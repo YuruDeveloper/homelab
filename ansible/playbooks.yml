@@ -1,0 +1,6 @@
+- name: Dnsinstaller
+  hosts: dns
+  become: true
+  roles:
+    - Alpineupgrade
+    - Technitium

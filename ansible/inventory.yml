@@ -1,0 +1,8 @@
+all:
+  children:
+    alpine:
+      children:
+        dns:
+         hosts:
+          dns0:
+            ansible_host: 192.168.2.100

@@ -1,0 +1,7 @@
+- name: Update cache
+  community.general.apk:
+    update_cache: true
+
+- name: Upgrade
+  community.general.apk:
+    upgrade: true

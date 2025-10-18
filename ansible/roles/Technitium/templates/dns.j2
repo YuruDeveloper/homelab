@@ -1,0 +1,27 @@
+#!/sbin/openrc-run
+name="{{ dns_service_name }}"
+description="technitium dns"
+
+command="/usr/bin/dotnet"
+command_args="{{ dns_install_dir }}/DnsServerApp.dll {{ dns_install_dir }}"
+command_user={{ dns_user }}
+command_background="yes"
+
+pidfile="/run/${RC_SVCNAME}.pid"
+
+output_log="{{ dns_log_dir }}/dns.log"
+error_log="{{ dns_log_dir }}/dns-error.log"
+
+
+depend() {
+    need net
+    after firewall
+}
+
+start_pre() {
+    checkpath --directory --owner {{ dns_user }}:{{ dns_user }} --mode 0755 {{ dns_log_dir }}
+}
+
+stop_post() {
+    rm -f "${pidfile}"
+}

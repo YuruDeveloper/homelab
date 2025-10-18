@@ -1,0 +1,5 @@
+dns_download_url: https://download.technitium.com/dns/DnsServerPortable.tar.gz
+dns_user: root
+dns_log_dir: /var/log/dns
+dns_install_dir: /etc/dns
+dns_service_name: dns

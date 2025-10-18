@@ -1,0 +1,38 @@
+- name: Install Need Pakege
+  community.general.apk:
+    update_cache: false
+    name:
+      - aspnetcore8-runtime
+      - icu
+      - tar
+    state: installed
+
+- name: Make dns folder
+  ansible.builtin.file:
+    state: directory
+    path: "{{ dns_install_dir }}"
+    mode: "755"
+
+- name: Install dns tar file
+  ansible.builtin.get_url:
+    url: "{{ dns_download_url }}"
+    dest: /tmp/
+    mode: "755"
+
+- name: Untar dns tar file
+  ansible.builtin.unarchive:
+    src: /tmp/DnsServerPortable.tar.gz
+    dest: "{{ dns_install_dir }}"
+    remote_src: true
+
+- name: Make service file
+  ansible.builtin.template:
+    src: dns.j2
+    dest: "/etc/init.d/{{ dns_service_name }}"
+    mode: "755"
+
+- name: Start Dns server
+  ansible.builtin.service:
+    name: "{{ dns_service_name }}"
+    state: started
+    enabled: true
