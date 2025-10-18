@@ -1,4 +1,4 @@
-- name: Install Need Pakege
+- name: Install Need Package
   community.general.apk:
     update_cache: false
     name:
@@ -36,3 +36,24 @@
     name: "{{ dns_service_name }}"
     state: started
     enabled: true
+
+- name: Remove temp Package
+  community.general.apk:
+    update_cache: false
+    name:
+      - tar
+    state: removed
+
+- name: Find temp files
+  ansible.builtin.find:
+    paths:
+      - /tmp/
+    patterns:
+      - "*.tar.gz"
+  register: temp_files
+
+- name: Remove temp files
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    state: absent
+  loop: "{{ temp_files.files }}"

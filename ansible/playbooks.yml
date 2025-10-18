@@ -1,6 +1,37 @@
-- name: Dnsinstaller
+- name: Install DNS
   hosts: dns
   become: true
   roles:
     - Alpineupgrade
     - Technitium
+
+- name: Etcd Config
+  hosts: haproxy
+  become: true
+  vars:
+    etcd_member_index: 0
+  roles:
+    - EtcdConfig
+
+- name: Etcd Config
+  hosts: db0
+  become: true
+  vars:
+    etcd_member_index: 1
+  roles:
+    - EtcdConfig
+
+- name: Etcd Config
+  hosts: db1
+  become: true
+  vars:
+    etcd_member_index: 2
+  roles:
+    - EtcdConfig
+
+- name: Install Etcd
+  hosts: HApostgresql
+  become: true
+  roles:
+    - Alpineupgrade
+    - Etcd

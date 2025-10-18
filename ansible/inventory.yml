@@ -4,5 +4,19 @@ all:
       children:
         dns:
          hosts:
-          dns0:
+          technitium0:
             ansible_host: 192.168.2.100
+          technitium1:
+            ansible_host: 192.168.2.101
+        HApostgresql:
+          children:
+            proxy:
+              hosts:
+                haproxy:
+                  ansible_host: 192.168.2.102
+            db:
+              hosts:
+                db0: 
+                  ansible_host: 192.168.2.103
+                db1:
+                  ansible_host: 192.168.2.104

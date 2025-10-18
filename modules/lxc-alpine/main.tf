@@ -67,9 +67,10 @@ resource "null_resource" "SshSetup" {
       ssh ${var.ProxmoxUserName}@${var.ProxmoxUrl} "pct exec ${proxmox_virtual_environment_container.LxcContainer.vm_id} -- apk add --no-cache openssh python3"
       ssh ${var.ProxmoxUserName}@${var.ProxmoxUrl} "pct exec ${proxmox_virtual_environment_container.LxcContainer.vm_id} -- rc-update add sshd"
       ssh ${var.ProxmoxUserName}@${var.ProxmoxUrl} "pct exec ${proxmox_virtual_environment_container.LxcContainer.vm_id} -- rc-service sshd start"
-      ssh ${var.ProxmoxUserName}@${var.ProxmoxUrl} "pct exec ${proxmox_virtual_environment_container.LxcContainer.vm_id} -- cat <<< \"PermitRootLogin yes\" >> /etc/ssh/sshd_config"
-      ssh ${var.ProxmoxUserName}@${var.ProxmoxUrl} "pct exec ${proxmox_virtual_environment_container.LxcContainer.vm_id} -- cat <<< \"PasswordAuthentication no\" >> /etc/ssh/sshd_config"
-      ssh ${var.ProxmoxUserName}@${var.ProxmoxUrl} "pct exec ${proxmox_virtual_environment_container.LxcContainer.vm_id} -- cat <<< \"PubkeyAuthentication yes\" >> /etc/ssh/sshd_config"
+      ssh ${var.ProxmoxUserName}@${var.ProxmoxUrl} "pct exec ${proxmox_virtual_environment_container.LxcContainer.vm_id} -- sed -i '\$a PermitRootLogin yes' /etc/ssh/sshd_config"
+      ssh ${var.ProxmoxUserName}@${var.ProxmoxUrl} "pct exec ${proxmox_virtual_environment_container.LxcContainer.vm_id} -- sed -i '\$a PasswordAuthentication no' /etc/ssh/sshd_config"
+      ssh ${var.ProxmoxUserName}@${var.ProxmoxUrl} "pct exec ${proxmox_virtual_environment_container.LxcContainer.vm_id} -- sed -i '\$a PubkeyAuthentication yes' /etc/ssh/sshd_config"
+      ssh ${var.ProxmoxUserName}@${var.ProxmoxUrl} "pct exec ${proxmox_virtual_environment_container.LxcContainer.vm_id} -- rc-service sshd restart"
     EOF
   }
 }

@@ -1,0 +1,83 @@
+- name: Install Need Pakege
+  community.general.apk:
+    update_cache: false
+    name:
+      - tar
+    state: installed
+
+- name: Install etcd tar file
+  ansible.builtin.get_url:
+    url: "{{ etcd_download_url }}"
+    dest: /tmp/
+    mode: "755"
+
+- name: Untar tar file
+  ansible.builtin.unarchive:
+    src: "/tmp/etcd-v{{ etcd_version }}-linux-amd64.tar.gz"
+    dest: /tmp/
+    mode: "755"
+    remote_src: true
+
+- name: Move files
+  ansible.builtin.copy:
+    src: "/tmp/etcd-v{{ etcd_version }}-linux-amd64/{{ item }}"
+    dest: /usr/local/bin/
+    mode: "755"
+    remote_src: true
+  loop:
+    - etcd
+    - etcdctl
+    - etcdutl
+
+- name: Make etcd group
+  ansible.builtin.group:
+    name: etcd
+    state: present
+    system: true
+
+- name: Make etcd user
+  ansible.builtin.user:
+    name: etcd
+    group: etcd
+    system: true
+    shell: /sbin/nologin
+    home: /var/lib/etcd
+    create_home: true
+    state: present
+
+- name: Make etcd folder
+  ansible.builtin.file:
+    path: /etc/etcd
+    state: directory
+    owner: etcd
+    group: etcd
+    mode: "755"
+
+- name: Add system file
+  ansible.builtin.template:
+    src: etcd.j2
+    dest: /etc/init.d/etcd
+    mode: "755"
+
+- name: Start Etcd
+  ansible.builtin.service:
+    name: etcd
+    state: started
+    enabled: true
+
+- name: Remove temp Package
+  community.general.apk:
+    update_cache: false
+    name:
+      - tar
+    state: removed
+
+- name: Remove temp files
+  ansible.builtin.file:
+    path: "/tmp/etcd-v{{ etcd_version }}-linux-amd64"
+    state: absent
+
+- name: Remove temp files
+  ansible.builtin.file:
+    path: "/tmp/etcd-v{{ etcd_version }}-linux-amd64.tar.gz"
+    state: absent

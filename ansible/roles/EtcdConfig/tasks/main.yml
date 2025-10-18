@@ -1,0 +1,5 @@
+- name: Make system file
+  ansible.builtin.template:
+    src: etcdconfig.j2
+    dest: "/etc/conf.d/etcd"
+    mode: "755"

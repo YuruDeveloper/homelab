@@ -1,0 +1,38 @@
+#!/sbin/openrc-run
+
+name="etcd"
+description="etcd key-value store"
+
+if [ -f /etc/conf.d/etcd ]; then
+    . /etc/conf.d/etcd
+fi
+
+: ${ETCD_USER:=etcd}
+: ${ETCD_GROUP:=etcd}
+: ${ETCD_WORKDIR:=/var/lib/etcd}
+
+command="/usr/local/bin/etcd"
+command_user="${ETCD_USER}:${ETCD_GROUP}"
+command_background=true
+pidfile="/run/${RC_SVCNAME}.pid"
+directory="${ETCD_WORKDIR}"
+
+# 자동 재시작 설정
+respawn_delay=10
+respawn_max=0
+
+output_log="/var/log/etcd/etcd.log"
+error_log="/var/log/etcd/etcd-error.log"
+
+depend() {
+    need net
+    after firewall
+}
+
+start_pre() {
+    # 작업 디렉토리 생성 및 권한 설정
+    checkpath --directory --mode 0755 --owner ${ETCD_USER}:${ETCD_GROUP} "${ETCD_WORKDIR}"
+    checkpath --directory --mode 0755 --owner ${ETCD_USER}:${ETCD_GROUP} "/var/log/etcd"
+    # 파일 디스크립터 제한 설정
+    ulimit -n 40000
+}

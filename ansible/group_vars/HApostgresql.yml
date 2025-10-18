@@ -1,0 +1,9 @@
+etcd_member_names:
+  - postgresql
+  - postgreslave0
+  - postgreslave1
+
+etcd_member_ips:
+  - 192.168.2.102
+  - 192.168.2.103
+  - 192.168.2.104

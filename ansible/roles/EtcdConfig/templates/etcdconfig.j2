@@ -1,0 +1,13 @@
+export ETCD_NAME={{ etcd_member_names[etcd_member_index] }}
+export ETCD_DATA_DIR="/var/lib/etcd"
+{% set clusters = [] %}
+{% for i in range(etcd_member_ips | length) %}
+{% set _ = clusters.append(etcd_member_names[i] + '=http://' + etcd_member_ips[i] + ':2380') %}
+{% endfor %}
+export ETCD_INITIAL_CLUSTER={{ clusters | join(',') }}
+export ETCD_INITIAL_CLUSTER_STATE=new
+export ETCD_INITIAL_CLUSTER_TOKEN="etcd-cluster"
+export ETCD_INITIAL_ADVERTISE_PEER_URLS="http://{{ etcd_member_ips[etcd_member_index]  }}:2380"
+export ETCD_LISTEN_PEER_URLS="http://0.0.0.0:2380"
+export ETCD_LISTEN_CLIENT_URLS="http://0.0.0.0:2379"
+export ETCD_ADVERTISE_CLIENT_URLS="http://{{ etcd_member_ips[etcd_member_index]  }}:2379"
