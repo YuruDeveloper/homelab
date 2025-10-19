@@ -81,3 +81,10 @@
   ansible.builtin.file:
     path: "/tmp/etcd-v{{ etcd_version }}-linux-amd64.tar.gz"
     state: absent
+
+- name: Set enable status
+  ansible.builtin.lineinfile:
+    path: /etc/conf.d/etcd
+    regexp: '^export ETCD_INITIAL_CLUSTER_STATE='
+    line: 'export ETCD_INITIAL_CLUSTER_STATE=existing'
+    state: present

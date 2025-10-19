@@ -1,0 +1,41 @@
+- name: Install Need Pakege
+  community.general.apk:
+    update_cache: false
+    name:
+      - python3
+      - postgresql-dev
+      - py3-virtualenv
+      - py3-pip
+      - gcc
+      - musl-dev
+      - python3-dev
+      - linux-headers
+    state: installed
+
+- name: Make Patroni folder
+  ansible.builtin.file:
+    path: /etc/patroni
+    state: directory
+    owner: postgres
+    group: postgres
+    mode: "755"
+
+- name: Make venv and instasll Patroni
+  ansible.builtin.pip:
+    name:
+      - psycopg2
+      - patroni[etcd]
+    virtualenv: /etc/patroni/venv/
+    virtualenv_command: python3 -m venv ./venv
+
+- name: Make system file
+  ansible.builtin.template:
+    src: patroni.j2
+    dest: "/etc/init.d/patroni"
+    mode: "755"
+
+- name: Start Patroni
+  ansible.builtin.service:
+    name: patroni
+    state: started
+    enabled: true

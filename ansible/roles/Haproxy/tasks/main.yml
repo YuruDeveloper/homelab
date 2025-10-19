@@ -1,0 +1,19 @@
+- name: Install Need Pakege
+  community.general.apk:
+    update_cache: false
+    name:
+      - haproxy
+    state: installed
+
+- name: Make Config file
+  ansible.builtin.template:
+    src: haproxy.j2
+    dest: "/etc/haproxy/haproxy.cfg"
+    mode: "755"
+    force: true
+
+- name: Start Haproxy
+  ansible.builtin.service:
+    name: haproxy
+    state: started
+    enabled: true

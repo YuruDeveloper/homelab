@@ -1,0 +1,11 @@
+- name: Make Patroni folder
+  ansible.builtin.file:
+    path: /etc/patroni
+    state: directory
+    mode: "755"
+
+- name: Make Setup file
+  ansible.builtin.template:
+    src: patroni.j2
+    dest: "/etc/patroni/patroni.yml"
+    mode: "755"

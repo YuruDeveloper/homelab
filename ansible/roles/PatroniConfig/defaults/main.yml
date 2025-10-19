@@ -1,0 +1,6 @@
+etcd_member_ips: []
+etcd_member_names: []
+etcd_member_index: ""
+postgresql_version: ""
+subnet: ""
+password: ""

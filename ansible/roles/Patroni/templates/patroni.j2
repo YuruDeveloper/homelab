@@ -1,0 +1,71 @@
+#!/sbin/openrc-run
+
+name="patroni"
+description="PostgreSQL High Availability with Patroni"
+
+VENV_PATH="/etc/patroni/venv"              # 가상환경 경로
+PATRONI_CONFIG="/etc/patroni/patroni.yml"   # Patroni 설정 파일
+POSTGRES_BIN="/usr/bin"                     # PostgreSQL 바이너리 경로
+
+command="${VENV_PATH}/bin/patroni"
+command_args="${PATRONI_CONFIG}"
+command_user="postgres:postgres"
+command_background="yes"
+
+# PID 파일
+pidfile="/run/patroni.pid"
+
+# 로그 파일
+output_log="/var/log/patroni/patroni.log"
+error_log="/var/log/patroni/patroni-error.log"
+
+# 환경 변수
+export PATH="${POSTGRES_BIN}:${PATH}"
+export LC_ALL="en_US.UTF-8"
+
+depend() {
+    need net
+    after etcd postgresql
+    use dns
+}
+
+start_pre() {
+    # 로그 디렉토리 생성
+    checkpath --directory --owner postgres:postgres --mode 0755 /var/log/patroni
+    checkpath --directory --owner postgres:postgres --mode 0755 /run/postgresql
+
+    # 설정 파일 존재 확인
+    if [ ! -f "${PATRONI_CONFIG}" ]; then
+        eerror "Patroni configuration file not found: ${PATRONI_CONFIG}"
+        return 1
+    fi
+    
+    # 가상환경 확인
+    if [ ! -f "${command}" ]; then
+        eerror "Patroni binary not found in virtual environment: ${command}"
+        return 1
+    fi
+    
+    einfo "Starting Patroni with config: ${PATRONI_CONFIG}"
+}
+
+stop_post() {
+    # PID 파일 정리
+    rm -f "${pidfile}"
+}
+
+status() {
+    if [ -f "${pidfile}" ]; then
+        pid=$(cat "${pidfile}")
+        if ps -p "${pid}" > /dev/null 2>&1; then
+            einfo "Patroni is running (PID: ${pid})"
+            return 0
+        else
+            eerror "Patroni is not running but PID file exists"
+            return 1
+        fi
+    else
+        einfo "Patroni is not running"
+        return 3
+    fi
+}

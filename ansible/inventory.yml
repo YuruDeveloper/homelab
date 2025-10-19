@@ -14,7 +14,7 @@ all:
               hosts:
                 haproxy:
                   ansible_host: 192.168.2.102
-            db:
+            postgresql:
               hosts:
                 db0: 
                   ansible_host: 192.168.2.103

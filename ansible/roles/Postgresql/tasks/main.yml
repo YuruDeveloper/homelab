@@ -1,0 +1,7 @@
+- name: Install postgresql
+  community.general.apk:
+    update_cache: true
+    name:
+      - "postgresql{{ postgresql_version }}"
+      - "postgresql{{ postgresql_version }}-contrib"
+      - "postgresql{{ postgresql_version }}-openrc"
