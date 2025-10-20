@@ -53,6 +53,6 @@ backend db
 
     {% for i in range(etcd_member_ips | length) %}
     {% if i != etcd_member_index %}
-server {{ etcd_member_names[i] }} {{ etcd_member_ips[i] }}:5432 port 8008 check
+ server {{ etcd_member_names[i] }} {{ etcd_member_ips[i] }}:5432 port 8008 check
     {% endif %}
     {% endfor %}

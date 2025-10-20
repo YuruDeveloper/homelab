@@ -1,3 +1,12 @@
+module "AlpineTemplate" {
+  source = "./modules/alpine-template"
+
+  ProxmoxNode        = var.proxmox_node
+  DatastoreId        = "local"
+  AlpineVersion      = "3.22"
+  AlpineTemplateDate = "20250617"
+}
+
 module "technitium0" {
   source = "./services/dns"
 
@@ -13,7 +22,8 @@ module "technitium0" {
   RootPassword = var.proxmox_password
   PublicKey    = var.public_key
 
-  DatastoreId  = "local"
+  DatastoreId     = "local"
+  TemplateFileId  = module.AlpineTemplate.TemplateFileId
 }
 
 module "technitium1" {
@@ -31,7 +41,8 @@ module "technitium1" {
   RootPassword = var.proxmox_password
   PublicKey    = var.public_key
 
-  DatastoreId  = "local"
+  DatastoreId     = "local"
+  TemplateFileId  = module.AlpineTemplate.TemplateFileId
 }
 
 module "haproxy" {
@@ -49,7 +60,8 @@ module "haproxy" {
   RootPassword = var.proxmox_password
   PublicKey    = var.public_key
 
-  DatastoreId  = "local"
+  DatastoreId     = "local"
+  TemplateFileId  = module.AlpineTemplate.TemplateFileId
 }
 
 module "postgreslave0" {
@@ -67,7 +79,8 @@ module "postgreslave0" {
   RootPassword = var.proxmox_password
   PublicKey    = var.public_key
 
-  DatastoreId  = "local"
+  DatastoreId     = "local"
+  TemplateFileId  = module.AlpineTemplate.TemplateFileId
 }
 
 module "postgreslave1" {
@@ -85,5 +98,25 @@ module "postgreslave1" {
   RootPassword = var.proxmox_password
   PublicKey    = var.public_key
 
-  DatastoreId  = "local"
+  DatastoreId     = "local"
+  TemplateFileId  = module.AlpineTemplate.TemplateFileId
+}
+
+module "docker" {
+  source = "./services/docker"
+
+  ProxmoxNode     = var.proxmox_node
+  ProxmoxUrl      = var.proxmox_url
+  ProxmoxUserName = var.proxmox_user_name
+
+  VmId = 1005
+
+  IpAddress     = "192.168.2.105/24"
+  Gateway       = "192.168.2.1"
+
+  RootPassword = var.proxmox_password
+  PublicKey    = var.public_key
+
+  DatastoreId     = "local"
+  TemplateFileId  = module.AlpineTemplate.TemplateFileId
 }

@@ -47,3 +47,8 @@ variable "PublicKey" {
   type        = string
   description = "SSH 공개키"
 }
+
+variable "TemplateFileId" {
+  type        = string
+  description = "Alpine 템플릿 파일 ID"
+}

@@ -1,0 +1,37 @@
+- name: Add eth1 Config
+  ansible.builtin.blockinfile:
+    path: /etc/network/interfaces
+    block: |
+      auto eth1
+      iface eth1 inet manual
+
+- name: Update network
+  ansible.builtin.service:
+    name: networking
+    state: restarted
+
+- name: Download Docker and Need Pakages
+  community.general.apk:
+    update_cache: false
+    name:
+      - docker
+      - docker-compose
+      - py3-requests
+      - py3-docker-py
+
+- name: Start Docker
+  ansible.builtin.service:
+    name: docker
+    state: started
+    enabled: true
+
+- name: Add macvalan network
+  community.docker.docker_network:
+    docker_host: unix:///var/run/docker.sock
+    name: macvlan
+    driver: macvlan
+    driver_options:
+      parent: eth1
+    ipam_config:
+      - subnet: "192.168.4.0/24"
+        gateway: "192.168.4.1"

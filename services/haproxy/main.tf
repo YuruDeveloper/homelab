@@ -23,4 +23,6 @@ module "haproxy" {
 
   DatastoreId  = var.DatastoreId
   Unprivileged = true
+
+  TemplateFileId = var.TemplateFileId
 }

@@ -92,14 +92,29 @@ variable "Unprivileged" {
   default     = true
 }
 
-variable "AlpineVersion" {
+variable "TemplateFileId" {
   type        = string
-  description = "Alpine Linux 버전"
-  default     = "3.22"
+  description = "Alpine 템플릿 파일 ID"
 }
 
-variable "AlpineTemplateDate" {
-  type        = string
-  description = "Alpine 템플릿 날짜"
-  default     = "20250617"
+variable "EnableNesting" {
+  type        = bool
+  description = "Docker 등 중첩 컨테이너 지원 활성화"
+  default     = false
+}
+
+variable "EnableKeyctl" {
+  type        = bool
+  description = "Keyctl 기능 활성화"
+  default     = false
+}
+
+variable "AdditionalNetworkInterfaces" {
+  type = list(object({
+    name    = string
+    vlan_id = number
+    bridge  = string
+  }))
+  description = "추가 네트워크 인터페이스 목록"
+  default     = []
 }

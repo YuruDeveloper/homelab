@@ -1,0 +1,20 @@
+- name: Make Portainer folder
+  ansible.builtin.file:
+    state: directory
+    path: "/root/portainer"
+    mode: "755"
+
+- name: Deploy Portainer
+  community.docker.docker_container:
+    docker_host: unix:///var/run/docker.sock
+    name: portainer
+    image: portainer/portainer-ce:latest
+    state: started
+    pull: true
+    restart_policy: always
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /root/portainer:/data
+    networks:
+      - name: macvlan
+        ipv4_address: "{{ portainer_ip }}"

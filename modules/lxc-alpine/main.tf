@@ -1,13 +1,3 @@
-resource "proxmox_virtual_environment_file" "AlpineTemplate" {
-  content_type = "vztmpl"
-  datastore_id = var.DatastoreId
-  node_name    = var.ProxmoxNode
-
-  source_file {
-    path = "http://download.proxmox.com/images/system/alpine-${var.AlpineVersion}-default_${var.AlpineTemplateDate}_amd64.tar.xz"
-  }
-}
-
 resource "proxmox_virtual_environment_container" "LxcContainer" {
   node_name    = var.ProxmoxNode
   vm_id        = var.VmId
@@ -30,13 +20,31 @@ resource "proxmox_virtual_environment_container" "LxcContainer" {
     bridge  = var.NetworkBridge
   }
 
+  dynamic "network_interface" {
+    for_each = var.AdditionalNetworkInterfaces
+    content {
+      enabled = true
+      name    = network_interface.value.name
+      vlan_id = network_interface.value.vlan_id
+      bridge  = network_interface.value.bridge
+    }
+  }
+
+  dynamic "features" {
+    for_each = var.EnableNesting || var.EnableKeyctl ? [1] : []
+    content {
+      nesting = var.EnableNesting
+      keyctl  = var.EnableKeyctl
+    }
+  }
+
   disk {
     datastore_id = var.DatastoreId
     size         = var.DiskSize
   }
 
   operating_system {
-    template_file_id = proxmox_virtual_environment_file.AlpineTemplate.id
+    template_file_id = var.TemplateFileId
     type             = "alpine"
   }
 
@@ -55,22 +63,13 @@ resource "proxmox_virtual_environment_container" "LxcContainer" {
   }
 }
 
-resource "null_resource" "SshSetup" {
+module "SshSetup" {
+  source = "../lxc-ssh-setup"
+
   depends_on = [proxmox_virtual_environment_container.LxcContainer]
 
-  triggers = {
-    container_id = proxmox_virtual_environment_container.LxcContainer.id
-  }
-
-  provisioner "local-exec" {
-    command = <<-EOF
-      ssh ${var.ProxmoxUserName}@${var.ProxmoxUrl} "pct exec ${proxmox_virtual_environment_container.LxcContainer.vm_id} -- apk add --no-cache openssh python3"
-      ssh ${var.ProxmoxUserName}@${var.ProxmoxUrl} "pct exec ${proxmox_virtual_environment_container.LxcContainer.vm_id} -- rc-update add sshd"
-      ssh ${var.ProxmoxUserName}@${var.ProxmoxUrl} "pct exec ${proxmox_virtual_environment_container.LxcContainer.vm_id} -- rc-service sshd start"
-      ssh ${var.ProxmoxUserName}@${var.ProxmoxUrl} "pct exec ${proxmox_virtual_environment_container.LxcContainer.vm_id} -- sed -i '\$a PermitRootLogin yes' /etc/ssh/sshd_config"
-      ssh ${var.ProxmoxUserName}@${var.ProxmoxUrl} "pct exec ${proxmox_virtual_environment_container.LxcContainer.vm_id} -- sed -i '\$a PasswordAuthentication no' /etc/ssh/sshd_config"
-      ssh ${var.ProxmoxUserName}@${var.ProxmoxUrl} "pct exec ${proxmox_virtual_environment_container.LxcContainer.vm_id} -- sed -i '\$a PubkeyAuthentication yes' /etc/ssh/sshd_config"
-      ssh ${var.ProxmoxUserName}@${var.ProxmoxUrl} "pct exec ${proxmox_virtual_environment_container.LxcContainer.vm_id} -- rc-service sshd restart"
-    EOF
-  }
+  ContainerId      = proxmox_virtual_environment_container.LxcContainer.id
+  VmId             = proxmox_virtual_environment_container.LxcContainer.vm_id
+  ProxmoxUrl       = var.ProxmoxUrl
+  ProxmoxUserName  = var.ProxmoxUserName
 }
