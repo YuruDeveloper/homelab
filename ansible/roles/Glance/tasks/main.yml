@@ -1,0 +1,26 @@
+- name: Make Glance folder
+  ansible.builtin.file:
+    state: directory
+    path: "/root/glance"
+    mode: "755"
+
+- name: Make Config File
+  ansible.builtin.template:
+    src: glance.j2
+    dest: "/root/glance/glance.yml"
+    mode: "755"
+
+- name: Deploy Glance
+  community.docker.docker_container:
+    docker_host: unix:///var/run/docker.sock
+    name: glance
+    image: glanceapp/glance:latest
+    state: started
+    pull: true
+    restart_policy: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /root/glance:/app/config
+    networks:
+      - name: macvlan
+        ipv4_address: "{{ glance_ip }}"

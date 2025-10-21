@@ -32,24 +32,37 @@
 
 - name: Set default CA to Let's Encrypt
   ansible.builtin.command:
-    cmd: /root/.acme.sh/acme.sh --set-default-ca --server letsencrypt
+    cmd: /root/.acme.sh/acme.sh --set-default-ca --server letsencrypt_test
   changed_when: true
 
-- name: Get Chanllage
+- name: Check if certificate already exists
+  ansible.builtin.stat:
+    path: "/root/.acme.sh/{{ domain }}/{{ domain_filename }}.cer"
+  register: cert_exists
+
+- name: Get Challenge
   ansible.builtin.command:
     /root/.acme.sh/acme.sh --issue --dns dns_duckdns -d "{{ domain }}"
   environment:
     DuckDNS_Token: "{{ token }}"
-  changed_when: true
-  failed_when: false
+  register: issue_cert_result
+  changed_when: issue_cert_result.rc == 0
+  failed_when:
+    - issue_cert_result.rc != 0
+    - "'Domains not changed' not in issue_cert_result.stdout"
+  when: not cert_exists.stat.exists
 
-- name: Get Chanllage
+- name: Get Challenge
   ansible.builtin.command:
     /root/.acme.sh/acme.sh --issue --dns dns_duckdns -d "{{ domain }}" -d "*.{{ domain }}" --dnssleep 180
   environment:
     DuckDNS_Token: "{{ token }}"
-  changed_when: true
-  failed_when: false
+  register: issue_cert_result
+  changed_when: issue_cert_result.rc == 0
+  failed_when:
+    - issue_cert_result.rc != 0
+    - "'Domains not changed' not in issue_cert_result.stdout"
+  when: not cert_exists.stat.exists
 
 - name: Create nginx ssl directory
   ansible.builtin.file:
@@ -57,12 +70,22 @@
     state: directory
     mode: '0755'
 
+- name: Check if nginx certificates are installed
+  ansible.builtin.stat:
+    path: "/etc/nginx/ssl/{{ domain_filename }}.cer"
+  register: nginx_cert_exists
+
 - name: Install certificate for nginx
   ansible.builtin.command:
     /root/.acme.sh/acme.sh --install-cert -d "{{ domain }}" -d "*.{{ domain }}"
     --key-file /etc/nginx/ssl/{{ domain_filename }}.key
     --fullchain-file /etc/nginx/ssl/{{ domain_filename }}.cer
-  changed_when: true
+  register: install_cert_result
+  changed_when: install_cert_result.rc == 0
+  failed_when:
+    - install_cert_result.rc != 0
+    - "'No such domain' not in install_cert_result.stderr"
+  when: not nginx_cert_exists.stat.exists or cert_exists.stat.exists
 
 - name: Make Defualt file
   ansible.builtin.template:

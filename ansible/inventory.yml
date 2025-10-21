@@ -28,3 +28,7 @@ all:
           hosts:
             nginx0:
               ansible_host: 192.168.5.100
+        gitea:
+          hosts:
+            gitea0: 
+              ansible_host: 192.168.2.106

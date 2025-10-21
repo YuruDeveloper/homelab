@@ -1,0 +1,12 @@
+- name: Install Need Pakege
+  community.general.apk:
+    update_cache: false
+    name:
+      - gitea
+    state: installed
+
+- name: Start Gitea
+  ansible.builtin.service:
+    name: gitea
+    state: started
+    enabled: true

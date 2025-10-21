@@ -1,0 +1,55 @@
+pages:
+  - name: home
+    columns:
+      - size: small
+        widgets:
+          - type: calendar
+            first-day-of-week: monday
+      - size: full
+        widgets:
+          - type: hacker-news
+          - type: monitor
+            cache: 1m
+            title: Services
+            sites:  
+              - title: opnsense
+                url: https://opnsense.bytedev.duckdns.org
+                icon: di:opnsense
+              - title: proxmox
+                url: https://proxmox.bytedev.duckdns.org
+                icon: di:proxmox
+              - title: technitium0
+                url: https://technitium0.bytedev.duckdns.org
+                icon: di:technitium
+              - title: technitium1
+                url: https://technitium1.bytedev.duckdns.org
+                icon: di:technitium
+          - type: docker-containers
+            cache: 1m
+            containers:
+              portainer:
+                name: portainer
+                description: manager docker
+                url: https://portainer.bytedev.duckdns.org
+                icon: si:portainer
+                hide: false
+              glance:
+                name: glance
+                icon: di:glance
+                description: dashboard
+                url: https://glance.bytedev.duckdns.org
+                hide: false
+      - size: small
+        widgets:
+          - type: weather
+            location: daegu, South Korea
+            units: metric
+            hour-format: 12h
+          - type: dns-stats
+            service: technitium
+            url: https://technitium0.bytedev.duckdns.org
+            token: {{ technitium0_apikey }}
+          - type: dns-stats
+            service: technitium
+            url:  https://technitium1.bytedev.duckdns.org
+            token: {{ technitium0_apikey }}

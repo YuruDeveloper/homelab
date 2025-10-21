@@ -83,13 +83,17 @@
     - Alpineupgrade
     - Docker
 
-- name: Deploy Portainer
+- name: Deploy Container
   become: true
   hosts: docker
   vars:
     portainer_ip: "192.168.4.100"
+    glance_ip: "192.168.4.101"
+    technitium0_apikey: "0"
+    technitium1_apikey: "0"
   roles:
     - Portainer
+    - Glance
 
 - name: Setup Nginx
   become: true
@@ -99,3 +103,10 @@
   roles:
     - Alpineupgrade
     - Nginx
+
+- name: Setup Gitea
+  become: true
+  hosts: gitea
+  roles:
+    - Alpineupgrade
+    - Gitea

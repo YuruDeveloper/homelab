@@ -139,3 +139,22 @@ module "nginx" {
   DatastoreId     = "local"
   TemplateFileId  = module.AlpineTemplate.TemplateFileId
 }
+
+module "gitea" {
+  source = "./services/gitea"
+
+  ProxmoxNode     = var.proxmox_node
+  ProxmoxUrl      = var.proxmox_url
+  ProxmoxUserName = var.proxmox_user_name
+
+  VmId = 1007
+
+  IpAddress     = "192.168.2.106/24"
+  Gateway       = "192.168.2.1"
+
+  RootPassword = var.proxmox_password
+  PublicKey    = var.public_key
+
+  DatastoreId     = "local"
+  TemplateFileId  = module.AlpineTemplate.TemplateFileId
+}

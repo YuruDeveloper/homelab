@@ -17,3 +17,9 @@ services:
   - domain: portainer.bytedev.duckdns.org
     ip: 192.168.4.100
     port: 9000
+  - domain: gitea.bytedev.duckdns.org
+    ip: 192.168.2.106
+    port: 3000
+  - domain: glance.bytedev.duckdns.org
+    ip: 192.168.4.101
+    port: 8080
