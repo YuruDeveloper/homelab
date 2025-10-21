@@ -1,0 +1,137 @@
+- name: Install Need Pakege
+  community.general.apk:
+    update_cache: false
+    name:
+      - nginx
+      - nginx-mod-stream
+      - nginx-openrc
+      - openssl
+      - curl
+    state: installed
+
+- name: Start nginx
+  ansible.builtin.service:
+    name: nginx
+    state: started
+    enabled: true
+
+- name: Install acme.sh
+  ansible.builtin.shell: |
+    set -o pipefail
+    curl -s https://get.acme.sh | sh -s email="{{ email }}"
+  args:
+    creates: /root/.acme.sh/account.conf
+    executable: /bin/ash
+
+- name: Add duckdns token
+  ansible.builtin.lineinfile:
+    path: /etc/profile
+    regexp: "^export DuckDNS_Token="
+    line: "export DuckDNS_Token={{ token }}"
+    state: present
+
+- name: Set default CA to Let's Encrypt
+  ansible.builtin.command:
+    cmd: /root/.acme.sh/acme.sh --set-default-ca --server letsencrypt
+  changed_when: true
+
+- name: Get Chanllage
+  ansible.builtin.command:
+    /root/.acme.sh/acme.sh --issue --dns dns_duckdns -d "{{ domain }}"
+  environment:
+    DuckDNS_Token: "{{ token }}"
+  changed_when: true
+  failed_when: false
+
+- name: Get Chanllage
+  ansible.builtin.command:
+    /root/.acme.sh/acme.sh --issue --dns dns_duckdns -d "{{ domain }}" -d "*.{{ domain }}" --dnssleep 180
+  environment:
+    DuckDNS_Token: "{{ token }}"
+  changed_when: true
+  failed_when: false
+
+- name: Create nginx ssl directory
+  ansible.builtin.file:
+    path: /etc/nginx/ssl
+    state: directory
+    mode: '0755'
+
+- name: Install certificate for nginx
+  ansible.builtin.command:
+    /root/.acme.sh/acme.sh --install-cert -d "{{ domain }}" -d "*.{{ domain }}"
+    --key-file /etc/nginx/ssl/{{ domain_filename }}.key
+    --fullchain-file /etc/nginx/ssl/{{ domain_filename }}.cer
+  changed_when: true
+
+- name: Make Defualt file
+  ansible.builtin.template:
+    src: default.j2
+    dest: /etc/nginx/http.d/default.conf
+    mode: "755"
+
+- name: Make internal file
+  ansible.builtin.template:
+    src: internal.j2
+    dest: /etc/nginx/http.d/internal.conf
+    mode: "755"
+
+- name: Make https Header file
+  ansible.builtin.template:
+    src: httpsheader.j2
+    dest: /etc/nginx/http.d/header.conf
+    mode: "755"
+
+- name: Make ssl Header file
+  ansible.builtin.template:
+    src: ssl.j2
+    dest: /etc/nginx/http.d/ssl.conf
+    mode: "755"
+
+- name: Make https files
+  ansible.builtin.template:
+    src: https.j2
+    dest: "/etc/nginx/http.d/{{ item.domain }}.conf"
+    mode: "755"
+  loop: "{{ services }}"
+
+- name: Install pgterm
+  ansible.builtin.get_url:
+    url: https://github.com/YuruDeveloper/pgterm/releases/download/release/pgterm
+    dest: "/usr/local/bin/pgterm"
+    mode: "755"
+
+- name: Make Config file
+  ansible.builtin.template:
+    src: pgtermConfig.j2
+    dest: /etc/conf.d/pgterm
+    mode: "755"
+
+- name: Make System file
+  ansible.builtin.template:
+    src: pgterm.j2
+    dest: /etc/init.d/pgterm
+    mode: "755"
+
+- name: Start pgterm
+  ansible.builtin.service:
+    name: pgterm
+    state: started
+    enabled: true
+
+- name: Make internal file
+  ansible.builtin.template:
+    src: internal.j2
+    dest: /etc/nginx/stream.d/internal.conf
+    mode: "755"
+
+- name: Make stream file
+  ansible.builtin.template:
+    src: stream.j2
+    dest: "/etc/nginx/stream.d/postgres.{{ domain }}.conf"
+    mode: "755"
+
+- name: Reload nginx
+  ansible.builtin.service:
+    name: nginx
+    state: reloaded

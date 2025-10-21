@@ -118,3 +118,9 @@ variable "AdditionalNetworkInterfaces" {
   description = "추가 네트워크 인터페이스 목록"
   default     = []
 }
+
+variable "Dns" {
+  type = list(string)
+  description = "dns 설정"
+  default = []
+}

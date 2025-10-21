@@ -1,0 +1,14 @@
+server {
+    listen 443 ssl;
+    server_name {{ item.domain }};
+
+    ssl_certificate     /etc/nginx/ssl/{{ domain_filename }}.cer;
+    ssl_certificate_key /etc/nginx/ssl/{{ domain_filename }}.key;
+
+    include /etc/nginx/http.d/ssl.conf;
+    include /etc/nginx/http.d/internal.conf;
+    location / {
+        proxy_pass http://{{ item.ip }}:{{ item.port }};
+        include /etc/nginx/http.d/header.conf;
+    }
+}

@@ -1,0 +1,10 @@
+server {
+    listen 443 ssl default_server;
+    server_name _;
+
+    ssl_certificate     /etc/nginx/ssl/{{ domain_filename }}.cer;
+    ssl_certificate_key /etc/nginx/ssl/{{ domain_filename }}.key;
+    include /etc/nginx/http.d/ssl.conf;
+
+    return 444;
+}

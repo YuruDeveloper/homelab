@@ -1,0 +1,39 @@
+#!/sbin/openrc-run
+name="pgterm"
+description="Lightweight PostgreSQL SSL Termination Proxy"
+
+if [ -f /etc/conf.d/pgterm ]; then
+    . /etc/conf.d/pgterm
+fi
+
+server_certificate_path="${PGTERM_SERVER_CERT:-/etc/nginx/ssl/cert.cer}"
+server_private_key_path="${PGTERM_SERVER_KEY:-/etc/nginx/ssl/key.key}"
+server_port="${PGTERM_SERVER_PORT:-9000}"
+backend_host="${PGTERM_BACKEND_HOST:-localhost}"
+backend_port="${PGTERM_BACKEND_PORT:-5432}"
+log_level="${PGTERM_LOG_LEVEL:-INFO}"
+
+command="/usr/local/bin/pgterm"
+command_args="--server-certificate-path ${server_certificate_path} --server-private-key-path ${server_private_key_path} --server-port ${server_port} --client-connection-host-or-ip ${backend_host} --client-connection-port ${backend_port}"
+command_user="nginx:nginx"
+command_background="yes"
+
+# PID 파일
+pidfile="/run/pgterm.pid"
+
+# 로그 파일
+output_log="/var/log/pgterm/pgterm.log"
+error_log="/var/log/pgterm/pgterm-error.log"
+
+depend() {
+    need net
+    after firewall
+}
+
+start_pre() {
+    # 로그 디렉토리 생성
+    checkpath --directory --owner nginx:nginx --mode 0755 /var/log/pgterm
+
+    einfo "Starting pgterm on port ${server_port}"
+    einfo "Backend: ${backend_host}:${backend_port}"
+}

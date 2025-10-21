@@ -120,3 +120,22 @@ module "docker" {
   DatastoreId     = "local"
   TemplateFileId  = module.AlpineTemplate.TemplateFileId
 }
+
+module "nginx" {
+  source = "./services/nginx"
+
+  ProxmoxNode     = var.proxmox_node
+  ProxmoxUrl      = var.proxmox_url
+  ProxmoxUserName = var.proxmox_user_name
+
+  VmId = 1006
+
+  IpAddress     = "192.168.5.100/24"
+  Gateway       = "192.168.5.1"
+
+  RootPassword = var.proxmox_password
+  PublicKey    = var.public_key
+
+  DatastoreId     = "local"
+  TemplateFileId  = module.AlpineTemplate.TemplateFileId
+}

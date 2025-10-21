@@ -1,0 +1,6 @@
+export PGTERM_SERVER_CERT="/etc/nginx/ssl/{{ domain_filename }}.cer"
+export PGTERM_SERVER_KEY="/etc/nginx/ssl/{{ domain_filename }}.key"
+export PGTERM_SERVER_PORT="9000"
+export PGTERM_LOG_LEVEL="INFO"
+export PGTERM_BACKEND_HOST={{ postgres_ip }}
+export PGTERM_BACKEND_PORT="5432"

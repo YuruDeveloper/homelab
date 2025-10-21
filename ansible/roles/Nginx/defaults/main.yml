@@ -1,0 +1,4 @@
+postgres_ip: ""
+pgterm_url: "https://github.com/YuruDeveloper/pgterm/releases/download/release/pgterm"
+services: []
+token: ""

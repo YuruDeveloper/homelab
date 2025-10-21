@@ -2,7 +2,6 @@ resource "proxmox_virtual_environment_container" "LxcContainer" {
   node_name    = var.ProxmoxNode
   vm_id        = var.VmId
   unprivileged = var.Unprivileged
-
   cpu {
     cores = var.CpuCores
     units = 1
@@ -55,6 +54,9 @@ resource "proxmox_virtual_environment_container" "LxcContainer" {
         address = var.IpAddress
         gateway = var.Gateway
       }
+    }
+    dns {
+      servers = var.Dns
     }
     user_account {
       password = var.RootPassword
