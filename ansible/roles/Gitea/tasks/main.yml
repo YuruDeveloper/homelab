@@ -1,4 +1,4 @@
-- name: Install Need Pakege
+- name: Install Need Package
   community.general.apk:
     update_cache: false
     name:

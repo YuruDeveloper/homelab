@@ -1,0 +1,25 @@
+---
+# Role: Alpineupgrade
+# Description: Alpine Linux 패키지 업데이트
+
+dependencies: []
+
+galaxy_info:
+  role_name: alpine_upgrade
+  author: cecil
+  description: Alpine Linux package upgrade
+  license: MIT
+  min_ansible_version: "2.9"
+  platforms:
+    - name: Alpine
+      versions:
+        - all
+
+# 변수 구조
+# Required Variables: 없음
+# Optional Variables: 없음
+# Provided Variables: 없음
+
+# 의존성 설명
+# - 선행 Role: 없음 (가장 먼저 실행되어야 함)
+# - 후속 Role: 대부분의 Role이 이것에 의존함

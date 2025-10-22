@@ -1,0 +1,40 @@
+---
+# Role: Portainer
+# Description: Portainer 컨테이너 관리 UI 배포
+
+dependencies:
+  - role: docker
+
+galaxy_info:
+  role_name: portainer
+  author: cecil
+  description: Portainer container management UI deployment
+  license: MIT
+  min_ansible_version: "2.9"
+  platforms:
+    - name: Alpine
+      versions:
+        - all
+
+# 변수 구조
+# Required Variables:
+#   - portainer_ip: (string) Portainer 컨테이너 IP 주소
+#       예: "192.168.4.100"
+#
+# Optional Variables: 없음
+#
+# Provided Variables:
+#   - Portainer 컨테이너가 {{ portainer_ip }}:9000에서 실행됨
+#
+# 네트워크 요구사항:
+#   - 포트 9000 (Portainer 웹 UI)
+#   - Docker macvlan 네트워크 (docker_network)
+#
+# 중요 사항:
+#   ⚠️ 이 Role을 실행하기 전에 Docker가 실행 중이어야 합니다!
+#   ⚠️ Docker Role에서 생성한 docker_network를 사용합니다
+#   ⚠️ portainer_ip는 macvlan 네트워크 대역 내여야 합니다
+
+# 의존성 설명
+# - 선행 Role: Docker (docker_network 필요)
+# - 후속 Role: 없음

@@ -1,5 +1,5 @@
 resource "proxmox_virtual_environment_container" "LxcContainer" {
-  node_name    = var.ProxmoxNode
+  node_name    = var.CommonConfig.ProxmoxNode
   vm_id        = var.VmId
   unprivileged = var.Unprivileged
   cpu {
@@ -38,12 +38,12 @@ resource "proxmox_virtual_environment_container" "LxcContainer" {
   }
 
   disk {
-    datastore_id = var.DatastoreId
+    datastore_id = var.CommonConfig.DatastoreId
     size         = var.DiskSize
   }
 
   operating_system {
-    template_file_id = var.TemplateFileId
+    template_file_id = var.CommonConfig.TemplateFileId
     type             = "alpine"
   }
 
@@ -59,8 +59,8 @@ resource "proxmox_virtual_environment_container" "LxcContainer" {
       servers = var.Dns
     }
     user_account {
-      password = var.RootPassword
-      keys     = [var.PublicKey]
+      password = var.CommonConfig.RootPassword
+      keys     = [var.CommonConfig.PublicKey]
     }
   }
 }
@@ -70,8 +70,8 @@ module "SshSetup" {
 
   depends_on = [proxmox_virtual_environment_container.LxcContainer]
 
-  ContainerId      = proxmox_virtual_environment_container.LxcContainer.id
-  VmId             = proxmox_virtual_environment_container.LxcContainer.vm_id
-  ProxmoxUrl       = var.ProxmoxUrl
-  ProxmoxUserName  = var.ProxmoxUserName
+  ContainerId     = proxmox_virtual_environment_container.LxcContainer.id
+  VmId            = proxmox_virtual_environment_container.LxcContainer.vm_id
+  ProxmoxUrl      = var.CommonConfig.ProxmoxUrl
+  ProxmoxUserName = var.CommonConfig.ProxmoxUserName
 }

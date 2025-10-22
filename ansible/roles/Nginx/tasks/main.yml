@@ -1,4 +1,4 @@
-- name: Install Need Pakege
+- name: Install Need Package
   community.general.apk:
     update_cache: false
     name:
@@ -87,7 +87,7 @@
     - "'No such domain' not in install_cert_result.stderr"
   when: not nginx_cert_exists.stat.exists or cert_exists.stat.exists
 
-- name: Make Defualt file
+- name: Make Default file
   ansible.builtin.template:
     src: default.j2
     dest: /etc/nginx/http.d/default.conf

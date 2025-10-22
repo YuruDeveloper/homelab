@@ -1,0 +1,35 @@
+---
+# Role: Technitium
+# Description: Technitium DNS 서버 설치 및 설정
+
+dependencies:
+  - role: alpine_upgrade
+
+galaxy_info:
+  role_name: technitium
+  author: cecil
+  description: Technitium DNS Server installation
+  license: MIT
+  min_ansible_version: "2.9"
+  platforms:
+    - name: Alpine
+      versions:
+        - all
+
+# 변수 구조
+# Required Variables:
+#   - technitium_version: Technitium DNS 버전 (defaults/main.yml에서 정의)
+#   - technitium_download_url: 다운로드 URL (defaults/main.yml에서 정의)
+#
+# Optional Variables: 없음
+#
+# Provided Variables:
+#   - DNS 서버가 포트 5380에서 실행됨
+#
+# 네트워크 요구사항:
+#   - 포트 53 (DNS)
+#   - 포트 5380 (웹 UI)
+
+# 의존성 설명
+# - 선행 Role: Alpineupgrade (패키지 업데이트 필요)
+# - 후속 Role: 없음

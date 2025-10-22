@@ -10,7 +10,7 @@
     name: networking
     state: restarted
 
-- name: Download Docker and Need Pakages
+- name: Download Docker and Need Packages
   community.general.apk:
     update_cache: false
     name:
@@ -25,7 +25,7 @@
     state: started
     enabled: true
 
-- name: Add macvalan network
+- name: Add macvlan network
   community.docker.docker_network:
     docker_host: unix:///var/run/docker.sock
     name: macvlan

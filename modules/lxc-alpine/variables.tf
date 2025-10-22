@@ -1,6 +1,15 @@
-variable "ProxmoxNode" {
-  type        = string
-  description = "Proxmox 노드 이름"
+variable "CommonConfig" {
+  type = object({
+    ProxmoxNode     = string
+    ProxmoxUrl      = string
+    ProxmoxUserName = string
+    RootPassword    = string
+    PublicKey       = string
+    DatastoreId     = string
+    TemplateFileId  = string
+  })
+  description = "LXC 공통 설정 (Proxmox 연결 정보 및 인증 정보)"
+  sensitive   = true
 }
 
 variable "VmId" {
@@ -37,12 +46,6 @@ variable "DiskSize" {
   default     = 1
 }
 
-variable "DatastoreId" {
-  type        = string
-  description = "데이터스토어 ID"
-  default     = "local"
-}
-
 variable "NetworkBridge" {
   type        = string
   description = "네트워크 브리지"
@@ -65,36 +68,10 @@ variable "Gateway" {
   description = "게이트웨이 IP 주소"
 }
 
-variable "RootPassword" {
-  type        = string
-  description = "Root 패스워드"
-  sensitive   = true
-}
-
-variable "PublicKey" {
-  type        = string
-  description = "SSH 공개키"
-}
-
-variable "ProxmoxUrl" {
-  type        = string
-  description = "Proxmox 서버 URL"
-}
-
-variable "ProxmoxUserName" {
-  type        = string
-  description = "Proxmox SSH 접속용 사용자명"
-}
-
 variable "Unprivileged" {
   type        = bool
   description = "Unprivileged 컨테이너 여부"
   default     = true
-}
-
-variable "TemplateFileId" {
-  type        = string
-  description = "Alpine 템플릿 파일 ID"
 }
 
 variable "EnableNesting" {

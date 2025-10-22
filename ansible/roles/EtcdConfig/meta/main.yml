@@ -1,0 +1,42 @@
+---
+# Role: EtcdConfig
+# Description: etcd 클러스터 설정 파일 생성 (설치 전 실행)
+
+dependencies: []
+
+galaxy_info:
+  role_name: etcd_config
+  author: cecil
+  description: Generate etcd cluster configuration before installation
+  license: MIT
+  min_ansible_version: "2.9"
+  platforms:
+    - name: Alpine
+      versions:
+        - all
+
+# 변수 구조
+# Required Variables:
+#   - etcd_member_ips: (list) etcd 클러스터 멤버 IP 목록
+#       예: ['192.168.2.102', '192.168.2.103', '192.168.2.104']
+#   - etcd_member_names: (list) etcd 클러스터 멤버 이름 목록
+#       예: ['postgresql', 'postgreslave0', 'postgreslave1']
+#   - etcd_member_index: (int) 현재 호스트의 인덱스 (0, 1, 2)
+#
+# Optional Variables: 없음
+#
+# Provided Variables:
+#   - /etc/conf.d/etcd 파일 생성
+#
+# 중요 사항:
+#   ⚠️ 이 Role은 Etcd 설치 **전에** 실행되어야 합니다!
+#   ⚠️ etcd_member_names와 etcd_member_ips의 길이가 같아야 합니다
+#   ⚠️ etcd_member_index는 0부터 시작하며 배열 범위 내여야 합니다
+#
+# 실행 순서:
+#   1. EtcdConfig (현재 Role) - 설정 파일 생성
+#   2. Etcd - etcd 설치 및 시작
+
+# 의존성 설명
+# - 선행 Role: 없음
+# - 후속 Role: Etcd (이 설정 파일을 사용)

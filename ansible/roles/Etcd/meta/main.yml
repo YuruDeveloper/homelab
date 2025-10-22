@@ -1,0 +1,47 @@
+---
+# Role: Etcd
+# Description: etcd 분산 키-값 저장소 설치
+
+dependencies:
+  - role: alpine_upgrade
+
+galaxy_info:
+  role_name: etcd
+  author: cecil
+  description: etcd distributed key-value store installation
+  license: MIT
+  min_ansible_version: "2.9"
+  platforms:
+    - name: Alpine
+      versions:
+        - all
+
+# 변수 구조
+# Required Variables:
+#   - etcd_member_ips: (list) etcd 클러스터 멤버 IP 목록
+#       예: ['192.168.2.102', '192.168.2.103', '192.168.2.104']
+#   - etcd_member_names: (list) etcd 클러스터 멤버 이름 목록
+#       예: ['postgresql', 'postgreslave0', 'postgreslave1']
+#   - etcd_member_index: (int) 현재 호스트의 인덱스 (0, 1, 2)
+#
+# Optional Variables:
+#   - etcd_version: (string) etcd 버전 (기본값: "3.6.5")
+#   - etcd_download_url: (string) 다운로드 URL (자동 생성)
+#
+# Provided Variables:
+#   - etcd 서비스가 포트 2379(client), 2380(peer)에서 실행됨
+#   - /usr/local/bin/etcd, etcdctl, etcdutl 바이너리 제공
+#
+# 네트워크 요구사항:
+#   - 포트 2379 (Client 통신)
+#   - 포트 2380 (Peer 통신)
+#
+# 중요 사항:
+#   ⚠️ 이 Role을 실행하기 전에 EtcdConfig를 먼저 실행해야 합니다!
+#   ⚠️ playbook에서 다음 순서로 실행:
+#      1. EtcdConfig (설정 파일 생성)
+#      2. Etcd (현재 Role - 설치 및 시작)
+
+# 의존성 설명
+# - 선행 Role: Alpineupgrade, EtcdConfig (playbook에서 수동 실행)
+# - 후속 Role: PatroniConfig, Patroni, Haproxy

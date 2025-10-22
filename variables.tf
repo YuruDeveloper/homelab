@@ -8,8 +8,7 @@ variable "proxmox_node" {
   default = "Server"
 }
 variable "public_key" {
-  type    = string
-  default = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIG+/E09hXBSOg6DfQr2vattC2NrYlOZYv4FehRGmNw4k cecil@STDDESKTOP"
+  type = string
 }
 variable "proxmox_url" {
   type = string

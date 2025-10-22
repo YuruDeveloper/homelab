@@ -1,9 +1,7 @@
 module "postgresql" {
   source = "../../modules/lxc-alpine"
 
-  ProxmoxNode     = var.ProxmoxNode
-  ProxmoxUrl      = var.ProxmoxUrl
-  ProxmoxUserName = var.ProxmoxUserName
+  CommonConfig = var.CommonConfig
 
   VmId     = var.VmId
   Hostname = "postgresql"
@@ -18,11 +16,5 @@ module "postgresql" {
   IpAddress     = var.IpAddress
   Gateway       = var.Gateway
 
-  RootPassword = var.RootPassword
-  PublicKey    = var.PublicKey
-
-  DatastoreId  = var.DatastoreId
   Unprivileged = true
-
-  TemplateFileId = var.TemplateFileId
 }

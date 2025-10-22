@@ -1,9 +1,7 @@
 module "haproxy" {
   source = "../../modules/lxc-alpine"
 
-  ProxmoxNode     = var.ProxmoxNode
-  ProxmoxUrl      = var.ProxmoxUrl
-  ProxmoxUserName = var.ProxmoxUserName
+  CommonConfig = var.CommonConfig
 
   VmId     = var.VmId
   Hostname = "nginx"
@@ -18,13 +16,7 @@ module "haproxy" {
   IpAddress     = var.IpAddress
   Gateway       = var.Gateway
 
-  Dns = [ "8.8.8.8" , "8.8.4.4" ]
+  Dns = ["8.8.8.8", "8.8.4.4"]
 
-  RootPassword = var.RootPassword
-  PublicKey    = var.PublicKey
-
-  DatastoreId  = var.DatastoreId
   Unprivileged = true
-
-  TemplateFileId = var.TemplateFileId
 }

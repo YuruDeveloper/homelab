@@ -1,4 +1,4 @@
-- name: Install Need Pakege
+- name: Install Need Package
   community.general.apk:
     update_cache: false
     name:
@@ -20,7 +20,7 @@
     group: postgres
     mode: "755"
 
-- name: Make venv and instasll Patroni
+- name: Make venv and install Patroni
   ansible.builtin.pip:
     name:
       - psycopg2

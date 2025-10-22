@@ -1,0 +1,41 @@
+---
+# Role: Gitea
+# Description: Gitea Git 서버 설치 및 설정 (준비 중)
+
+dependencies:
+  - role: alpine_upgrade
+
+galaxy_info:
+  role_name: gitea
+  author: cecil
+  description: Gitea Git server installation
+  license: MIT
+  min_ansible_version: "2.9"
+  platforms:
+    - name: Alpine
+      versions:
+        - all
+
+# 변수 구조
+# Required Variables: (준비 중)
+#   - gitea_version: Gitea 버전
+#   - gitea_database_host: PostgreSQL 호스트
+#   - gitea_database_password: 데이터베이스 비밀번호
+#
+# Optional Variables: (준비 중)
+#
+# Provided Variables:
+#   - Gitea 서비스가 포트 3000에서 실행됨
+#
+# 네트워크 요구사항:
+#   - 포트 3000 (Gitea 웹 UI)
+#   - 포트 22 (SSH Git)
+#   - PostgreSQL 데이터베이스 접근 가능
+#
+# 중요 사항:
+#   ⚠️ 이 Role은 아직 개발 중입니다
+#   ⚠️ PostgreSQL 데이터베이스가 필요합니다
+
+# 의존성 설명
+# - 선행 Role: Alpineupgrade, PostgreSQL (데이터베이스 필요)
+# - 후속 Role: 없음

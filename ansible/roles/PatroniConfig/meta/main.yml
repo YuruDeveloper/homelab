@@ -1,0 +1,51 @@
+---
+# Role: PatroniConfig
+# Description: Patroni HA 설정 파일 생성 (설치 전 실행)
+
+dependencies: []
+
+galaxy_info:
+  role_name: patroni_config
+  author: cecil
+  description: Generate Patroni configuration before installation
+  license: MIT
+  min_ansible_version: "2.9"
+  platforms:
+    - name: Alpine
+      versions:
+        - all
+
+# 변수 구조
+# Required Variables:
+#   - etcd_member_ips: (list) etcd 클러스터 멤버 IP 목록
+#       예: ['192.168.2.102', '192.168.2.103', '192.168.2.104']
+#   - etcd_member_names: (list) etcd 클러스터 멤버 이름 목록
+#       예: ['postgresql', 'postgreslave0', 'postgreslave1']
+#   - etcd_member_index: (int) 현재 호스트의 인덱스 (1, 2)
+#       주의: haproxy는 0이므로 PostgreSQL 노드는 1, 2입니다
+#   - postgresql_version: (string) PostgreSQL 버전 (예: "17")
+#   - subnet: (string) 허용할 네트워크 대역 (예: "192.168.2.0/24")
+#   - password: (string) PostgreSQL 슈퍼유저 및 복제 비밀번호
+#       보통 "{{ postgresql_password }}"로 vault에서 가져옴
+#
+# Optional Variables: 없음
+#
+# Provided Variables:
+#   - /etc/patroni/patroni.yml 파일 생성
+#
+# 중요 사항:
+#   ⚠️ 이 Role은 PostgreSQL + Patroni 설치 **전에** 실행되어야 합니다!
+#   ⚠️ Etcd 클러스터가 실행 중이어야 합니다 (etcd 접속 가능 필요)
+#   ⚠️ postgresql_password는 group_vars/HApostgresql/vault.yml에서 정의
+#
+# 네트워크 요구사항:
+#   - etcd 클러스터 접속 가능 (2379 포트)
+#
+# 실행 순서:
+#   1. Etcd 설치 및 시작
+#   2. PatroniConfig (현재 Role) - 설정 파일 생성
+#   3. PostgreSQL + Patroni 설치
+
+# 의존성 설명
+# - 선행 Role: Etcd (실행 중이어야 함)
+# - 후속 Role: Patroni (이 설정 파일을 사용)
