@@ -1,19 +1,19 @@
 output "ContainerId" {
-  description = "ha proxy 서버 컨테이너 ID"
-  value       = module.haproxy.ContainerId
+  description = "nginx 서버 컨테이너 ID"
+  value       = module.nginx.ContainerId
 }
 
 output "VmId" {
-  description = "ha proxy 서버 VM ID"
-  value       = module.haproxy.VmId
+  description = "nginx 서버 VM ID"
+  value       = module.nginx.VmId
 }
 
 output "Hostname" {
-  description = "ha proxy 서버 호스트네임"
-  value       = module.haproxy.Hostname
+  description = "nginx 서버 호스트네임"
+  value       = module.nginx.Hostname
 }
 
 output "IpAddress" {
-  description = "ha proxy 서버 IP 주소"
-  value       = module.haproxy.IpAddress
+  description = "nginx 서버 IP 주소"
+  value       = module.nginx.IpAddress
 }

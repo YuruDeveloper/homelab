@@ -1,4 +1,4 @@
-module "haproxy" {
+module "nginx" {
   source = "../../modules/lxc-alpine"
 
   CommonConfig = var.CommonConfig
