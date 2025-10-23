@@ -1,0 +1,41 @@
+---
+# Role: Glance
+# Description: Glance 대시보드 컨테이너 배포
+
+galaxy_info:
+  role_name: glance
+  author: cecil
+  description: Glance dashboard container deployment
+  license: MIT
+  min_ansible_version: "2.9"
+  platforms:
+    - name: Alpine
+      versions:
+        - all
+
+# 변수 구조
+# Required Variables:
+#   - glance_ip: (string) Glance 컨테이너 IP 주소
+#       예: "192.168.4.101"
+#   - technitium0_apikey: (string) Technitium DNS #1 API 키
+#   - technitium1_apikey: (string) Technitium DNS #2 API 키
+#
+# Optional Variables: 없음
+#
+# Provided Variables:
+#   - Glance 대시보드가 {{ glance_ip }}:8080에서 실행됨
+#
+# 네트워크 요구사항:
+#   - 포트 8080 (Glance 웹 UI)
+#   - Docker macvlan 네트워크 (docker_network)
+#   - Technitium DNS 서버 API 접근 가능 (포트 5380)
+#
+# 중요 사항:
+#   ⚠️ 이 Role을 실행하기 전에 Docker가 실행 중이어야 합니다!
+#   ⚠️ Technitium DNS 서버가 실행 중이어야 합니다 (API 접근 필요)
+#   ⚠️ technitium API 키는 DNS 서버 웹 UI에서 수동 생성 필요
+#   ⚠️ glance_ip는 macvlan 네트워크 대역 내여야 합니다
+
+# 의존성 설명
+# - 선행 Role: Docker (docker_network 필요), Technitium (API 접근 필요)
+# - 후속 Role: 없음

@@ -2,10 +2,12 @@ all:
   children:
     opnsense:
       hosts:
+        opnsense:
+          ansible_host:
     truenas:
       hosts:
-        #truenas0:
-         # ansible_host: 
+        truenas0:
+          ansible_host: 
     alpine:
       children:
         dns:

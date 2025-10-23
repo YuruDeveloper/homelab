@@ -1,0 +1,5 @@
+- name: Upgrade System
+  hosts: alpine
+  become: true
+  roles:
+    - alpine_upgrade

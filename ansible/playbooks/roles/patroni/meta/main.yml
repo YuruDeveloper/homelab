@@ -1,0 +1,45 @@
+---
+# Role: Patroni
+# Description: Patroni PostgreSQL HA 관리자 설치
+
+
+galaxy_info:
+  role_name: patroni
+  author: cecil
+  description: Patroni PostgreSQL HA manager installation
+  license: MIT
+  min_ansible_version: "2.9"
+  platforms:
+    - name: Alpine
+      versions:
+        - all
+
+# 변수 구조
+# Required Variables: 없음 (PatroniConfig에서 이미 설정 파일 생성)
+#
+# Optional Variables: 없음
+#
+# Provided Variables:
+#   - Patroni 서비스 실행
+#   - REST API 포트 8008 제공
+#   - PostgreSQL HA 클러스터 관리
+#
+# 네트워크 요구사항:
+#   - 포트 8008 (Patroni REST API)
+#   - 포트 5432 (PostgreSQL)
+#   - 포트 2379 (etcd client)
+#
+# 중요 사항:
+#   ⚠️ 이 Role을 실행하기 전에 다음이 필요합니다:
+#      1. Etcd 클러스터 실행 중
+#      2. PatroniConfig 실행 완료 (/etc/patroni/patroni.yml 존재)
+#      3. PostgreSQL 설치 완료
+#   ⚠️ playbook에서 다음 순서로 실행:
+#      1. Etcd 설치 및 시작
+#      2. PatroniConfig (설정 파일 생성)
+#      3. Postgresql (설치)
+#      4. Patroni (현재 Role - 설치 및 시작)
+
+# 의존성 설명
+# - 선행 Role: Postgresql (dependency), PatroniConfig (playbook에서 수동 실행)
+# - 후속 Role: Haproxy (Patroni API를 사용)

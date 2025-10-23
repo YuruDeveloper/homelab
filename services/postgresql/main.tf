@@ -9,7 +9,7 @@ module "postgresql" {
   CpuCores = 2
   Memory   = 2024
   Swap     = 0
-  DiskSize = 2
+  DiskSize = 16
 
   NetworkBridge = "vmbr1"
   VlanId        = 100

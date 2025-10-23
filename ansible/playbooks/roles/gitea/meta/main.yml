@@ -1,0 +1,19 @@
+---
+# Role: Gitea
+# Description: Gitea Git 서버 설치 및 설정 (준비 중)
+
+galaxy_info:
+  role_name: gitea
+  author: cecil
+  description: Gitea Git server installation
+  license: MIT
+  min_ansible_version: "2.9"
+  platforms:
+    - name: Alpine
+      versions:
+        - all
+
+
+# 의존성 설명
+# - 선행 Role: Alpineupgrade, PostgreSQL (데이터베이스 필요)
+# - 후속 Role: 없음

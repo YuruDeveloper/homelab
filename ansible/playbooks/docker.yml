@@ -1,0 +1,20 @@
+- name: Setup Docker host
+  become: true
+  hosts: docker
+  vars:
+    subnet: 192.168.4.0/24
+    gateway: 192.168.4.1
+  roles:
+    - docker
+
+- name: Deploy Container
+  become: true
+  hosts: docker
+  vars:
+    portainer_ip: "192.168.4.100"
+    glance_ip: "192.168.4.101"
+    technitium0_apikey: "0"
+    technitium1_apikey: "0"
+  roles:
+    - portainer
+    - glance

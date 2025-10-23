@@ -73,7 +73,7 @@ module "haproxy" {
   IpAddress = "192.168.2.102/24"
   Gateway   = local.Networks.internal.Gateway
 
-  depends_on = [module.AlpineTemplate, module.technitium0]
+  depends_on = [module.AlpineTemplate]
 }
 
 module "postgreslave0" {
@@ -85,7 +85,7 @@ module "postgreslave0" {
   IpAddress = "192.168.2.103/24"
   Gateway   = local.Networks.internal.Gateway
 
-  depends_on = [module.AlpineTemplate, module.technitium0]
+  depends_on = [module.AlpineTemplate]
 }
 
 module "postgreslave1" {
@@ -97,7 +97,7 @@ module "postgreslave1" {
   IpAddress = "192.168.2.104/24"
   Gateway   = local.Networks.internal.Gateway
 
-  depends_on = [module.AlpineTemplate, module.technitium0]
+  depends_on = [module.AlpineTemplate]
 }
 
 module "docker" {
@@ -109,7 +109,7 @@ module "docker" {
   IpAddress = "192.168.2.105/24"
   Gateway   = local.Networks.internal.Gateway
 
-  depends_on = [module.AlpineTemplate, module.technitium0]
+  depends_on = [module.AlpineTemplate]
 }
 
 module "nginx" {
@@ -121,7 +121,7 @@ module "nginx" {
   IpAddress = "192.168.5.100/24"
   Gateway   = local.Networks.dmz.Gateway
 
-  depends_on = [module.postgreslave0, module.postgreslave1, module.docker]
+  depends_on = [module.AlpineTemplate]
 }
 
 module "gitea" {
@@ -133,5 +133,5 @@ module "gitea" {
   IpAddress = "192.168.2.106/24"
   Gateway   = local.Networks.internal.Gateway
 
-  depends_on = [module.AlpineTemplate, module.postgreslave0, module.postgreslave1]
+ depends_on = [module.AlpineTemplate]
 }

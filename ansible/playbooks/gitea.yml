@@ -1,0 +1,5 @@
+- name: Setup Gitea
+  become: true
+  hosts: gitea
+  roles:
+    - gitea

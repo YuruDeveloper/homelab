@@ -1,0 +1,5 @@
+- name: Install DNS
+  hosts: dns
+  become: true
+  roles:
+    - technitium

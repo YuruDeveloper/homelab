@@ -1,0 +1,34 @@
+---
+# Role: Postgresql
+# Description: PostgreSQL 17 데이터베이스 설치
+galaxy_info:
+  role_name: postgresql
+  author: cecil
+  description: PostgreSQL 17 database installation
+  license: MIT
+  min_ansible_version: "2.9"
+  platforms:
+    - name: Alpine
+      versions:
+        - all
+
+# 변수 구조
+# Required Variables: 없음 (내부에서 postgresql_version 정의)
+#
+# Optional Variables: 없음
+#
+# Provided Variables:
+#   - PostgreSQL 17 설치 완료
+#   - postgres 사용자 및 그룹 생성
+#   - /var/lib/postgresql/17/data 디렉토리 생성
+#
+# 네트워크 요구사항:
+#   - 포트 5432 (PostgreSQL)
+#
+# 중요 사항:
+#   ⚠️ 이 Role은 Patroni와 함께 사용됩니다
+#   ⚠️ PatroniConfig가 먼저 실행되어 설정 파일을 생성해야 합니다
+
+# 의존성 설명
+# - 선행 Role: Alpineupgrade
+# - 후속 Role: Patroni

@@ -1,0 +1,60 @@
+- name: Etcd Config
+  hosts: haproxy
+  become: true
+  vars:
+    etcd_member_index: 0
+  roles:
+    - etcd_config
+
+- name: Etcd Config
+  hosts: db0
+  become: true
+  vars:
+    etcd_member_index: 1
+  roles:
+    - etcd_config
+
+- name: Etcd Config
+  hosts: db1
+  become: true
+  vars:
+    etcd_member_index: 2
+  roles:
+    - etcd_config
+
+- name: Install Etcd
+  hosts: HApostgresql
+  become: true
+  roles:
+    - etcd
+
+- name: Patroni Config
+  hosts: db0
+  become: true
+  vars:
+    etcd_member_index: 1
+  roles:
+    - patroni_config
+
+- name: Patroni Config
+  hosts: db1
+  become: true
+  vars:
+    etcd_member_index: 2
+  roles:
+    - patroni_config
+
+- name: Install Postgresql and Patroni
+  hosts: postgresql
+  become: true
+  roles:
+    - postgresql
+    - patroni
+
+- name: Install haproxy and setup
+  become: true
+  hosts: haproxy
+  vars:
+    etcd_member_index: 0
+  roles:
+    - haproxy

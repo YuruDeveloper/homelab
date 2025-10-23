@@ -1,0 +1,47 @@
+---
+# Role: Haproxy
+# Description: HAProxy 로드밸런서 설치 및 PostgreSQL HA 프록시 설정
+
+galaxy_info:
+  role_name: haproxy
+  author: cecil
+  description: HAProxy load balancer for PostgreSQL HA cluster
+  license: MIT
+  min_ansible_version: "2.9"
+  platforms:
+    - name: Alpine
+      versions:
+        - all
+
+# 변수 구조
+# Required Variables:
+#   - etcd_member_ips: (list) etcd 클러스터 멤버 IP 목록
+#       예: ['192.168.2.102', '192.168.2.103', '192.168.2.104']
+#   - etcd_member_names: (list) etcd 클러스터 멤버 이름 목록
+#       예: ['postgresql', 'postgreslave0', 'postgreslave1']
+#   - etcd_member_index: (int) 현재 호스트의 인덱스 (보통 0 - haproxy 노드)
+#
+# Optional Variables: 없음
+#
+# Provided Variables:
+#   - HAProxy가 포트 5432에서 PostgreSQL 프록시 제공
+#   - Primary 노드로 자동 라우팅
+#   - Patroni REST API (8008)를 통한 헬스체크
+#
+# 네트워크 요구사항:
+#   - 포트 5432 (PostgreSQL 프록시)
+#   - 포트 8008 (Patroni API - 헬스체크용)
+#
+# 중요 사항:
+#   ⚠️ 이 Role을 실행하기 전에 Patroni가 실행 중이어야 합니다!
+#   ⚠️ haproxy.cfg에서 자기 자신(etcd_member_index)은 백엔드에서 제외됩니다
+#   ⚠️ Patroni REST API의 /primary 엔드포인트로 헬스체크 수행
+#
+# 템플릿 로직:
+#   - etcd_member_ips와 etcd_member_names를 순회
+#   - etcd_member_index와 다른 노드만 PostgreSQL 백엔드로 추가
+#   - Patroni API 포트 8008로 헬스체크
+
+# 의존성 설명
+# - 선행 Role: Alpineupgrade, Etcd, Patroni (실행 중이어야 함)
+# - 후속 Role: 없음

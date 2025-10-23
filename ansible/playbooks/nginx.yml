@@ -1,0 +1,7 @@
+- name: Setup Nginx
+  become: true
+  hosts: nginx
+  vars:
+    postgres_ip: "192.168.2.102"
+  roles:
+    - nginx
