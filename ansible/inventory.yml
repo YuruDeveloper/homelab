@@ -1,13 +1,9 @@
 all:
   children:
-    opnsense:
-      hosts:
-        opnsense:
-          ansible_host:
     truenas:
       hosts:
-        truenas0:
-          ansible_host: 
+       truenas0:
+        ansible_host: 192.168.2.107
     alpine:
       children:
         dns:

@@ -1,0 +1,13 @@
+- name: Set hostname
+  arensb.truenas.hostname:
+    name: truenas.bytedev.duckdns.org
+
+- name: Create DataSet
+  arensb.truenas.filesystem:
+    name: "Data/{{ item }}"
+    type: FILESYSTEM
+    state: present
+  loop:
+    - postgresql
+    - git_folder
+    - git_large_folder

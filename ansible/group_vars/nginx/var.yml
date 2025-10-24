@@ -12,7 +12,7 @@ services:
     ip: 192.168.2.101
     port: 5380
   - domain: truenas.bytedev.duckdns.org
-    ip: 192.168.2.10
+    ip: 192.168.2.107
     port: 80
   - domain: portainer.bytedev.duckdns.org
     ip: 192.168.4.100

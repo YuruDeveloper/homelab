@@ -1,0 +1,5 @@
+- name: Setup truenas
+  hosts: truenas
+  become: true
+  roles:
+    - truenas
