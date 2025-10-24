@@ -14,10 +14,6 @@ variable "proxmox_url" {
   type = string
 }
 
-variable "proxmox_api_token" {
-  type      = string
-  sensitive = true
-}
 
 variable "proxmox_user_name" {
   type = string
