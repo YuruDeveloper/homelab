@@ -7,7 +7,7 @@ module "postgresql" {
   Hostname = "postgresql"
 
   CpuCores = 2
-  Memory   = 2024
+  Memory   = 2048
   Swap     = 0
   DiskSize = 16
 

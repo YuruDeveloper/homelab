@@ -7,9 +7,7 @@ variable "proxmox_node" {
   type    = string
   default = "Server"
 }
-variable "public_key" {
-  type = string
-}
+
 variable "proxmox_url" {
   type = string
 }
