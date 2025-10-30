@@ -10,7 +10,7 @@ resource "proxmox_virtual_environment_network_linux_bridge" "vmbr1" {
 resource "proxmox_virtual_environment_network_linux_bridge" "vmbr2" {
   node_name = var.proxmox_node
   name = "vmbr2"
-  ports = ["enx00e04c360027"]
+  ports = ["enp3s0"]
 }
 
 resource "proxmox_virtual_environment_vm" "opnsense" {
@@ -24,7 +24,7 @@ resource "proxmox_virtual_environment_vm" "opnsense" {
     scsi_hardware = "virtio-scsi-pci"
 
     cpu {
-      cores = 1
+      cores = 2
       type = "host"
     }
 
