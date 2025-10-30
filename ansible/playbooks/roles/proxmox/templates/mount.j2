@@ -1,0 +1,14 @@
+[Unit]
+Description=NFS Mount
+After=network-online.target remote-fs-pre.target truenas-check.service
+Wants=network-online.target
+Requires=truenas-check.service
+
+[Mount]
+What=192.168.2.10:{{ mount_orgine }}
+Where={{ mount_point }}
+Type=nfs
+Options=vers=4,rw,sync,hard,_netdev,timeo=600,retrans=3 
+
+[Install]
+WantedBy=remote-fs.target

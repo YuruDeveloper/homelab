@@ -1,0 +1,28 @@
+---
+galaxy_info:
+  role_name: proxmox
+  author: cecil
+  description: Configure NFS mounts on Proxmox host for TrueNAS storage
+  company: Homelab
+  license: MIT
+
+  min_ansible_version: "2.9"
+
+  platforms:
+    - name: Debian
+      versions:
+        - bullseye
+        - bookworm
+    - name: Ubuntu
+      versions:
+        - focal
+        - jammy
+
+  galaxy_tags:
+    - proxmox
+    - nfs
+    - truenas
+    - storage
+    - systemd
+
+dependencies: []

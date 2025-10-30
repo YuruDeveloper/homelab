@@ -1,0 +1,16 @@
+---
+# Proxmox NFS Mount Role Defaults
+
+# TrueNAS Server IP
+truenas_ip: "192.168.2.10"
+
+# NFS Mount Points Configuration (override in group_vars)
+nfs_mounts: []
+
+# NFS Mount Options
+nfs_mount_options: "vers=4,rw,sync,hard,_netdev,timeo=600,retrans=3"
+
+# TrueNAS Check Script Configuration
+truenas_check_retry_count: 12
+truenas_check_sleep_sec: 30
+truenas_check_timeout: 400

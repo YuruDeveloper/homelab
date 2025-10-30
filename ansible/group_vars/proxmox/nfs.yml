@@ -1,0 +1,22 @@
+---
+# Proxmox NFS Mount Configuration
+
+# TrueNAS Server IP
+truenas_ip: "192.168.2.10"
+
+# NFS Mount Points Configuration
+nfs_mounts:
+  - name: "postgresql"
+    mount_origin: "/mnt/Data/postgresql"
+    mount_point: "/mnt/postgresql"
+    description: "PostgreSQL WAL Archive"
+
+  - name: "git"
+    mount_origin: "/mnt/Data/git"
+    mount_point: "/mnt/git"
+    description: "Gitea Repositories"
+
+  - name: "gitlarge"
+    mount_origin: "/mnt/Data/gitLarge"
+    mount_point: "/mnt/gitlarge"
+    description: "Gitea LFS Storage"

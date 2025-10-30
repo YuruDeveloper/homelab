@@ -1,0 +1,65 @@
+---
+# Proxmox NFS Mount Setup Tasks
+
+- name: Create mount point directories
+  ansible.builtin.file:
+    path: "{{ item.mount_point }}"
+    state: directory
+    mode: '0755'
+    owner: root
+    group: root
+  loop: "{{ nfs_mounts }}"
+
+- name: Deploy TrueNAS availability check script
+  ansible.builtin.template:
+    src: truenas_check.j2
+    dest: /usr/local/bin/truenas_check.sh
+    mode: '0755'
+    owner: root
+    group: root
+
+- name: Deploy TrueNAS check systemd service
+  ansible.builtin.template:
+    src: service.j2
+    dest: /etc/systemd/system/truenas-check.service
+    mode: '0644'
+    owner: root
+    group: root
+
+- name: Enable TrueNAS check service
+  ansible.builtin.systemd:
+    name: truenas-check.service
+    enabled: true
+    daemon_reload: true
+
+- name: Deploy NFS mount systemd units
+  ansible.builtin.template:
+    src: mount.j2
+    dest: "/etc/systemd/system/mnt-{{ item.name }}.mount"
+    mode: '0644'
+    owner: root
+    group: root
+  vars:
+    mount_orgine: "{{ item.mount_origin }}"
+    mount_point: "{{ item.mount_point }}"
+  loop: "{{ nfs_mounts }}"
+
+- name: Reload systemd daemon
+  ansible.builtin.systemd:
+    daemon_reload: true
+
+- name: Enable and start NFS mount units
+  ansible.builtin.systemd:
+    name: "mnt-{{ item.name }}.mount"
+    enabled: true
+    state: started
+    daemon_reload: true
+  loop: "{{ nfs_mounts }}"
+
+- name: Verify NFS mounts are active
+  ansible.builtin.command:
+    cmd: "mountpoint -q {{ item.mount_point }}"
+  loop: "{{ nfs_mounts }}"
+  register: mount_check
+  changed_when: false
+  failed_when: mount_check.rc != 0

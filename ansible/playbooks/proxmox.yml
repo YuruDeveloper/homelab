@@ -1,0 +1,5 @@
+- name: Set truenas link
+  become: true
+  hosts: proxmox
+  roles:
+    - proxmox

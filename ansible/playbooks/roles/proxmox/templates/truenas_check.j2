@@ -1,0 +1,21 @@
+#!/bin/bash
+
+NFS_SERVER={{ truenas_ip }}
+RETRY_COUNT=12
+SLEEP_SEC=30
+
+check_nfs() {
+    if showmount -e "$NFS_SERVER" &>/dev/null; then
+        return 0
+    fi
+    return 1
+}
+
+for i in $(seq 1 $RETRY_COUNT); do
+    if check_nfs; then 
+        exit 0
+    fi
+    sleep $SLEEP_SEC
+done 
+
+exit 1
