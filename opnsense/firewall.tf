@@ -1,4 +1,77 @@
 # ============================================
+# 방화벽 규칙 - WAN (포트포워딩 허용)
+# ============================================
+
+# WAN → Allow HTTPS (443) forwarded traffic
+resource "opnsense_firewall_filter" "WanAllowHttps" {
+  enabled     = true
+  sequence    = 1
+  action      = "pass"
+  quick       = true
+  interface   = ["wan"]
+  direction   = "in"
+  ip_protocol = "inet"
+  protocol    = "TCP"
+
+  source = {
+    net = "any"
+  }
+
+  destination = {
+    net  = "192.168.5.2/32"
+    port = "443"
+  }
+
+  description = "Allow WAN to Nginx HTTPS (NAT forwarded)"
+}
+
+# WAN → Allow HTTP (80) forwarded traffic
+resource "opnsense_firewall_filter" "WanAllowHttp" {
+  enabled     = true
+  sequence    = 2
+  action      = "pass"
+  quick       = true
+  interface   = ["wan"]
+  direction   = "in"
+  ip_protocol = "inet"
+  protocol    = "TCP"
+
+  source = {
+    net = "any"
+  }
+
+  destination = {
+    net  = "192.168.5.2/32"
+    port = "80"
+  }
+
+  description = "Allow WAN to Nginx HTTP (NAT forwarded)"
+}
+
+# WAN → Allow PostgreSQL (5432) forwarded traffic
+resource "opnsense_firewall_filter" "WanAllowPostgresql" {
+  enabled     = true
+  sequence    = 3
+  action      = "pass"
+  quick       = true
+  interface   = ["wan"]
+  direction   = "in"
+  ip_protocol = "inet"
+  protocol    = "TCP"
+
+  source = {
+    net = "any"
+  }
+
+  destination = {
+    net  = "192.168.5.2/32"
+    port = "5432"
+  }
+
+  description = "Allow WAN to Nginx PostgreSQL Proxy (NAT forwarded)"
+}
+
+# ============================================
 # 방화벽 규칙 - LAN (Hardware Network)
 # ============================================
 
@@ -62,7 +135,7 @@ resource "opnsense_firewall_filter" "Lan1ToAny" {
   protocol    = "any"
 
   source = {
-    net = "opt1"
+    net = "192.168.1.0/24"
   }
 
   destination = {
@@ -110,7 +183,7 @@ resource "opnsense_firewall_filter" "ServiceToAny" {
   protocol    = "any"
 
   source = {
-    net = "opt2"
+    net = "192.168.2.0/24"
   }
 
   destination = {
@@ -158,7 +231,7 @@ resource "opnsense_firewall_filter" "K8sToDns1" {
   protocol    = "UDP"
 
   source = {
-    net = "opt3"
+    net = "192.168.3.0/24"
   }
 
   destination = {
@@ -181,7 +254,7 @@ resource "opnsense_firewall_filter" "K8sToDns2" {
   protocol    = "UDP"
 
   source = {
-    net = "opt3"
+    net = "192.168.3.0/24"
   }
 
   destination = {
@@ -204,7 +277,7 @@ resource "opnsense_firewall_filter" "K8sBlockInternal" {
   protocol    = "any"
 
   source = {
-    net = "opt3"
+    net = "192.168.3.0/24"
   }
 
   destination = {
@@ -226,7 +299,7 @@ resource "opnsense_firewall_filter" "K8sToInternet" {
   protocol    = "any"
 
   source = {
-    net = "opt3"
+    net = "192.168.3.0/24"
   }
 
   destination = {
@@ -274,7 +347,7 @@ resource "opnsense_firewall_filter" "ContainerBlockInternal" {
   protocol    = "any"
 
   source = {
-    net = "opt4"
+    net = "192.168.4.0/24"
   }
 
   destination = {
@@ -296,7 +369,7 @@ resource "opnsense_firewall_filter" "ContainerToInternet" {
   protocol    = "any"
 
   source = {
-    net = "opt4"
+    net = "192.168.4.0/24"
   }
 
   destination = {
@@ -344,7 +417,7 @@ resource "opnsense_firewall_filter" "DmzToOpnsense" {
   protocol    = "TCP"
 
   source = {
-    net = "opt5"
+    net = "192.168.5.0/24"
   }
 
   destination = {
@@ -367,7 +440,7 @@ resource "opnsense_firewall_filter" "DmzToProxmox" {
   protocol    = "TCP"
 
   source = {
-    net = "opt5"
+    net = "192.168.5.0/24"
   }
 
   destination = {
@@ -390,7 +463,7 @@ resource "opnsense_firewall_filter" "DmzToDns1" {
   protocol    = "TCP"
 
   source = {
-    net = "opt5"
+    net = "192.168.5.0/24"
   }
 
   destination = {
@@ -413,7 +486,7 @@ resource "opnsense_firewall_filter" "DmzToDns2" {
   protocol    = "TCP"
 
   source = {
-    net = "opt5"
+    net = "192.168.5.0/24"
   }
 
   destination = {
@@ -436,7 +509,7 @@ resource "opnsense_firewall_filter" "DmzToTruenas" {
   protocol    = "TCP"
 
   source = {
-    net = "opt5"
+    net = "192.168.5.0/24"
   }
 
   destination = {
@@ -459,7 +532,7 @@ resource "opnsense_firewall_filter" "DmzToPostgresql" {
   protocol    = "TCP"
 
   source = {
-    net = "opt5"
+    net = "192.168.5.0/24"
   }
 
   destination = {
@@ -482,7 +555,7 @@ resource "opnsense_firewall_filter" "DmzToGitea" {
   protocol    = "TCP"
 
   source = {
-    net = "opt5"
+    net = "192.168.5.0/24"
   }
 
   destination = {
@@ -505,7 +578,7 @@ resource "opnsense_firewall_filter" "DmzToPortainer" {
   protocol    = "TCP"
 
   source = {
-    net = "opt5"
+    net = "192.168.5.0/24"
   }
 
   destination = {
@@ -528,7 +601,7 @@ resource "opnsense_firewall_filter" "DmzToGlance" {
   protocol    = "TCP"
 
   source = {
-    net = "opt5"
+    net = "192.168.5.0/24"
   }
 
   destination = {
@@ -551,7 +624,7 @@ resource "opnsense_firewall_filter" "DmzBlockInternal" {
   protocol    = "any"
 
   source = {
-    net = "opt5"
+    net = "192.168.5.0/24"
   }
 
   destination = {
@@ -573,7 +646,7 @@ resource "opnsense_firewall_filter" "DmzToInternet" {
   protocol    = "any"
 
   source = {
-    net = "opt5"
+    net = "192.168.5.0/24"
   }
 
   destination = {

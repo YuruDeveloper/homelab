@@ -3,8 +3,8 @@ resource "proxmox_virtual_environment_network_linux_bridge" "vmbr1" {
   name = "vmbr1"
   vlan_aware = true
   ports = []
-  address = "192.168.0.2/24"
   gateway = "192.168.0.1"
+  address = "192.168.0.2/24"
 }
 
 resource "proxmox_virtual_environment_network_linux_bridge" "vmbr2" {

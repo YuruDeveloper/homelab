@@ -42,6 +42,16 @@ resource "proxmox_virtual_environment_container" "LxcContainer" {
     size         = var.DiskSize
   }
 
+  dynamic "mount_point" {
+    for_each = var.MountPoints
+    content {
+      volume = mount_point.value.volume
+      path   = mount_point.value.mount_point
+      shared = true
+      replicate = false
+    }
+  }
+
   operating_system {
     template_file_id = var.CommonConfig.TemplateFileId
     type             = "alpine"
@@ -55,8 +65,11 @@ resource "proxmox_virtual_environment_container" "LxcContainer" {
         gateway = var.Gateway
       }
     }
-    dns {
-      servers = var.Dns
+    dynamic "dns" {
+      for_each = length(var.Dns) > 0 ? [1] : []
+      content {
+        servers = var.Dns
+      }
     }
     user_account {
       password = var.CommonConfig.RootPassword

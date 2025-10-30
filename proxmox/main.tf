@@ -5,7 +5,7 @@ locals {
     ProxmoxUserName = var.proxmox_user_name
     RootPassword    = var.proxmox_password
     PublicKey       = var.public_key
-    DatastoreId     = "local"
+    DatastoreId     = "local-lvm"
     TemplateFileId  = module.AlpineTemplate.TemplateFileId
   }
 
@@ -35,18 +35,36 @@ module "truenas" {
 
   ProxmoxNode = var.proxmox_node
 
-  VmId        = 1008
-  DatastoreId = "local"
+  VmId        = 300
+  DatastoreId = "local-lvm"
 
 }
+
+# ============================================================================
+# NFS Mount Configuration
+# ============================================================================
+# NFS mounts should be configured on Proxmox host (192.168.0.2) via /etc/fstab
+# This ensures persistent and stable mounts across reboots.
+#
+# Setup instructions:
+# 1. SSH to Proxmox host: ssh root@192.168.0.2
+# 2. Create mount directories:
+#    mkdir -p /mnt/postgresql /mnt/git /mnt/gitlarge
+# 3. Add to /etc/fstab:
+#    192.168.2.10:/mnt/Data/postgresql  /mnt/postgresql  nfs  vers=4,rw,sync,hard  0  0
+#    192.168.2.10:/mnt/Data/git         /mnt/git         nfs  vers=4,rw,sync,hard  0  0
+#    192.168.2.10:/mnt/Data/gitLarge    /mnt/gitlarge    nfs  vers=4,rw,sync,hard  0  0
+# 4. Mount all: mount -a
+# 5. Verify: df -h | grep mnt
+# ============================================================================
 
 module "technitium0" {
   source = "./services/dns"
 
   CommonConfig = local.CommonLxcConfig
 
-  VmId      = 1000
-  IpAddress = "192.168.2.100/24"
+  VmId      = 200
+  IpAddress = "192.168.2.2/24"
   Gateway   = local.Networks.internal.Gateway
 
   depends_on = [module.AlpineTemplate]
@@ -57,8 +75,8 @@ module "technitium1" {
 
   CommonConfig = local.CommonLxcConfig
 
-  VmId      = 1001
-  IpAddress = "192.168.2.101/24"
+  VmId      = 201
+  IpAddress = "192.168.2.3/24"
   Gateway   = local.Networks.internal.Gateway
 
   depends_on = [module.AlpineTemplate]
@@ -69,8 +87,8 @@ module "haproxy" {
 
   CommonConfig = local.CommonLxcConfig
 
-  VmId      = 1002
-  IpAddress = "192.168.2.102/24"
+  VmId      = 500
+  IpAddress = "192.168.2.30/24"
   Gateway   = local.Networks.internal.Gateway
 
   depends_on = [module.AlpineTemplate]
@@ -81,8 +99,8 @@ module "postgreslave0" {
 
   CommonConfig = local.CommonLxcConfig
 
-  VmId      = 1003
-  IpAddress = "192.168.2.103/24"
+  VmId      = 510
+  IpAddress = "192.168.2.40/24"
   Gateway   = local.Networks.internal.Gateway
 
   depends_on = [module.AlpineTemplate]
@@ -93,8 +111,8 @@ module "postgreslave1" {
 
   CommonConfig = local.CommonLxcConfig
 
-  VmId      = 1004
-  IpAddress = "192.168.2.104/24"
+  VmId      = 511
+  IpAddress = "192.168.2.41/24"
   Gateway   = local.Networks.internal.Gateway
 
   depends_on = [module.AlpineTemplate]
@@ -105,8 +123,8 @@ module "docker" {
 
   CommonConfig = local.CommonLxcConfig
 
-  VmId      = 1005
-  IpAddress = "192.168.2.105/24"
+  VmId      = 400
+  IpAddress = "192.168.2.20/24"
   Gateway   = local.Networks.internal.Gateway
 
   depends_on = [module.AlpineTemplate]
@@ -117,8 +135,8 @@ module "nginx" {
 
   CommonConfig = local.CommonLxcConfig
 
-  VmId      = 1006
-  IpAddress = "192.168.5.100/24"
+  VmId      = 900
+  IpAddress = "192.168.5.2/24"
   Gateway   = local.Networks.dmz.Gateway
 
   depends_on = [module.AlpineTemplate]
@@ -129,9 +147,9 @@ module "gitea" {
 
   CommonConfig = local.CommonLxcConfig
 
-  VmId      = 1007
-  IpAddress = "192.168.2.106/24"
+  VmId      = 600
+  IpAddress = "192.168.2.70/24"
   Gateway   = local.Networks.internal.Gateway
 
- depends_on = [module.AlpineTemplate]
+  depends_on = [module.AlpineTemplate]
 }

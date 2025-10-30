@@ -32,7 +32,7 @@
 
 - name: Set default CA to Let's Encrypt
   ansible.builtin.command:
-    cmd: /root/.acme.sh/acme.sh --set-default-ca --server letsencrypt_test
+    cmd: /root/.acme.sh/acme.sh --set-default-ca --server letsencrypt
   changed_when: true
 
 - name: Check if certificate already exists
@@ -87,6 +87,16 @@
     - "'No such domain' not in install_cert_result.stderr"
   when: not nginx_cert_exists.stat.exists or cert_exists.stat.exists
 
+- name: Set certificate ownership for nginx user
+  ansible.builtin.file:
+    path: "/etc/nginx/ssl/{{ domain_filename }}.{{ item }}"
+    owner: nginx
+    group: nginx
+    mode: '0640'
+  loop:
+    - cer
+    - key
+
 - name: Make Default file
   ansible.builtin.template:
     src: default.j2
@@ -129,6 +139,8 @@
     src: pgtermConfig.j2
     dest: /etc/conf.d/pgterm
     mode: "755"
+    owner: nginx
+    group: nginx
 
 - name: Make System file
   ansible.builtin.template:

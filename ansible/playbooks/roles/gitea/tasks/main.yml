@@ -5,6 +5,14 @@
       - gitea
     state: installed
 
+- name: Create Gitea Data Directory
+  ansible.builtin.file:
+    path: /var/lib/gitea/data
+    state: directory
+    owner: gitea
+    group: www-data
+    mode: "0755"
+
 - name: Start Gitea
   ansible.builtin.service:
     name: gitea

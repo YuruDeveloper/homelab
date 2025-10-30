@@ -17,4 +17,17 @@ module "gitea" {
   Gateway       = var.Gateway
 
   Unprivileged = true
+
+  MountPoints = [
+    {
+      volume      = "/mnt/git"
+      mount_point = "/var/lib/gitea/data/gitea-repositories"
+      read_only   = false
+    },
+    {
+      volume      = "/mnt/gitlarge"
+      mount_point = "/var/lib/gitea/data/lfs"
+      read_only   = false
+    }
+  ]
 }

@@ -5,30 +5,30 @@ all:
         dns:
          hosts:
           technitium0:
-            ansible_host: 192.168.2.100
+            ansible_host: 192.168.2.2
           technitium1:
-            ansible_host: 192.168.2.101
+            ansible_host: 192.168.2.3
         HApostgresql:
           children:
             proxy:
               hosts:
                 haproxy:
-                  ansible_host: 192.168.2.102
+                  ansible_host: 192.168.2.30
             postgresql:
               hosts:
-                db0: 
-                  ansible_host: 192.168.2.103
+                db0:
+                  ansible_host: 192.168.2.40
                 db1:
-                  ansible_host: 192.168.2.104
+                  ansible_host: 192.168.2.41
         docker:
           hosts:
             docker0:
-              ansible_host: 192.168.2.105
+              ansible_host: 192.168.2.20
         nginx:
           hosts:
             nginx0:
-              ansible_host: 192.168.5.100
+              ansible_host: 192.168.5.2
         gitea:
           hosts:
-            gitea0: 
-              ansible_host: 192.168.2.106
+            gitea0:
+              ansible_host: 192.168.2.70

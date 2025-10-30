@@ -6,20 +6,20 @@ services:
     ip: 192.168.0.2
     port: 8006
   - domain: technitium0.bytedev.duckdns.org
-    ip: 192.168.2.100
+    ip: 192.168.2.2
     port: 5380
   - domain: technitium1.bytedev.duckdns.org
-    ip: 192.168.2.101
+    ip: 192.168.2.3
     port: 5380
   - domain: truenas.bytedev.duckdns.org
-    ip: 192.168.2.107
+    ip: 192.168.2.10
     port: 80
   - domain: portainer.bytedev.duckdns.org
-    ip: 192.168.4.100
+    ip: 192.168.4.2
     port: 9000
   - domain: gitea.bytedev.duckdns.org
-    ip: 192.168.2.106
+    ip: 192.168.2.70
     port: 3000
   - domain: glance.bytedev.duckdns.org
-    ip: 192.168.4.101
+    ip: 192.168.4.3
     port: 8080

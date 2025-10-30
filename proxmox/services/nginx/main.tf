@@ -16,7 +16,7 @@ module "nginx" {
   IpAddress     = var.IpAddress
   Gateway       = var.Gateway
 
-  Dns = ["8.8.8.8", "8.8.4.4"]
+  Dns = ["1.1.1.1", "8.8.8.8"]
 
   Unprivileged = true
 }

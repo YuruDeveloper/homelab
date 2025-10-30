@@ -43,6 +43,7 @@ resource "proxmox_virtual_environment_vm" "truenas" {
     path_in_datastore =  "/dev/disk/by-id/ata-HS-SSD-WAVE_S__256G_30164514896"
     file_format = "raw"
     interface = "sata0"
+    size = 238
   }
 
   disk {
@@ -50,6 +51,7 @@ resource "proxmox_virtual_environment_vm" "truenas" {
     path_in_datastore = "/dev/disk/by-id/ata-HS-SSD-WAVE_S__256G_30170974145"
     file_format = "raw"
     interface = "sata1"
+    size = 238
   }
 
   network_device {

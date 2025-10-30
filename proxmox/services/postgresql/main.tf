@@ -17,4 +17,12 @@ module "postgresql" {
   Gateway       = var.Gateway
 
   Unprivileged = true
+
+  MountPoints = [
+    {
+      volume      = "/mnt/postgresql"
+      mount_point = "/mnt/postgresql-wal"
+      read_only   = false
+    }
+  ]
 }

@@ -2,6 +2,6 @@
   become: true
   hosts: nginx
   vars:
-    postgres_ip: "192.168.2.102"
+    postgres_ip: "192.168.2.30"
   roles:
     - nginx

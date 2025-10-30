@@ -11,10 +11,10 @@
   become: true
   hosts: docker
   vars:
-    portainer_ip: "192.168.4.100"
-    glance_ip: "192.168.4.101"
-    technitium0_apikey: "0"
-    technitium1_apikey: "0"
+    portainer_ip: "192.168.4.2"
+    glance_ip: "192.168.4.3"
+    technitium0_apikey: "{{ api1 }}"
+    technitium1_apikey: "{{ api2 }}"
   roles:
     - portainer
     - glance

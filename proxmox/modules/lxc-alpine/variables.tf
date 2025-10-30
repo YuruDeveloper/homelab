@@ -101,3 +101,13 @@ variable "Dns" {
   description = "dns 설정"
   default = []
 }
+
+variable "MountPoints" {
+  type = list(object({
+    volume      = string
+    mount_point = string
+    read_only   = bool
+  }))
+  description = "마운트 포인트 목록 (bind mount). volume 형식: 'mp=/호스트/경로' (Proxmox 호스트의 디렉토리를 컨테이너에 bind mount)"
+  default     = []
+}
