@@ -335,10 +335,54 @@ resource "opnsense_firewall_filter" "K8sToInternetIpv6" {
 # 방화벽 규칙 - Container VLAN (192.168.4.0/24)
 # ============================================
 
+resource "opnsense_firewall_filter" "ContainerToTechnitium0" {
+  enabled     = true
+  sequence    = 40
+  action      = "pass"
+  quick       = true
+  interface   = ["opt4"]
+  direction   = "in"
+  ip_protocol = "inet"
+  protocol    = "TCP"
+
+  source = {
+    net = "192.168.4.0/24"
+  }
+
+  destination = {
+    net = "192.168.2.2/32"
+    port = "5380"
+  }
+
+  description = "Allow Container to Technitium0"
+}
+
+resource "opnsense_firewall_filter" "ContainerToTechnitium1" {
+  enabled     = true
+  sequence    = 41
+  action      = "pass"
+  quick       = true
+  interface   = ["opt4"]
+  direction   = "in"
+  ip_protocol = "inet"
+  protocol    = "TCP"
+
+  source = {
+    net = "192.168.4.0/24"
+  }
+
+  destination = {
+    net = "192.168.2.3/32"
+    port = "5380"
+  }
+
+  description = "Allow technitium 1"
+}
+
 # Container → Block internal networks
 resource "opnsense_firewall_filter" "ContainerBlockInternal" {
   enabled     = true
-  sequence    = 40
+  sequence    = 42
   action      = "block"
   quick       = true
   interface   = ["opt4"]
@@ -360,7 +404,7 @@ resource "opnsense_firewall_filter" "ContainerBlockInternal" {
 # Container → Allow Internet
 resource "opnsense_firewall_filter" "ContainerToInternet" {
   enabled     = true
-  sequence    = 41
+  sequence    = 43
   action      = "pass"
   quick       = true
   interface   = ["opt4"]
@@ -382,7 +426,7 @@ resource "opnsense_firewall_filter" "ContainerToInternet" {
 # Container IPv6 → Allow Internet
 resource "opnsense_firewall_filter" "ContainerToInternetIpv6" {
   enabled     = true
-  sequence    = 42
+  sequence    = 44
   action      = "pass"
   quick       = true
   interface   = ["opt4"]
