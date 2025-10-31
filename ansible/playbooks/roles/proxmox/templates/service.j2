@@ -7,7 +7,7 @@ Wants=network-online.target
 Type=oneshot
 ExecStart=/usr/local/bin/truenas_check.sh
 RemainAfterExit=yes
-TimeoutStartSec=400
+TimeoutStartSec={{ truenas_check_timeout }}
 
 Restart=on-failure
 RestartSec=60

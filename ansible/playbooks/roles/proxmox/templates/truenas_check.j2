@@ -1,8 +1,8 @@
 #!/bin/bash
 
 NFS_SERVER={{ truenas_ip }}
-RETRY_COUNT=12
-SLEEP_SEC=30
+RETRY_COUNT={{ truenas_check_retry_count }}
+SLEEP_SEC={{ truenas_check_sleep_sec }}
 
 check_nfs() {
     if showmount -e "$NFS_SERVER" &>/dev/null; then

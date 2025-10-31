@@ -40,7 +40,7 @@
     owner: root
     group: root
   vars:
-    mount_orgine: "{{ item.mount_origin }}"
+    mount_origin: "{{ item.mount_origin }}"
     mount_point: "{{ item.mount_point }}"
   loop: "{{ nfs_mounts }}"
 
