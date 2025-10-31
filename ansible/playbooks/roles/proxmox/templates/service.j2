@@ -1,6 +1,6 @@
 [Unit]
 Description=TrueNAS NFS Share Availability Check
-After=network-online.target
+After=network-online.target multi-user.target
 Wants=network-online.target
 
 [Service]

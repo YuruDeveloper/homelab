@@ -357,50 +357,6 @@ resource "opnsense_firewall_filter" "ContainerToNginx" {
   description = "Allow Container to Nginx for NAT reflection"
 }
 
-resource "opnsense_firewall_filter" "ContainerToTechnitium0" {
-  enabled     = true
-  sequence    = 40
-  action      = "pass"
-  quick       = true
-  interface   = ["opt4"]
-  direction   = "in"
-  ip_protocol = "inet"
-  protocol    = "TCP"
-
-  source = {
-    net = "192.168.4.0/24"
-  }
-
-  destination = {
-    net = "192.168.2.2/32"
-    port = "5380"
-  }
-
-  description = "Allow Container to Technitium0"
-}
-
-resource "opnsense_firewall_filter" "ContainerToTechnitium1" {
-  enabled     = true
-  sequence    = 41
-  action      = "pass"
-  quick       = true
-  interface   = ["opt4"]
-  direction   = "in"
-  ip_protocol = "inet"
-  protocol    = "TCP"
-
-  source = {
-    net = "192.168.4.0/24"
-  }
-
-  destination = {
-    net = "192.168.2.3/32"
-    port = "5380"
-  }
-
-  description = "Allow technitium 1"
-}
-
 # Container → Block internal networks
 resource "opnsense_firewall_filter" "ContainerBlockInternal" {
   enabled     = true

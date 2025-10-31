@@ -2,13 +2,12 @@
 Description=NFS Mount
 After=network-online.target remote-fs-pre.target truenas-check.service
 Wants=network-online.target
-Requires=truenas-check.service
 
 [Mount]
 What={{ truenas_ip }}:{{ mount_origin }}
 Where={{ mount_point }}
 Type=nfs
-Options={{ nfs_mount_options }} 
+Options={{ nfs_mount_options }},nofail,x-systemd.automount
 
 [Install]
 WantedBy=remote-fs.target
