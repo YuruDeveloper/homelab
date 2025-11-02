@@ -29,7 +29,7 @@ resource "proxmox_virtual_environment_vm" "opnsense" {
     }
 
     memory {
-      dedicated = 2048
+      dedicated = 4096
     }
 
     boot_order = ["scsi0","ide2"]
@@ -54,13 +54,16 @@ resource "proxmox_virtual_environment_vm" "opnsense" {
 
     network_device {
       bridge = "vmbr0"
+      queues = 14
     }
 
     network_device {
       bridge = "vmbr1"
+      queues = 14
     }
 
     network_device {
       bridge = "vmbr2"
+      queues = 14
     }
 }
