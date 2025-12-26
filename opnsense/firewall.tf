@@ -699,3 +699,74 @@ resource "opnsense_firewall_filter" "DmzToInternetIpv6" {
 
   description = "Allow DMZ IPv6 to Internet"
 }
+
+# ============================================
+# 방화벽 규칙 - Wireguard VPN (opt6)
+# ============================================
+
+# Wireguard → Allow all to any
+resource "opnsense_firewall_filter" "Wireguard" {
+  enabled     = true
+  sequence    = 62
+  action      = "pass"
+  quick       = true
+  interface   = ["opt6"]
+  direction   = "in"
+  ip_protocol = "inet"
+  protocol    = "any"
+
+  source = {
+    net = "opt6"
+  }
+
+  destination = {
+    net = "any"
+  }
+
+  description = "Allow Wireguard interface to any"
+}
+
+# Wireguard IPv6 → Allow all to any
+resource "opnsense_firewall_filter" "WireguardIpv6" {
+  enabled     = true
+  sequence    = 63
+  action      = "pass"
+  quick       = true
+  interface   = ["opt6"]
+  direction   = "in"
+  ip_protocol = "inet6"
+  protocol    = "any"
+
+  source = {
+    net = "opt6"
+  }
+
+  destination = {
+    net = "any"
+  }
+
+  description = "Allow Wireguard IPv6 interface to any"
+}
+
+# WAN → Allow Wireguard VPN (UDP 51820)
+resource "opnsense_firewall_filter" "WanAllowWireguard" {
+  enabled     = true
+  sequence    = 64
+  action      = "pass"
+  quick       = true
+  interface   = ["wan"]
+  direction   = "in"
+  ip_protocol = "inet"
+  protocol    = "UDP"
+
+  source = {
+    net = "any"
+  }
+
+  destination = {
+    net  = "any"
+    port = "51820"
+  }
+
+  description = "Allow WAN to Wireguard VPN (UDP 51820)"
+}

@@ -54,16 +54,16 @@ resource "proxmox_virtual_environment_vm" "opnsense" {
 
     network_device {
       bridge = "vmbr0"
-      queues = 14
+      queues = 8
     }
 
     network_device {
       bridge = "vmbr1"
-      queues = 14
+      queues = 8
     }
 
     network_device {
       bridge = "vmbr2"
-      queues = 14
+      queues = 8
     }
 }

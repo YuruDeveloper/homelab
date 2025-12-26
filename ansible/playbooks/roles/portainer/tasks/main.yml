@@ -11,6 +11,7 @@
     image: portainer/portainer-ce:latest
     state: started
     pull: true
+    recreate: true
     restart_policy: always
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock

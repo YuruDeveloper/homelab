@@ -37,12 +37,12 @@
 
 - name: Check if certificate already exists
   ansible.builtin.stat:
-    path: "/root/.acme.sh/{{ domain }}/{{ domain_filename }}.cer"
+    path: "/etc/nginx/ssl/{{ domain_filename }}.cer"
   register: cert_exists
 
 - name: Get Challenge
   ansible.builtin.command:
-    /root/.acme.sh/acme.sh --issue --dns dns_duckdns -d "{{ domain }}"
+    /root/.acme.sh/acme.sh --issue --dns dns_duckdns -d "{{ domain }}" --dnssleep 180
   environment:
     DuckDNS_Token: "{{ token }}"
   register: issue_cert_result
