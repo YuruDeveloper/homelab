@@ -581,7 +581,7 @@ resource "opnsense_firewall_filter" "DmzToGitea" {
   }
 
   destination = {
-    net  = "192.168.2.70/32"
+    net  = "192.168.2.80/32"
     port = "3000"
   }
 

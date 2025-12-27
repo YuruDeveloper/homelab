@@ -148,7 +148,7 @@ module "gitea" {
   CommonConfig = local.CommonLxcConfig
 
   VmId      = 600
-  IpAddress = "192.168.2.70/24"
+  IpAddress = "192.168.2.80/24"
   Gateway   = local.Networks.internal.Gateway
 
   depends_on = [module.AlpineTemplate]

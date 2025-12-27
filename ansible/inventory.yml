@@ -35,4 +35,4 @@ all:
         gitea:
           hosts:
             gitea0:
-              ansible_host: 192.168.2.70
+              ansible_host: 192.168.2.80

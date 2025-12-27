@@ -1,15 +1,6 @@
 ---
 # Proxmox NFS Mount Setup Tasks
 
-- name: Create mount point directories
-  ansible.builtin.file:
-    path: "{{ item.mount_point }}"
-    state: directory
-    mode: '0755'
-    owner: root
-    group: root
-  loop: "{{ nfs_mounts }}"
-
 - name: Deploy TrueNAS availability check script
   ansible.builtin.template:
     src: truenas_check.j2
@@ -32,6 +23,26 @@
     enabled: true
     daemon_reload: true
 
+- name: Check if mount points are already mounted
+  ansible.builtin.command:
+    cmd: "mountpoint -q {{ item.mount_point }}"
+  loop: "{{ nfs_mounts }}"
+  register: mount_status
+  changed_when: false
+  failed_when: false
+
+- name: Create mount point directories (only if not mounted)
+  ansible.builtin.file:
+    path: "{{ mount_status.results[index].item.mount_point }}"
+    state: directory
+    mode: '0755'
+    owner: root
+    group: root
+  loop: "{{ mount_status.results }}"
+  loop_control:
+    index_var: index
+  when: mount_status.results[index].rc != 0
+
 - name: Deploy NFS mount systemd units
   ansible.builtin.template:
     src: mount.j2
@@ -43,18 +54,22 @@
     mount_origin: "{{ item.mount_origin }}"
     mount_point: "{{ item.mount_point }}"
   loop: "{{ nfs_mounts }}"
+  notify: Reload systemd daemon
 
-- name: Reload systemd daemon
-  ansible.builtin.systemd:
-    daemon_reload: true
-
-- name: Enable and start NFS mount units
+- name: Enable NFS mount units
   ansible.builtin.systemd:
     name: "mnt-{{ item.name }}.mount"
     enabled: true
-    state: started
-    daemon_reload: true
   loop: "{{ nfs_mounts }}"
+
+- name: Start NFS mount units (only if not already mounted)
+  ansible.builtin.systemd:
+    name: "mnt-{{ mount_status.results[index].item.name }}.mount"
+    state: started
+  loop: "{{ mount_status.results }}"
+  loop_control:
+    index_var: index
+  when: mount_status.results[index].rc != 0
 
 - name: Verify NFS mounts are active
   ansible.builtin.command:

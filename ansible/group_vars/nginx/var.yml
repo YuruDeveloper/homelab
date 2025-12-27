@@ -18,7 +18,7 @@ services:
     ip: 192.168.4.2
     port: 9000
   - domain: gitea.bytedev.duckdns.org
-    ip: 192.168.2.70
+    ip: 192.168.2.80
     port: 3000
   - domain: glance.bytedev.duckdns.org
     ip: 192.168.4.3
