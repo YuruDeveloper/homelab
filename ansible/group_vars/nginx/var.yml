@@ -2,9 +2,6 @@ services:
   - domain: opnsense.bytedev.duckdns.org
     ip: 192.168.0.1
     port: 80
-  - domain: proxmox.bytedev.duckdns.org
-    ip: 192.168.0.2
-    port: 8006
   - domain: technitium0.bytedev.duckdns.org
     ip: 192.168.2.2
     port: 5380
@@ -23,3 +20,7 @@ services:
   - domain: glance.bytedev.duckdns.org
     ip: 192.168.4.3
     port: 8080
+httpsserviec:
+    - domain: proxmox.bytedev.duckdns.org
+      ip: 192.168.0.2
+      port: 8006

@@ -1,31 +1,47 @@
-module "docker" {
-  source = "../../modules/lxc-alpine"
+resource "proxmox_virtual_environment_vm" "docker" {
+  name      = "docker"
+  node_name = var.CommonConfig.ProxmoxNode
 
-  CommonConfig = var.CommonConfig
+  vm_id = var.VmId
 
-  VmId     = var.VmId
-  Hostname = "docker"
+  bios    = "ovmf"
+  machine = "q35"
 
-  CpuCores = 4
-  Memory   = 4096
-  Swap     = 1024
-  DiskSize = 16
+  scsi_hardware = "virtio-scsi-pci"
 
-  EnableNesting = true
-  EnableKeyctl  = true
+  boot_order = ["scsi0"]
 
-  NetworkBridge = "vmbr1"
-  VlanId        = 100
-  IpAddress     = var.IpAddress
-  Gateway       = var.Gateway
+  cpu {
+    cores = 1
+  }
 
-  AdditionalNetworkInterfaces = [
-    {
-      name    = "eth1"
-      vlan_id = 300
-      bridge  = "vmbr1"
-    }
-  ]
+  memory {
+    dedicated = 2048
+  }
 
-  Unprivileged = true
+  efi_disk {
+    datastore_id = var.CommonConfig.DatastoreId
+    file_format  = "raw"
+    type         = "4m"
+  }
+
+  disk {
+    datastore_id = var.CommonConfig.DatastoreId
+    size         = 16
+    interface    = "scsi0"
+  }
+
+  network_device {
+    bridge  = "vmbr1"
+    vlan_id = 100
+  }
+
+  network_device {
+    bridge  = "vmbr1"
+    vlan_id = 300
+  }
+
+  cdrom {
+    file_id = var.AlpineVirtIsoId
+  }
 }

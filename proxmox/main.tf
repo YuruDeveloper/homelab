@@ -30,6 +30,14 @@ module "AlpineTemplate" {
   AlpineTemplateDate = "20250617"
 }
 
+module "AlpineVirtIso" {
+  source = "./modules/alpine-iso"
+
+  ProxmoxNode   = var.proxmox_node
+  DatastoreId   = "local"
+  AlpineVersion = "3.23"
+}
+
 module "truenas" {
   source = "./services/truenas"
 
@@ -123,11 +131,12 @@ module "docker" {
 
   CommonConfig = local.CommonLxcConfig
 
-  VmId      = 400
-  IpAddress = "192.168.2.20/24"
-  Gateway   = local.Networks.internal.Gateway
+  VmId            = 400
+  IpAddress       = "192.168.2.20/24"
+  Gateway         = local.Networks.internal.Gateway
+  AlpineVirtIsoId = module.AlpineVirtIso.FileId
 
-  depends_on = [module.AlpineTemplate]
+  depends_on = [module.AlpineVirtIso]
 }
 
 module "nginx" {
@@ -147,7 +156,7 @@ module "gitea" {
 
   CommonConfig = local.CommonLxcConfig
 
-  VmId      = 600
+  VmId      = 1000
   IpAddress = "192.168.2.80/24"
   Gateway   = local.Networks.internal.Gateway
 

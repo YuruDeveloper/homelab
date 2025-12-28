@@ -28,3 +28,8 @@ variable "Gateway" {
   type        = string
   description = "게이트웨이 IP 주소"
 }
+
+variable "AlpineVirtIsoId" {
+  type        = string
+  description = "Alpine virt ISO 파일 ID"
+}
