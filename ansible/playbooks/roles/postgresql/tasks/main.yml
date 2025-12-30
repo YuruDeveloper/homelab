@@ -5,3 +5,4 @@
       - "postgresql{{ postgresql_version }}"
       - "postgresql{{ postgresql_version }}-contrib"
       - "postgresql{{ postgresql_version }}-openrc"
+      - postgresql-pgvector
