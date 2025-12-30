@@ -1,0 +1,38 @@
+#!/sbin/openrc-run
+
+name="rustfs"
+description=""
+
+if [ -f /etc/conf.d/rustfs ]; then
+    . /etc/conf.d/rustfs
+fi
+
+: ${RUSTFS_USER:=rustfs}
+: ${RUSTFS_GROUP:=rustfs}
+: ${RUSTFS_WORKDIR:=/var/lib/rustfs}
+
+command="/usr/local/bin/rustfs /mnt/objectstorage"
+command_user="${RUSTFS_USER}:${RUSTFS_GROUP}"
+command_background=true
+pidfile="/run/${RC_SVCNAME}.pid"
+directory="${RUSTFS_WORKDIR}"
+
+# 자동 재시작 설정
+respawn_delay=10
+respawn_max=0
+
+output_log="/var/log/rustfs/rustfs.log"
+error_log="/var/log/rustfs/rustfs-error.log"
+
+depend() {
+    need net
+    after firewall
+}
+
+start_pre() {
+    # 작업 디렉토리 생성 및 권한 설정
+    checkpath --directory --mode 0755 --owner ${RUSTFS_USER}:${RUSTFS_GROUP} "${RUSTFS_WORKDIR}"
+    checkpath --directory --mode 0755 --owner ${RUSTFS_USER}:${RUSTFS_GROUP} "/var/log/rustfs"
+    # 파일 디스크립터 제한 설정
+    ulimit -n 40000
+}

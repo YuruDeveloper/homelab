@@ -126,6 +126,18 @@ module "postgreslave1" {
   depends_on = [module.AlpineTemplate]
 }
 
+module "rustfs" {
+  source = "./services/rustfs"
+
+  CommonConfig = local.CommonLxcConfig
+
+  VmId      = 600
+  IpAddress = "192.168.2.50/24"
+  Gateway   = local.Networks.internal.Gateway
+
+  depends_on = [module.AlpineTemplate]
+}
+
 module "docker" {
   source = "./services/docker"
 

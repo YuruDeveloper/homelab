@@ -20,3 +20,8 @@ nfs_mounts:
     mount_origin: "/mnt/Data/gitLarge"
     mount_point: "/mnt/gitlarge"
     description: "Gitea LFS Storage"
+
+  - name: "objectstorage"
+    mount_origin: "/mnt/Data/objectStorage"
+    mount_point: "/mnt/objectstorage"
+    description: "Object Storage"

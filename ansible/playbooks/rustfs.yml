@@ -1,0 +1,5 @@
+- name: Setup Rustfs
+  become: true
+  hosts: rustfs
+  roles:
+    - rustfs
