@@ -25,3 +25,8 @@ nfs_mounts:
     mount_origin: "/mnt/Data/objectStorage"
     mount_point: "/mnt/objectstorage"
     description: "Object Storage"
+  
+  - name: "mongodb"
+    mount_origin: "/mnt/Data/mongodb"
+    mount_point: "/mnt/mongodb"
+    description: "Mongo DB"

@@ -23,11 +23,6 @@ variable "TemplateFileId" {
   description = "LXC 템플릿 파일 ID"
 }
 
-variable "DiskSize" {
-  type = number
-  description = "Disk 사이즈"
-}
-
 # 서비스별 개별 설정
 variable "VmId" {
   type        = number

@@ -1,4 +1,4 @@
-module "haproxy" {
+module "mongodb" {
   source = "../../modules/lxc"
 
   CommonConfig   = var.CommonConfig
@@ -6,12 +6,12 @@ module "haproxy" {
   TemplateFileId = var.TemplateFileId
 
   VmId     = var.VmId
-  Hostname = "haproxy"
+  Hostname = "mongodb"
 
-  CpuCores = 1
-  Memory   = 512
+  CpuCores = 2
+  Memory   = 2048
   Swap     = 0
-  DiskSize = var.DiskSize
+  DiskSize = 16
 
   NetworkBridge = "vmbr1"
   VlanId        = 100
@@ -19,4 +19,12 @@ module "haproxy" {
   Gateway       = var.Gateway
 
   Unprivileged = true
+
+  MountPoints = [
+    {
+      volume      = "/mnt/mongodb"
+      mount_point = "/mnt/mongodb"
+      read_only   = false
+    }
+  ]
 }

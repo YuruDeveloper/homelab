@@ -1,0 +1,17 @@
+- name: Install Need Package
+  ansible.builtin.apt:
+    name:
+      - haproxy
+
+- name: Make Config file
+  ansible.builtin.template:
+    src: haproxy.j2
+    dest: "/etc/haproxy/haproxy.cfg"
+    mode: "755"
+    force: true
+
+- name: Start Haproxy
+  ansible.builtin.service:
+    name: haproxy
+    state: restarted
+    enabled: true

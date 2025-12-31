@@ -1,0 +1,57 @@
+- name: Set Repo
+  become: true
+  hosts: HAmongodb
+  roles:
+    - mongodbrepo
+
+- name: Install MongoDB
+  become: true
+  hosts: mongodb
+  roles:
+    - mongodb
+
+- name: Install Arbiter
+  become: true
+  hosts: proxy1
+  roles:
+    - mongodbarbiter
+
+- name: Replica Setup
+  become: true
+  hosts: db2
+  tasks:
+    - name: Download Need Packge
+      ansible.builtin.apt:
+        name:
+          - python3-pymongo
+
+    - name: Replica Setup
+      community.mongodb.mongodb_replicaset:
+        replica_set: "{{ replica_set_name }}"
+        members:
+          - host: "{{ replica_set_members[0] }}:{{ mongodb_port }}"
+            priority: 1
+          - host: "{{ replica_set_members[1] }}:{{ mongodb_port }}"
+            priority: 1
+          - host: "{{ replica_set_members[2] }}:{{ mongodb_port }}"
+            priority: 1
+        login_host: "{{ replica_set_members[1] }}"
+        login_port: "{{ mongodb_port }}"
+        arbiter_at_index: 0
+    - name: Create User
+      community.mongodb.mongodb_user:
+        replica_set: "{{ replica_set_name }}"
+        login_database: admin
+        database: admin
+        name: "{{ mongodb_admin_user }}"
+        password: "{{ mongodb_admin_password }}"
+        roles:
+          - role: root
+            db: admin
+        state: present
+
+- name: HA proxy Setup
+  become: true
+  hosts: proxy1
+  roles:
+    - haproxy1

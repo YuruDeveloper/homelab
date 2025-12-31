@@ -1,0 +1,32 @@
+- name: Instsall gpg
+  ansible.builtin.apt:
+    name: gpg
+
+- name: Gpg key download
+  ansible.builtin.get_url:
+    url: https://www.mongodb.org/static/pgp/server-8.0.asc
+    dest: /tmp/mongodb-server-8.0.asc
+    mode: "0644"
+
+- name: MongoDB gpg key dearmor
+  ansible.builtin.command:
+    cmd: gpg --dearmor -o /usr/share/keyrings/mongodb-server-8.0.gpg /tmp/mongodb-server-8.0.asc
+  args:
+    creates: /usr/share/keyrings/mongodb-server-8.0.gpg
+  become: true
+
+- name: Add MongoDB 8.0 APT repository
+  ansible.builtin.apt_repository:
+    repo: "deb [signed-by=/usr/share/keyrings/mongodb-server-8.0.gpg] https://repo.mongodb.org/apt/debian bookworm/mongodb-org/8.0 main"
+    filename: mongodb-org-8.0
+    state: present
+  become: true
+
+- name: Update cache
+  ansible.builtin.apt:
+    update_cache: true
+
+- name: Remove gpg
+  ansible.builtin.apt:
+    name: gpg
+    state: absent

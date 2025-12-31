@@ -1,0 +1,42 @@
+- name: Instasll MongoDB
+  ansible.builtin.apt:
+    name:
+      - mongodb-org-server
+
+- name: Ensure directory exists (create if not present)
+  ansible.builtin.file:
+    path: /var/lib/mongodb/arb
+    state: directory
+    owner: mongodb
+    group: mongodb
+    mode: '0777'
+    recurse: true
+
+- name: Update dbPath in mongod.conf
+  ansible.builtin.lineinfile:
+    path: /etc/mongod.conf
+    regexp: '^(\s*)dbPath:\s*/var/lib/mongodb\s*$'
+    line: '\1dbPath: /var/lib/mongodb/arb'
+    backrefs: true
+    state: present
+
+- name: Configure replication in mongod.conf
+  ansible.builtin.blockinfile:
+    path: /etc/mongod.conf
+    block: |
+      replication:
+        replSetName: {{ replica_set_name }}
+    marker: "# {mark} ANSIBLE MANAGED REPLICATION BLOCK"
+
+- name: Configure replication in mongod.conf
+  ansible.builtin.lineinfile:
+    path: /etc/mongod.conf
+    regexp: '^(\s*)bindIp:\s*127\.0\.0\.1'
+    line: '\1bindIp: 0.0.0.0'
+    backrefs: yes
+    state: present
+
+- name: Setup mongod
+  ansible.builtin.systemd:
+    name: mongod
+    state: restarted

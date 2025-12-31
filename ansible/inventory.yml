@@ -14,9 +14,9 @@ all:
             ansible_host: 192.168.2.3
         HApostgresql:
           children:
-            proxy:
+            proxy0:
               hosts:
-                haproxy:
+                haproxy0:
                   ansible_host: 192.168.2.30
             postgresql:
               hosts:
@@ -40,3 +40,18 @@ all:
           hosts:
             gitea0:
               ansible_host: 192.168.2.80
+    debian:
+      children:
+        HAmongodb:
+          children:
+            proxy1:
+              hosts:
+                haproxy1:
+                  ansible_host: 192.168.2.31
+            mongodb:
+              hosts:
+                db2: 
+                  ansible_host: 192.168.2.60
+                db3:  
+                  ansible_host: 192.168.2.61
+              

@@ -90,3 +90,16 @@ module "SshSetup" {
   ProxmoxUrl      = var.CommonConfig.ProxmoxUrl
   ProxmoxUserName = var.CommonConfig.ProxmoxUserName
 }
+
+# Debian일 때만 Debian Setup 실행
+module "DebianSetup" {
+  count  = var.OsType == "debian" ? 1 : 0
+  source = "../debian-setup"
+
+  depends_on = [proxmox_virtual_environment_container.LxcContainer]
+
+  ContainerId     = proxmox_virtual_environment_container.LxcContainer.id
+  VmId            = proxmox_virtual_environment_container.LxcContainer.vm_id
+  ProxmoxUrl      = var.CommonConfig.ProxmoxUrl
+  ProxmoxUserName = var.CommonConfig.ProxmoxUserName
+}

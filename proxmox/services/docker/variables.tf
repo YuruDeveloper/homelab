@@ -7,7 +7,6 @@ variable "CommonConfig" {
     RootPassword    = string
     PublicKey       = string
     DatastoreId     = string
-    TemplateFileId  = string
   })
   description = "LXC 공통 설정 (Proxmox 연결 정보 및 인증 정보)"
   sensitive   = true

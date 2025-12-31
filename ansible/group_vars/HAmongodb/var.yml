@@ -1,0 +1,19 @@
+replica_set_names:
+  - "haproxy"
+  - "db0"
+  - "db1"
+
+replica_set_members:
+  - 192.168.2.31
+  - 192.168.2.60
+  - 192.168.2.61
+
+replica_set_name: "hamongo0"
+
+mongodb_admin_user: cecil
+
+mongodb_port: 27017
+
+haproxy_port: 27018
+
+arbiter_index: 0

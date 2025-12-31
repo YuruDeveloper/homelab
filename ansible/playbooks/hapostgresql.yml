@@ -53,8 +53,8 @@
 
 - name: Install haproxy and setup
   become: true
-  hosts: haproxy
+  hosts: haproxy0
   vars:
     etcd_member_index: 0
   roles:
-    - haproxy
+    - haproxy0

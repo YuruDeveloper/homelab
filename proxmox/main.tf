@@ -60,24 +60,6 @@ module "truenas" {
 
 }
 
-# ============================================================================
-# NFS Mount Configuration
-# ============================================================================
-# NFS mounts should be configured on Proxmox host (192.168.0.2) via /etc/fstab
-# This ensures persistent and stable mounts across reboots.
-#
-# Setup instructions:
-# 1. SSH to Proxmox host: ssh root@192.168.0.2
-# 2. Create mount directories:
-#    mkdir -p /mnt/postgresql /mnt/git /mnt/gitlarge
-# 3. Add to /etc/fstab:
-#    192.168.2.10:/mnt/Data/postgresql  /mnt/postgresql  nfs  vers=4,rw,sync,hard  0  0
-#    192.168.2.10:/mnt/Data/git         /mnt/git         nfs  vers=4,rw,sync,hard  0  0
-#    192.168.2.10:/mnt/Data/gitLarge    /mnt/gitlarge    nfs  vers=4,rw,sync,hard  0  0
-# 4. Mount all: mount -a
-# 5. Verify: df -h | grep mnt
-# ============================================================================
-
 module "technitium0" {
   source = "./services/dns"
 
@@ -104,12 +86,12 @@ module "technitium1" {
   depends_on = [module.AlpineTemplate]
 }
 
-module "haproxy" {
+module "haproxy0" {
   source = "./services/haproxy"
 
   CommonConfig   = local.CommonLxcConfig
   TemplateFileId = local.Templates.Alpine
-
+  DiskSize = 1
   VmId      = 500
   IpAddress = "192.168.2.30/24"
   Gateway   = local.Networks.internal.Gateway
@@ -156,11 +138,51 @@ module "rustfs" {
   depends_on = [module.AlpineTemplate]
 }
 
+module "haproxy1" {
+  source = "./services/haproxy"
+  OsType = "debian"
+  DiskSize = 2
+  CommonConfig   = local.CommonLxcConfig
+  TemplateFileId = local.Templates.Debian
+
+  VmId = 700
+  IpAddress = "192.168.2.31/24"
+  Gateway   = local.Networks.internal.Gateway
+
+  depends_on = [module.DebianTemplate]
+}
+
+module "mongodb0" {
+  source = "./services/mongodb"
+  OsType = "debian"
+  CommonConfig   = local.CommonLxcConfig
+  TemplateFileId = local.Templates.Debian
+
+  VmId = 710
+  IpAddress = "192.168.2.60/24"
+  Gateway   = local.Networks.internal.Gateway
+
+  depends_on = [module.DebianTemplate]
+}
+
+module "mongodb1" {
+  source = "./services/mongodb"
+  OsType = "debian"
+  CommonConfig   = local.CommonLxcConfig
+  TemplateFileId = local.Templates.Debian
+
+  VmId = 711
+  IpAddress = "192.168.2.61/24"
+  Gateway   = local.Networks.internal.Gateway
+
+  depends_on = [module.DebianTemplate]
+}
+
 module "docker" {
   source = "./services/docker"
 
   CommonConfig = local.CommonLxcConfig
-
+  
   VmId            = 400
   IpAddress       = "192.168.2.20/24"
   Gateway         = local.Networks.internal.Gateway
