@@ -1,7 +1,9 @@
 module "rustfs" {
-  source = "../../modules/lxc-alpine"
+  source = "../../modules/lxc"
 
-  CommonConfig = var.CommonConfig
+  CommonConfig   = var.CommonConfig
+  OsType         = var.OsType
+  TemplateFileId = var.TemplateFileId
 
   VmId     = var.VmId
   Hostname = "rustfs"

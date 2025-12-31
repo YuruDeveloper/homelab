@@ -45,16 +45,16 @@ resource "proxmox_virtual_environment_container" "LxcContainer" {
   dynamic "mount_point" {
     for_each = var.MountPoints
     content {
-      volume = mount_point.value.volume
-      path   = mount_point.value.mount_point
-      shared = true
+      volume    = mount_point.value.volume
+      path      = mount_point.value.mount_point
+      shared    = true
       replicate = false
     }
   }
 
   operating_system {
-    template_file_id = var.CommonConfig.TemplateFileId
-    type             = "alpine"
+    template_file_id = var.TemplateFileId
+    type             = var.OsType
   }
 
   initialization {
@@ -78,8 +78,10 @@ resource "proxmox_virtual_environment_container" "LxcContainer" {
   }
 }
 
+# Alpine일 때만 SSH Setup 실행
 module "SshSetup" {
-  source = "../lxc-ssh-setup"
+  count  = var.OsType == "alpine" ? 1 : 0
+  source = "../alpine-ssh-setup"
 
   depends_on = [proxmox_virtual_environment_container.LxcContainer]
 

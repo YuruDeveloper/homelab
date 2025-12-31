@@ -6,10 +6,25 @@ variable "CommonConfig" {
     RootPassword    = string
     PublicKey       = string
     DatastoreId     = string
-    TemplateFileId  = string
   })
   description = "LXC 공통 설정 (Proxmox 연결 정보 및 인증 정보)"
   sensitive   = true
+}
+
+variable "OsType" {
+  type        = string
+  description = "OS 타입 (alpine, debian 등)"
+  default     = "alpine"
+
+  validation {
+    condition     = contains(["alpine", "debian"], var.OsType)
+    error_message = "OsType must be 'alpine' or 'debian'."
+  }
+}
+
+variable "TemplateFileId" {
+  type        = string
+  description = "LXC 템플릿 파일 ID"
 }
 
 variable "VmId" {
@@ -97,9 +112,9 @@ variable "AdditionalNetworkInterfaces" {
 }
 
 variable "Dns" {
-  type = list(string)
+  type        = list(string)
   description = "dns 설정"
-  default = []
+  default     = []
 }
 
 variable "MountPoints" {

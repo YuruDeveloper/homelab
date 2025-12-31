@@ -6,7 +6,11 @@ locals {
     RootPassword    = var.proxmox_password
     PublicKey       = var.public_key
     DatastoreId     = "local-lvm"
-    TemplateFileId  = module.AlpineTemplate.TemplateFileId
+  }
+
+  Templates = {
+    Alpine = module.AlpineTemplate.TemplateFileId
+    Debian = module.DebianTemplate.TemplateFileId
   }
 
   Networks = {
@@ -28,6 +32,14 @@ module "AlpineTemplate" {
   DatastoreId        = "local"
   AlpineVersion      = "3.22"
   AlpineTemplateDate = "20250617"
+}
+
+module "DebianTemplate" {
+  source = "./modules/debian-template"
+  ProxmoxNode        = var.proxmox_node
+  DatastoreId        = "local"
+  DebianVersion = "13"
+  DebianDetailVersion = "13.1-2"
 }
 
 module "AlpineVirtIso" {
@@ -69,7 +81,8 @@ module "truenas" {
 module "technitium0" {
   source = "./services/dns"
 
-  CommonConfig = local.CommonLxcConfig
+  CommonConfig   = local.CommonLxcConfig
+  TemplateFileId = local.Templates.Alpine
 
   VmId      = 200
   IpAddress = "192.168.2.2/24"
@@ -81,7 +94,8 @@ module "technitium0" {
 module "technitium1" {
   source = "./services/dns"
 
-  CommonConfig = local.CommonLxcConfig
+  CommonConfig   = local.CommonLxcConfig
+  TemplateFileId = local.Templates.Alpine
 
   VmId      = 201
   IpAddress = "192.168.2.3/24"
@@ -93,7 +107,8 @@ module "technitium1" {
 module "haproxy" {
   source = "./services/haproxy"
 
-  CommonConfig = local.CommonLxcConfig
+  CommonConfig   = local.CommonLxcConfig
+  TemplateFileId = local.Templates.Alpine
 
   VmId      = 500
   IpAddress = "192.168.2.30/24"
@@ -105,7 +120,8 @@ module "haproxy" {
 module "postgreslave0" {
   source = "./services/postgresql"
 
-  CommonConfig = local.CommonLxcConfig
+  CommonConfig   = local.CommonLxcConfig
+  TemplateFileId = local.Templates.Alpine
 
   VmId      = 510
   IpAddress = "192.168.2.40/24"
@@ -117,7 +133,8 @@ module "postgreslave0" {
 module "postgreslave1" {
   source = "./services/postgresql"
 
-  CommonConfig = local.CommonLxcConfig
+  CommonConfig   = local.CommonLxcConfig
+  TemplateFileId = local.Templates.Alpine
 
   VmId      = 511
   IpAddress = "192.168.2.41/24"
@@ -129,7 +146,8 @@ module "postgreslave1" {
 module "rustfs" {
   source = "./services/rustfs"
 
-  CommonConfig = local.CommonLxcConfig
+  CommonConfig   = local.CommonLxcConfig
+  TemplateFileId = local.Templates.Alpine
 
   VmId      = 600
   IpAddress = "192.168.2.50/24"
@@ -154,7 +172,8 @@ module "docker" {
 module "nginx" {
   source = "./services/nginx"
 
-  CommonConfig = local.CommonLxcConfig
+  CommonConfig   = local.CommonLxcConfig
+  TemplateFileId = local.Templates.Alpine
 
   VmId      = 900
   IpAddress = "192.168.5.2/24"
@@ -166,7 +185,8 @@ module "nginx" {
 module "gitea" {
   source = "./services/gitea"
 
-  CommonConfig = local.CommonLxcConfig
+  CommonConfig   = local.CommonLxcConfig
+  TemplateFileId = local.Templates.Alpine
 
   VmId      = 1000
   IpAddress = "192.168.2.80/24"

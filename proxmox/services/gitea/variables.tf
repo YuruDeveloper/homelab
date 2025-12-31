@@ -7,10 +7,20 @@ variable "CommonConfig" {
     RootPassword    = string
     PublicKey       = string
     DatastoreId     = string
-    TemplateFileId  = string
   })
   description = "LXC 공통 설정 (Proxmox 연결 정보 및 인증 정보)"
   sensitive   = true
+}
+
+variable "OsType" {
+  type        = string
+  description = "OS 타입 (alpine, debian)"
+  default     = "alpine"
+}
+
+variable "TemplateFileId" {
+  type        = string
+  description = "LXC 템플릿 파일 ID"
 }
 
 # 서비스별 개별 설정
