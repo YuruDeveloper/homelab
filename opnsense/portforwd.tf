@@ -76,3 +76,28 @@ resource "opnsense_firewall_nat" "PostgresqlForward" {
   log         = false
   sequence    = 3
 }
+
+# MongoDB (27017) → Nginx (MongoDB Proxy)
+resource "opnsense_firewall_nat" "MongoDBForward" {
+  enabled   = true
+  interface = "wan"
+  protocol  = "TCP"
+
+  source = {
+    net = "any"
+  }
+
+  destination = {
+    net  = "wanip"
+    port = "27017"
+  }
+
+  target = {
+    ip   = "192.168.5.2"  # Nginx DMZ
+    port = "27017"
+  }
+
+  description = "MongoDB external access via Nginx port 27017"
+  log         = true
+  sequence    = 1
+}

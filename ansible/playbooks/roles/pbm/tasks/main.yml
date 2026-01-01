@@ -38,7 +38,6 @@
     src: pbm.j2
     dest: /tmp/pbm.yaml
     mode: "0600"
-  notify: Apply PBM config
 
 - name: Deploy pbm-agent systemd config file
   ansible.builtin.template:
@@ -77,5 +76,5 @@
   ansible.builtin.systemd:
     name: pbm-agent
     state: restarted
-
-
+    enabled: true
+    

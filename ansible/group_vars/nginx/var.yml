@@ -30,3 +30,9 @@ httpsserviec:
     - domain: proxmox.bytedev.duckdns.org
       ip: 192.168.0.2
       port: 8006
+
+streams:
+  - domain: mongodb.bytedev.duckdns.org
+    listen_port: 27017
+    ip: 192.168.2.31
+    port: 27018

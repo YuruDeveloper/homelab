@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "opnsense": {
+      "command": "npx",
+      "args": ["-y", "@richard-stovall/opnsense-mcp-server"],
+      "env": {
+        "OPNSENSE_URL": "https://opnsense.bytedev.duckdns.org",
+        "OPNSENSE_API_KEY": "xfl631ccVQVITVb6eIqVli0C3vyUdOLL3CPCKaGOWV9zGQA4a28LRySEPOz5JHyfRU7faBtTprcPGSdO",
+        "OPNSENSE_API_SECRET": "Htlj1y+z/hhHnymkXovbPJ1L85rjVwEHY5dtEnQ+gnCgz59yRKIo9Qs51JteRKq6aZqmXLCYTxURPrhf",
+        "OPNSENSE_VERIFY_SSL": "true"
+      }
+    }
+  }
+}

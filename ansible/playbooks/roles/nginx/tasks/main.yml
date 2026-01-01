@@ -169,9 +169,16 @@
 
 - name: Make stream file
   ansible.builtin.template:
-    src: stream.j2
+    src: postgresql_stream.j2
     dest: "/etc/nginx/stream.d/postgres.{{ domain }}.conf"
     mode: "755"
+
+- name: Make stream files
+  ansible.builtin.template:
+    src: stream.j2
+    dest: "/etc/nginx/stream.d/{{ item.domain }}.conf"
+    mode: "755"
+  loop: "{{ streams }}"
 
 - name: Reload nginx
   ansible.builtin.service:
