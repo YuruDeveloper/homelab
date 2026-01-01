@@ -38,8 +38,8 @@ module "DebianTemplate" {
   source = "./modules/debian-template"
   ProxmoxNode        = var.proxmox_node
   DatastoreId        = "local"
-  DebianVersion = "13"
-  DebianDetailVersion = "13.1-2"
+  DebianVersion = "12"
+  DebianDetailVersion = "12.7-1"
 }
 
 module "AlpineVirtIso" {

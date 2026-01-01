@@ -1,0 +1,81 @@
+- name: Download Percona release package
+  ansible.builtin.get_url:
+    url: "https://repo.percona.com/apt/percona-release_latest.bookworm_all.deb"
+    dest: "/tmp/percona-release_latest.bookworm_all.deb"
+    mode: "0644"
+
+- name: Install Percona release package
+  ansible.builtin.apt:
+    deb: "/tmp/percona-release_latest.bookworm_all.deb"
+
+- name: Enable Percona Server for MongoDB 8.0 repository
+  ansible.builtin.command:
+    cmd: percona-release enable psmdb-80 release
+  changed_when: false
+
+- name: Enable Percona Server for MongoDB 8.0 repository
+  ansible.builtin.command:
+    cmd: percona-release enable pbm release
+  changed_when: false
+
+- name: Update cache
+  ansible.builtin.apt:
+    update_cache: true
+
+- name: Install PBM
+  ansible.builtin.apt:
+    name:
+      - percona-backup-mongodb
+
+- name: Folder Create
+  ansible.builtin.file:
+    path: /etc/default
+    state: directory
+    mode: "0755"
+
+- name: Deploy PBM Stroage config
+  ansible.builtin.template:
+    src: pbm.j2
+    dest: /tmp/pbm.yaml
+    mode: "0600"
+  notify: Apply PBM config
+
+- name: Deploy pbm-agent systemd config file
+  ansible.builtin.template:
+    src: config.j2
+    dest: /etc/default/pbm-agent
+    mode: "755"
+
+- name: Deploy pbm-agent systemd file
+  ansible.builtin.template:
+    src: agent.j2
+    dest: /usr/lib/systemd/system/pbm-agent.service
+    mode: "755"
+
+- name: Update systemd
+  ansible.builtin.systemd:
+    daemon_reload: true
+
+- name: ADD Environment value
+  ansible.builtin.lineinfile:
+    path: /etc/environment
+    regexp: '^PBM_MONGODB_URI='
+    line: 'PBM_MONGODB_URI="mongodb://pbmuser:{{ pbm_password }}@127.0.0.1:{{ mongodb_port }}/?authSource=admin"'
+    state: present
+    create: true
+    backup: true
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Apply PBM config
+  ansible.builtin.command:
+    cmd: "pbm config --file /tmp/pbm.yaml"
+  changed_when: false
+
+- name: Enable and start PBM agent
+  ansible.builtin.systemd:
+    name: pbm-agent
+    state: restarted
+
+

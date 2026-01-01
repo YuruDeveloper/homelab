@@ -49,9 +49,35 @@
           - role: root
             db: admin
         state: present
+    - name: Create PBM User
+      community.mongodb.mongodb_user:
+        replica_set: "{{ replica_set_name }}"
+        login_database: admin
+        database: admin
+        name: pbmuser
+        password: "{{ mongodb_admin_password }}"
+        roles:
+          - role: root
+            db: admin
+        state: present
 
 - name: HA proxy Setup
   become: true
   hosts: proxy1
   roles:
     - haproxy1
+
+- name: Set PBM
+  become: true
+  hosts: mongodb
+  roles:
+    - pbm
+
+- name: MakeBackup
+  become: true
+  hosts: db2
+  tasks:
+    - name: CreateBackup
+      ansible.builtin.command:
+        cmd: pbm backup
+      changed_when: false

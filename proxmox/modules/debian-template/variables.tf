@@ -12,11 +12,11 @@ variable "DatastoreId" {
 variable "DebianVersion" {
   type        = string
   description = "Debian Linux 버전"
-  default     = "13"
+  default     = "12"
 }
 
 variable "DebianDetailVersion" {
   type        = string
   description = "Debian 상세 버전"
-  default     = "13.1-2"
+  default     = "12.7-1"
 }
