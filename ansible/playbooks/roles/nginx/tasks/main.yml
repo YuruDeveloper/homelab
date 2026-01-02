@@ -9,12 +9,6 @@
       - curl
     state: installed
 
-- name: Start nginx
-  ansible.builtin.service:
-    name: nginx
-    state: started
-    enabled: true
-
 - name: Install acme.sh
   ansible.builtin.shell: |
     set -o pipefail
@@ -158,7 +152,7 @@
 - name: Start pgterm
   ansible.builtin.service:
     name: pgterm
-    state: started
+    state: restarted
     enabled: true
 
 - name: Make internal file
@@ -183,4 +177,4 @@
 - name: Reload nginx
   ansible.builtin.service:
     name: nginx
-    state: reloaded
+    state: restarted

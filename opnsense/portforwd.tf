@@ -99,5 +99,55 @@ resource "opnsense_firewall_nat" "MongoDBForward" {
 
   description = "MongoDB external access via Nginx port 27017"
   log         = true
-  sequence    = 1
+  sequence    = 4
+}
+
+# S3 API (9000) → Nginx (S3 Proxy)
+resource "opnsense_firewall_nat" "S3ApiForward" {
+  enabled   = true
+  interface = "wan"
+  protocol  = "TCP"
+
+  source = {
+    net = "any"
+  }
+
+  destination = {
+    net  = "wanip"
+    port = "9000"
+  }
+
+  target = {
+    ip   = "192.168.5.2"  # Nginx DMZ
+    port = "9000"
+  }
+
+  description = "S3 API external access via Nginx"
+  log         = false
+  sequence    = 5
+}
+
+# Redis (6379) → Nginx (Redis Proxy)
+resource "opnsense_firewall_nat" "RedisForward" {
+  enabled   = true
+  interface = "wan"
+  protocol  = "TCP"
+
+  source = {
+    net = "any"
+  }
+
+  destination = {
+    net  = "wanip"
+    port = "6379"
+  }
+
+  target = {
+    ip   = "192.168.5.2"  # Nginx DMZ
+    port = "6379"
+  }
+
+  description = "Redis external access via Nginx"
+  log         = false
+  sequence    = 6
 }

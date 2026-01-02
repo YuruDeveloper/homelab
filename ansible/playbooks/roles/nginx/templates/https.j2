@@ -1,5 +1,5 @@
 server {
-    listen 443 ssl;
+    listen {{ item.listen_port}} ssl;
     server_name {{ item.domain }};
 
     ssl_certificate     /etc/nginx/ssl/{{ domain_filename }}.cer;

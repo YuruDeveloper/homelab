@@ -1,0 +1,26 @@
+- name: Create Sentinel directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: redis
+    group: redis
+    mode: "0755"
+  loop:
+    - /var/lib/sentinel
+    - /var/run/redis
+    - /var/log/redis
+
+- name: Make Sentinel config file
+  ansible.builtin.template:
+    src: sentinel.j2
+    dest: "/etc/sentinel.conf"
+    owner: redis
+    group: redis
+    mode: "0644"
+    force: true
+
+- name: Enable and start Redis Sentinel
+  ansible.builtin.service:
+    name: redis-sentinel
+    state: restarted
+    enabled: true

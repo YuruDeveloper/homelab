@@ -1,0 +1,80 @@
+#---------------------------------------------------------------------
+# Global settings
+#---------------------------------------------------------------------
+global
+    log         127.0.0.1 local2
+
+    chroot      /var/lib/haproxy
+    pidfile     /var/run/haproxy.pid
+    maxconn     4000
+    user        haproxy
+    group       haproxy
+    daemon
+
+    # turn on stats unix socket
+    stats socket /var/lib/haproxy/stats
+
+#---------------------------------------------------------------------
+# common defaults that all the 'listen' and 'backend' sections will
+# use if not designated in their block
+#---------------------------------------------------------------------
+defaults
+    mode                    tcp
+    log                     global
+    option                  tcplog
+    option                  dontlognull
+    option                  redispatch
+    retries                 3
+    timeout http-request    10s
+    timeout queue           1m
+    timeout connect         10s
+    timeout client          30s
+    timeout server          1m
+    timeout http-keep-alive 10s
+    timeout check           10s
+    maxconn                 3000
+
+#---------------------------------------------------------------------
+# Frontend - Redis Client Connections
+#---------------------------------------------------------------------
+frontend redis-front
+    bind *:{{ redis_port }}
+    mode tcp
+    default_backend redis-prime
+
+#---------------------------------------------------------------------
+# Backend - Redis Prime (Master) Auto-Detection
+#---------------------------------------------------------------------
+backend redis-prime
+    mode tcp
+    option tcp-check
+
+    # Health check sequence - detect current Master
+    tcp-check connect
+    tcp-check send AUTH\ {{ redis_password }}\r\n
+    tcp-check expect string +OK
+    tcp-check send PING\r\n
+    tcp-check expect string +PONG
+    tcp-check send info\ replication\r\n
+    tcp-check expect string role:master
+    tcp-check send QUIT\r\n
+    tcp-check expect string +OK
+
+    # Server list - only current Prime (Master) will pass health check
+{% for i in range(redis_member_ips | length) %}
+{% if redis_member_names[i] != 'haproxy2' %}
+    server {{ redis_member_names[i] }} {{ redis_member_ips[i] }}:{{ redis_port }} check inter 1s fall 3 rise 2 on-marked-down shutdown-sessions
+{% endif %}
+{% endfor %}
+
+#---------------------------------------------------------------------
+# HAProxy Statistics Page
+#---------------------------------------------------------------------
+listen stats
+    bind *:8404
+    mode http
+    stats enable
+    stats uri /
+    stats refresh 10s
+    stats show-legends
+    stats show-desc Redis HA Cluster (Prime Auto-Detection)

@@ -1,0 +1,25 @@
+- name: Create Redis directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: redis
+    group: redis
+    mode: "0755"
+  loop:
+    - /var/lib/redis
+    - /var/log/redis
+
+- name: Make Redis config file
+  ansible.builtin.template:
+    src: redis.j2
+    dest: "/etc/redis.conf"
+    owner: redis
+    group: redis
+    mode: "0644"
+    force: true
+
+- name: Enable and start Redis
+  ansible.builtin.service:
+    name: redis
+    state: restarted
+    enabled: true

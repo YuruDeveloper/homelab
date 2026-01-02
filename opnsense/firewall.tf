@@ -115,6 +115,62 @@ resource "opnsense_firewall_filter" "WanAllowMongodb" {
   }
 }
 
+# WAN → Allow S3 API (9000) forwarded traffic
+resource "opnsense_firewall_filter" "WanAllowS3Api" {
+  enabled     = true
+  sequence    = 5
+  description = "Allow WAN to Nginx S3 API Proxy port 9000"
+
+  interface = {
+    interface = ["wan"]
+  }
+
+  filter = {
+    action      = "pass"
+    quick       = true
+    direction   = "in"
+    ip_protocol = "inet"
+    protocol    = "TCP"
+
+    source = {
+      net = "any"
+    }
+
+    destination = {
+      net  = "192.168.5.2/32"
+      port = "9000"
+    }
+  }
+}
+
+# WAN → Allow Redis (6379) forwarded traffic
+resource "opnsense_firewall_filter" "WanAllowRedis" {
+  enabled     = true
+  sequence    = 6
+  description = "Allow WAN to Nginx Redis Proxy port 6379"
+
+  interface = {
+    interface = ["wan"]
+  }
+
+  filter = {
+    action      = "pass"
+    quick       = true
+    direction   = "in"
+    ip_protocol = "inet"
+    protocol    = "TCP"
+
+    source = {
+      net = "any"
+    }
+
+    destination = {
+      net  = "192.168.5.2/32"
+      port = "6379"
+    }
+  }
+}
+
 # ============================================
 # 방화벽 규칙 - LAN (Hardware Network)
 # ============================================
@@ -854,10 +910,38 @@ resource "opnsense_firewall_filter" "DmzToMongodb" {
   }
 }
 
+# DMZ → Redis HAProxy
+resource "opnsense_firewall_filter" "DmzToRedis" {
+  enabled     = true
+  sequence    = 60
+  description = "Allow DMZ to Redis HAProxy"
+
+  interface = {
+    interface = ["opt5"]
+  }
+
+  filter = {
+    action      = "pass"
+    quick       = true
+    direction   = "in"
+    ip_protocol = "inet"
+    protocol    = "TCP"
+
+    source = {
+      net = "192.168.5.0/24"
+    }
+
+    destination = {
+      net  = "192.168.2.32/32"
+      port = "6379"
+    }
+  }
+}
+
 # DMZ → Block remaining internal networks
 resource "opnsense_firewall_filter" "DmzBlockInternal" {
   enabled     = true
-  sequence    = 60
+  sequence    = 61
   description = "Block DMZ access to remaining internal networks"
 
   interface = {
@@ -884,7 +968,7 @@ resource "opnsense_firewall_filter" "DmzBlockInternal" {
 # DMZ → Allow Internet
 resource "opnsense_firewall_filter" "DmzToInternet" {
   enabled     = true
-  sequence    = 61
+  sequence    = 62
   description = "Allow DMZ to Internet"
 
   interface = {
@@ -911,7 +995,7 @@ resource "opnsense_firewall_filter" "DmzToInternet" {
 # DMZ IPv6 → Allow Internet
 resource "opnsense_firewall_filter" "DmzToInternetIpv6" {
   enabled     = true
-  sequence    = 62
+  sequence    = 63
   description = "Allow DMZ IPv6 to Internet"
 
   interface = {

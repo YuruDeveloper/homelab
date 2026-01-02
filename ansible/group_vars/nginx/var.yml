@@ -1,31 +1,41 @@
 services:
   - domain: opnsense.bytedev.duckdns.org
+    listen_port: 443
     ip: 192.168.0.1
     port: 80
   - domain: technitium0.bytedev.duckdns.org
+    listen_port: 443
     ip: 192.168.2.2
     port: 5380
   - domain: technitium1.bytedev.duckdns.org
+    listen_port: 443
     ip: 192.168.2.3
     port: 5380
   - domain: truenas.bytedev.duckdns.org
+    listen_port: 443
     ip: 192.168.2.10
     port: 80
   - domain: portainer.bytedev.duckdns.org
+    listen_port: 443
     ip: 192.168.4.2
     port: 9000
   - domain: gitea.bytedev.duckdns.org
+    listen_port: 443
     ip: 192.168.2.80
     port: 3000
   - domain: glance.bytedev.duckdns.org
+    listen_port: 443
     ip: 192.168.4.3
     port: 8080
   - domain: rustfs.bytedev.duckdns.org
+    listen_port: 443
     ip: 192.168.2.50
     port: 9001
   - domain: s3.bytedev.duckdns.org
+    listen_port: 9000
     ip: 192.168.2.50
     port: 9000
+
 httpsserviec:
     - domain: proxmox.bytedev.duckdns.org
       ip: 192.168.0.2
@@ -36,3 +46,8 @@ streams:
     listen_port: 27017
     ip: 192.168.2.31
     port: 27018
+  - domain: redis.bytedev.duckdns.org
+    listen_port: 6379
+    ip: 192.168.2.32
+    port: 6379
+

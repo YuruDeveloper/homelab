@@ -1,0 +1,16 @@
+protected-mode no
+port {{ sentinel_port }}
+daemonize no
+pidfile /var/run/redis-sentinel.pid
+loglevel notice
+logfile /var/log/redis/sentinel.log
+dir /var/lib/sentinel
+sentinel monitor {{ sentinel_prime_name }} {{ redis_initial_prime_ip }} {{ redis_port }} {{ sentinel_quorum }}
+sentinel down-after-milliseconds {{ sentinel_prime_name }} 30000
+acllog-max-len 128
+sentinel parallel-syncs {{ sentinel_prime_name }} 1
+sentinel failover-timeout {{ sentinel_prime_name }} 180000
+sentinel deny-scripts-reconfig yes
+SENTINEL resolve-hostnames no
+SENTINEL announce-hostnames no
+SENTINEL master-reboot-down-after-period {{ sentinel_prime_name }} 0

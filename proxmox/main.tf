@@ -178,6 +178,43 @@ module "mongodb1" {
   depends_on = [module.DebianTemplate]
 }
 
+module "haproxy2" {
+  source = "./services/haproxy"
+
+  CommonConfig   = local.CommonLxcConfig
+  TemplateFileId = local.Templates.Alpine
+  DiskSize = 1
+  VmId      = 800
+  IpAddress = "192.168.2.32/24"
+  Gateway   = local.Networks.internal.Gateway
+
+  depends_on = [module.AlpineTemplate]
+}
+
+module "redis0" {
+  source = "./services/redis"
+  CommonConfig   = local.CommonLxcConfig
+  TemplateFileId = local.Templates.Alpine
+  VmId = 810
+  IpAddress = "192.168.2.70/24"
+  Gateway   = local.Networks.internal.Gateway
+
+  depends_on = [module.AlpineTemplate]
+}
+
+
+
+module "redis1" {
+  source = "./services/redis"
+  CommonConfig   = local.CommonLxcConfig
+  TemplateFileId = local.Templates.Alpine
+  VmId = 811
+  IpAddress = "192.168.2.71/24"
+  Gateway   = local.Networks.internal.Gateway
+
+  depends_on = [module.AlpineTemplate]
+}
+
 module "docker" {
   source = "./services/docker"
 

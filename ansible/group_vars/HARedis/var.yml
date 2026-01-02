@@ -1,0 +1,16 @@
+redis_member_names:
+  - haproxy2
+  - redis0
+  - redis1
+
+redis_member_ips:
+  - 192.168.2.32
+  - 192.168.2.70
+  - 192.168.2.71
+
+redis_password: "{{ vault_redis_password }}"
+redis_initial_prime_ip: "192.168.2.70"  # db4 (redis0)
+redis_port: 6379
+sentinel_port: 26379
+sentinel_prime_name: "prime"
+sentinel_quorum: 2

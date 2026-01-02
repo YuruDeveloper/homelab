@@ -1,0 +1,27 @@
+- name: Install Need Package
+  become: true
+  hosts: HARedis
+  tasks:
+    - name: Install redis
+      community.general.apk:
+        name:
+          - redis
+        state: installed
+
+- name: Set Sentinel
+  become: true
+  hosts: HARedis
+  roles:
+    - redis_sentinel
+
+- name: Set redis
+  become: true
+  hosts: redis
+  roles:
+    - redis
+
+- name: Set ha proxy
+  become: true
+  hosts: proxy2
+  roles:
+    - haproxy2
