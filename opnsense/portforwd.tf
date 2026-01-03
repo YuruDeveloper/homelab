@@ -153,7 +153,7 @@ resource "opnsense_firewall_nat" "RedisForward" {
 }
 
 # Kafka (9092) → Nginx Reverse Proxy Kafka
-resource "opnsense_firewall_nat" "vForward" {
+resource "opnsense_firewall_nat" "KafkaForward" {
   enabled   = true
   interface = "wan"
   protocol  = "TCP"
