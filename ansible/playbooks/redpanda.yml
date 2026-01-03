@@ -1,0 +1,5 @@
+- name: Setup Redpanda
+  become: true
+  hosts: redpanda
+  roles:
+    - redpanda

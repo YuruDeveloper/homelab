@@ -11,6 +11,7 @@ locals {
   Templates = {
     Alpine = module.AlpineTemplate.TemplateFileId
     Debian = module.DebianTemplate.TemplateFileId
+    Debian13 = module.Debian13Template.TemplateFileId
   }
 
   Networks = {
@@ -40,6 +41,14 @@ module "DebianTemplate" {
   DatastoreId        = "local"
   DebianVersion = "12"
   DebianDetailVersion = "12.7-1"
+}
+
+module "Debian13Template" {
+  source = "./modules/debian-template"
+  ProxmoxNode        = var.proxmox_node
+  DatastoreId        = "local"
+  DebianVersion = "13"
+  DebianDetailVersion = "13.1-2"
 }
 
 module "AlpineVirtIso" {
@@ -252,4 +261,17 @@ module "gitea" {
   Gateway   = local.Networks.internal.Gateway
 
   depends_on = [module.AlpineTemplate]
+}
+
+module "redpanda" {
+  source = "./services/redpanda"
+  OsType         = "debian"
+  CommonConfig = local.CommonLxcConfig
+  TemplateFileId = local.Templates.Debian13
+
+  VmId = 1100
+  IpAddress = "192.168.2.90/24"
+  Gateway = local.Networks.internal.Gateway
+
+  depends_on = [module.Debian13Template]
 }

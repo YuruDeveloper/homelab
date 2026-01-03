@@ -151,3 +151,28 @@ resource "opnsense_firewall_nat" "RedisForward" {
   log         = false
   sequence    = 6
 }
+
+# Kafka (9092) → Nginx Reverse Proxy Kafka
+resource "opnsense_firewall_nat" "vForward" {
+  enabled   = true
+  interface = "wan"
+  protocol  = "TCP"
+
+  source = {
+    net = "any"
+  }
+
+  destination = {
+    net  = "wanip"
+    port = "9092"
+  }
+
+  target = {
+    ip   = "192.168.5.2"  # Nginx DMZ
+    port = "9092"
+  }
+
+  description = "Kafka external access via Nginx"
+  log         = false
+  sequence    = 7
+}

@@ -1,0 +1,38 @@
+- name: Instsall Need Package
+  ansible.builtin.apt:
+    name:
+      - curl
+
+- name: Redpanda APT 설정 스크립트 다운로드
+  ansible.builtin.get_url:
+    url: https://dl.redpanda.com/nzc4ZYQK3WRGd9sy/redpanda/cfg/setup/bash.deb.sh
+    dest: /tmp/redpanda_setup.sh
+    mode: '0755'
+
+- name: Redpanda APT 설정 스크립트 실행
+  ansible.builtin.command:
+    cmd: /tmp/redpanda_setup.sh
+  changed_when: false
+
+- name: Instasll Redpanda
+  ansible.builtin.apt:
+    name:
+      - redpanda
+    state: present
+
+- name: Install Redpanda Connect
+  ansible.builtin.command:
+    cmd: rpk connect install
+  changed_when: false
+
+- name: Start redpanda
+  ansible.builtin.systemd:
+    name: redpanda
+    state: restarted
+    enabled: true
+
+- name: Remove temp Package
+  ansible.builtin.apt:
+    name:
+      - curl
+    state: absent

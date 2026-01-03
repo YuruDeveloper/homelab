@@ -52,6 +52,7 @@ all:
           hosts:
             gitea0:
               ansible_host: 192.168.2.80
+
     debian:
       children:
         HAmongodb:
@@ -66,4 +67,8 @@ all:
                   ansible_host: 192.168.2.60
                 db3:  
                   ansible_host: 192.168.2.61
+        redpanda:
+          hosts:
+            redpanda0:
+              ansible_host: 192.168.2.90
               
