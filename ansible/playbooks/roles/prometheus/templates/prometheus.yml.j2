@@ -1,0 +1,109 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    cluster: 'homelab'
+    replica: 'prometheus0'
+
+scrape_configs:
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  - job_name: 'node-exporter'
+    static_configs:
+      - targets:
+        # DNS
+        - '192.168.2.2:9100'   # technitium0
+        - '192.168.2.3:9100'   # technitium1
+        # Storage
+        - '192.168.2.10:9100'  # truenas
+        # Docker
+        - '192.168.2.20:9100'  # docker0
+        # PostgreSQL HA
+        - '192.168.2.30:9100'  # haproxy0
+        - '192.168.2.40:9100'  # db0
+        - '192.168.2.41:9100'  # db1
+        # RustFS
+        - '192.168.2.50:9100'  # rustfs
+        # MongoDB HA
+        - '192.168.2.31:9100'  # haproxy1
+        - '192.168.2.60:9100'  # mongo0
+        - '192.168.2.61:9100'  # mongo1
+        # Redis HA
+        - '192.168.2.32:9100'  # haproxy2
+        - '192.168.2.70:9100'  # redis0
+        - '192.168.2.71:9100'  # redis1
+        # Git
+        - '192.168.2.80:9100'  # gitea
+        # Redpanda
+        - '192.168.2.90:9100'  # redpanda
+        # Observability
+        - '192.168.2.100:9100' # grafana
+        - '192.168.2.101:9100' # loki
+        - '192.168.2.102:9100' # prometheus
+        # Nginx (DMZ)
+        - '192.168.5.2:9100'   # nginx
+
+  - job_name: 'postgresql'
+    static_configs:
+      - targets:
+        - '192.168.2.40:9187'  # db0
+        - '192.168.2.41:9187'  # db1
+
+  - job_name: 'patroni'
+    static_configs:
+      - targets:
+        - '192.168.2.40:8008'  # db0
+        - '192.168.2.41:8008'  # db1
+
+  - job_name: 'etcd'
+    static_configs:
+      - targets:
+        - '192.168.2.30:2379'  # haproxy0
+        - '192.168.2.40:2379'  # db0
+        - '192.168.2.41:2379'  # db1
+
+  - job_name: 'mongodb'
+    static_configs:
+      - targets:
+        - '192.168.2.60:9216'  # mongo0
+        - '192.168.2.61:9216'  # mongo1
+
+  - job_name: 'redis'
+    static_configs:
+      - targets:
+        - '192.168.2.70:9121'  # redis0
+        - '192.168.2.71:9121'  # redis1
+
+  - job_name: 'haproxy'
+    static_configs:
+      - targets:
+        - '192.168.2.30:7000'  # haproxy0 (PostgreSQL)
+        - '192.168.2.31:8404'  # haproxy1 (MongoDB)
+        - '192.168.2.32:8404'  # haproxy2 (Redis)
+
+  - job_name: 'nginx'
+    static_configs:
+      - targets:
+        - '192.168.5.2:9113'   # nginx
+
+  - job_name: 'redpanda'
+    static_configs:
+      - targets:
+        - '192.168.2.90:9644'  # redpanda
+
+  - job_name: 'cadvisor'
+    static_configs:
+      - targets:
+        - '192.168.2.20:8080'  # docker0
+
+  - job_name: 'loki'
+    static_configs:
+      - targets:
+        - '192.168.2.101:3100'  # loki
+
+  - job_name: 'grafana'
+    static_configs:
+      - targets:
+        - '192.168.2.100:3000'  # grafana

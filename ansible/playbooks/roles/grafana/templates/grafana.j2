@@ -1,0 +1,16 @@
+#!/sbin/openrc-run
+
+supervisor=supervise-daemon
+
+name="Grafana"
+description="Metrics Dashboard and Graph Editor"
+
+command="/usr/bin/grafana"
+command_args="server $GRAFANA_OPTS"
+
+command_user=grafana:grafana
+
+depend() {
+        need net
+        after firewall
+}

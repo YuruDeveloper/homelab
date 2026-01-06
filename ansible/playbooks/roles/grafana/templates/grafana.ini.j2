@@ -1,0 +1,39 @@
+[server]
+http_addr = 0.0.0.0
+http_port = 3000
+domain = grafana.bytedev.duckdns.org
+root_url = https://grafana.bytedev.duckdns.org
+
+[database]
+type = postgres
+host = postgres.bytedev.duckdns.org:5432
+user = grafana
+password = {{ grafana_password }}
+ssl_mode: "require"
+database = grafana
+
+[security]
+admin_user = cecil
+admin_password = {{ grafana_password }}
+secret_key = SW2YcwTIb9zpOOhoPsMm
+
+[users]
+allow_sign_up = false
+
+[auth.anonymous]
+enabled = false
+
+[log]
+mode = console file
+level = info
+
+[log.console]
+level = info
+
+[log.file]
+level = info
+log_rotate = true
+max_lines = 1000000
+max_size_shift = 28
+daily_rotate = true
+max_days = 7

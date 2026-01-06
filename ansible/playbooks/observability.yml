@@ -1,0 +1,17 @@
+- name: Set grafana
+  become: true
+  hosts: grafana
+  roles:
+    - grafana
+
+- name: Set Prometheus
+  become: true
+  hosts: prometheus
+  roles:
+    - prometheus
+
+- name: Set loki
+  become: true
+  hosts: loki
+  roles:
+    - loki

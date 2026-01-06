@@ -1,0 +1,52 @@
+- name: Install Prometheus
+  community.general.apk:
+    name: prometheus
+    state: present
+- name: Create Prometheus NFS directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: "0777"
+  loop:
+    - /mnt/observability/prometheus
+
+- name: Create Prometheus local directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: prometheus
+    group: prometheus
+    mode: "0755"
+  loop:
+    - /etc/prometheus
+    - /var/log/prometheus
+
+- name: Configure Prometheus
+  ansible.builtin.template:
+    src: prometheus.yml.j2
+    dest: /etc/prometheus/prometheus.yml
+    owner: prometheus
+    group: prometheus
+    mode: "0644"
+
+- name: Configure Prometheus storage path
+  ansible.builtin.lineinfile:
+    path: /etc/conf.d/prometheus
+    regexp: '^prometheus_storage_path='
+    line: 'prometheus_storage_path="/mnt/observability/prometheus"'
+    create: true
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: Remove checkpath from init.d script
+  ansible.builtin.lineinfile:
+    path: /etc/init.d/prometheus
+    regexp: '^\s*checkpath -d "\$prometheus_storage_path"'
+    state: absent
+
+- name: Enable and start Prometheus
+  ansible.builtin.service:
+    name: prometheus
+    state: restarted
+    enabled: true

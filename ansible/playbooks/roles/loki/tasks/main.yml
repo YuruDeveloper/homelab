@@ -1,0 +1,33 @@
+- name: Install Loki
+  community.general.apk:
+    name:
+      - loki
+    state: present
+
+- name: Create Loki NFS directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: "0777"
+  loop:
+    - /mnt/observability/loki
+    - /mnt/observability/loki/chunks
+    - /mnt/observability/loki/rules
+    - /mnt/observability/loki/index
+    - /mnt/observability/loki/cache
+    - /mnt/observability/loki/compactor
+    - /mnt/observability/loki/ruler
+
+- name: Configure Loki
+  ansible.builtin.template:
+    src: loki-local-config.yaml.j2
+    dest: /etc/loki/loki-local-config.yaml
+    owner: loki
+    group: grafana
+    mode: "0644"
+
+- name: Enable and start Loki
+  ansible.builtin.service:
+    name: loki
+    state: restarted
+    enabled: true

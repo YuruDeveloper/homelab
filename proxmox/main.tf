@@ -275,3 +275,44 @@ module "redpanda" {
 
   depends_on = [module.Debian13Template]
 }
+
+module "grafana" {
+  source = "./services/grafana"
+
+  CommonConfig   = local.CommonLxcConfig
+  TemplateFileId = local.Templates.Alpine
+
+  VmId = 1200
+  IpAddress = "192.168.2.100/24"
+  Gateway = local.Networks.internal.Gateway
+  
+  depends_on = [module.AlpineTemplate]
+}
+
+
+module "loki" {
+  source = "./services/loki"
+
+  CommonConfig   = local.CommonLxcConfig
+  TemplateFileId = local.Templates.Alpine
+
+  VmId = 1201
+  IpAddress = "192.168.2.101/24"
+  Gateway = local.Networks.internal.Gateway
+  
+  depends_on = [module.AlpineTemplate]
+}
+
+
+module "prometheus" {
+  source = "./services/prometheus"
+
+  CommonConfig   = local.CommonLxcConfig
+  TemplateFileId = local.Templates.Alpine
+
+  VmId = 1202
+  IpAddress = "192.168.2.102/24"
+  Gateway = local.Networks.internal.Gateway
+  
+  depends_on = [module.AlpineTemplate]
+}

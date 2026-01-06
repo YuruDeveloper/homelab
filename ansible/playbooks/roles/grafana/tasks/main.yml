@@ -1,0 +1,64 @@
+- name: Install Grafana
+  community.general.apk:
+    name: grafana
+    state: present
+
+- name: Create Grafana NFS directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: "0777"
+  loop:
+    - /mnt/observability/grafana
+    - /mnt/observability/grafana/provisioning
+    - /mnt/observability/grafana/provisioning/alerting
+    - /mnt/observability/grafana/provisioning/dashboards
+    - /mnt/observability/grafana/provisioning/datasources
+    - /mnt/observability/grafana/provisioning/notifiers
+    - /mnt/observability/grafana/provisioning/plugins
+
+- name: Configure Grafana
+  ansible.builtin.template:
+    src: grafana.ini.j2
+    dest: /etc/grafana.ini
+    owner: grafana
+    group: grafana
+    mode: "0640"
+
+- name: Remove start_pre function from init.d
+  ansible.builtin.blockinfile:
+    path: /etc/init.d/grafana
+    marker: "# {mark} ANSIBLE MANAGED BLOCK - start_pre removal"
+    block: ""
+    insertafter: "^depend\\(\\)"
+    state: absent
+
+- name: Create init.d file
+  ansible.builtin.template:
+    src: grafana.j2
+    dest: /etc/init.d/grafana
+    mode: "0777"
+
+- name: Configure conf.d to match grafana.ini settings
+  ansible.builtin.lineinfile:
+    path: /etc/conf.d/grafana
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line | default(omit) }}"
+    state: "{{ item.state | default('present') }}"
+  loop:
+    - regexp: '^cfg:paths\.data='
+      line: 'cfg:paths.data=/mnt/observability/grafana'
+    - regexp: '^cfg:paths\.provisioning='
+      line: 'cfg:paths.provisioning=/etc/grafana/provisioning'
+    - regexp: '^cfg:paths\.plugins='
+      line: 'cfg:paths.plugins=/var/lib/grafana/plugins'
+    - regexp: '^cfg:log\.mode='
+      line: 'cfg:log.mode=console file"'
+    - regexp: '^cfg:server\.http_addr='
+      state: absent
+
+- name: Enable and start Grafana
+  ansible.builtin.service:
+    name: grafana
+    state: restarted
+    enabled: true

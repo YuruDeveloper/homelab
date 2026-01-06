@@ -30,3 +30,8 @@ nfs_mounts:
     mount_origin: "/mnt/Data/mongodb"
     mount_point: "/mnt/mongodb"
     description: "Mongo DB"
+
+  - name: "observability"
+    mount_origin: "/mnt/Data/observability"
+    mount_point: "/mnt/observability"
+    description: "Observability TechStack"

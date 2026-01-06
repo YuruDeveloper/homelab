@@ -52,7 +52,14 @@ all:
           hosts:
             gitea0:
               ansible_host: 192.168.2.80
-
+        observability:
+          hosts:
+            grafana:
+              ansible_host: 192.168.2.100
+            loki:
+              ansible_host: 192.168.2.101
+            prometheus:
+              ansible_host: 192.168.2.102
     debian:
       children:
         HAmongodb:
