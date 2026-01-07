@@ -1,12 +1,85 @@
----
-- name: Install prometheus-redis-exporter
+- name: Install Package
   community.general.apk:
     name:
-      - prometheus-redis-exporter
+      - tar
     state: present
+
+- name: Install prometheus-redis-exporter
+  ansible.builtin.get_url:
+    url: "{{ redis_exporter_download_url }}"
+    dest: /tmp/exporter.tar.gz
+    mode: "0755"
+
+- name: Ubtar file
+  ansible.builtin.unarchive:
+    src: /tmp/exporter.tar.gz
+    dest: /tmp/
+    mode: "0755"
+    remote_src: true
+
+- name: Move files
+  ansible.builtin.copy:
+    src: "/tmp/redis_exporter-v1.80.1.linux-amd64/redis_exporter"
+    dest: /usr/local/bin/
+    mode: "755"
+    remote_src: true
+
+- name: Make redis_exporter group
+  ansible.builtin.group:
+    name: redis_exporter
+    state: present
+    system: true
+
+- name: Make redis_exporter user
+  ansible.builtin.user:
+    name: redis_exporter
+    group: redis_exporter
+    system: true
+    shell: /sbin/nologin
+    home: /var/lib/redis_exporter
+    create_home: true
+    state: present
+
+- name: Make redis_exporter folder
+  ansible.builtin.file:
+    path: /var/lib/redis_exporter
+    state: directory
+    owner: redis_exporter
+    group: redis_exporter
+    mode: "755"
+
+- name: Make redis_exporter folder
+  ansible.builtin.file:
+    path: /etc/redis_exporter
+    state: directory
+    owner: redis_exporter
+    group: redis_exporter
+    mode: "755"
+
+- name: Make system file
+  ansible.builtin.template:
+    src: redis_exporter.j2
+    dest: /etc/init.d/redis_exporter
+    mode: "0755"
+
+- name: Remove tempFile
+  ansible.builtin.file:
+    path: "/tmp/redis_exporter-v1.80.1.linux-amd64"
+    state: absent
+
+- name: Remove tempFile
+  ansible.builtin.file:
+    path: "/tmp/exporter.tar.gz"
+    state: absent
+
+- name: Install Package
+  community.general.apk:
+    name:
+      - tar
+    state: absent
 
 - name: Enable and start redis-exporter service
   ansible.builtin.service:
-    name: prometheus-redis-exporter
+    name: redis_exporter
     enabled: true
     state: restarted

@@ -1,0 +1,20 @@
+#!/sbin/openrc-run
+
+name="redis_exporter"
+description="redis_exporter"
+
+command="/usr/local/bin/redis_exporter"
+command_args="-redis.addr localhost:6379 --redis.password {{ redis_password }} -redis.user default"
+command_user="redis_exporter:redis_exporter"
+command_background="yes"
+pidfile="/run/${RC_SVCNAME}.pid"
+
+depend() {
+    need net
+    after firewall
+}
+
+start_pre() {
+    checkpath --directory --owner redis_exporter:redis_exporter --mode 0755 /var/lib/redis_exporter
+    checkpath --directory --owner redis_exporter:redis_exporter --mode 0755 /var/log/redis_exporter
+}
