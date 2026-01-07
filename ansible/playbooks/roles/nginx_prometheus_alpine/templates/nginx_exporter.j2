@@ -1,0 +1,20 @@
+#!/sbin/openrc-run
+
+name="nginx_exporter"
+description="nginx_exporter"
+
+command="/usr/local/bin/nginx-prometheus-exporter"
+command_args="--nginx.scrape-uri=http://127.0.0.1:8080/stub_status"
+command_user="nginx_exporter:nginx_exporter"
+command_background="yes"
+pidfile="/run/${RC_SVCNAME}.pid"
+
+depend() {
+    need net
+    after firewall
+}
+
+start_pre() {
+    checkpath --directory --owner nginx_exporter:nginx_exporter --mode 0755 /var/lib/nginx_exporter
+    checkpath --directory --owner nginx_exporter:nginx_exporter --mode 0755 /var/log/nginx_exporter
+}

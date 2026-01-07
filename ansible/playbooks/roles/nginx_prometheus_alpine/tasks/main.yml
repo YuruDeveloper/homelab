@@ -1,12 +1,100 @@
----
-- name: Install prometheus-nginx-exporter
+- name: Install Package
   community.general.apk:
     name:
-      - prometheus-nginx-exporter
+      - tar
     state: present
+
+- name: Install nginx-prometheus-exporter
+  ansible.builtin.get_url:
+    url: "https://github.com/nginx/nginx-prometheus-exporter/releases/download/v{{ version }}/nginx-prometheus-exporter_{{ version }}_linux_amd64.tar.gz"
+    dest: /tmp/nginx_exporter.tar.gz
+    mode: "0755"
+
+- name: Ubtar file
+  ansible.builtin.unarchive:
+    src: /tmp/nginx_exporter.tar.gz
+    dest: /tmp/
+    mode: "0755"
+    remote_src: true
+
+- name: Move files
+  ansible.builtin.copy:
+    src: "/tmp/nginx-prometheus-exporter"
+    dest: /usr/local/bin/
+    mode: "755"
+    remote_src: true
+
+- name: Make nginx_exporter group
+  ansible.builtin.group:
+    name: nginx_exporter
+    state: present
+    system: true
+
+- name: Make nginx_exporter user
+  ansible.builtin.user:
+    name: nginx_exporter
+    group: nginx_exporter
+    system: true
+    shell: /sbin/nologin
+    home: /var/lib/nginx_exporter
+    create_home: true
+    state: present
+
+- name: Make nginx_exporter folder
+  ansible.builtin.file:
+    path: /var/lib/nginx_exporter
+    state: directory
+    owner: nginx_exporter
+    group: nginx_exporter
+    mode: "755"
+
+- name: Make nginx_exporter folder
+  ansible.builtin.file:
+    path: /etc/nginx_exporter
+    state: directory
+    owner: nginx_exporter
+    group: nginx_exporter
+    mode: "755"
+
+- name: Make system file
+  ansible.builtin.template:
+    src: nginx_exporter.j2
+    dest: /etc/init.d/nginx_exporter
+    mode: "0755"
+
+- name: Remove tempFile
+  ansible.builtin.file:
+    path: "/tmp/completions"
+    state: absent
+
+- name: Remove tempFile
+  ansible.builtin.file:
+    path: "/tmp/manpages"
+    state: absent
+
+- name: Remove tempFile
+  ansible.builtin.file:
+    path: "/tmp/README.md"
+    state: absent
+
+- name: Remove tempFile
+  ansible.builtin.file:
+    path: "/tmp/LICENSE"
+    state: absent
+
+- name: Remove tempFile
+  ansible.builtin.file:
+    path: "/tmp/nginx_exporter.tar.gz"
+    state: absent
+
+- name: Remove Temp Package
+  community.general.apk:
+    name:
+      - tar
+    state: absent
 
 - name: Enable and start nginx-exporter service
   ansible.builtin.service:
-    name: prometheus-nginx-exporter
+    name: nginx_exporter
     enabled: true
     state: restarted
