@@ -1,21 +1,22 @@
 [server]
 http_addr = 0.0.0.0
-http_port = 3000
-domain = grafana.bytedev.duckdns.org
+http_port = 5000
 root_url = https://grafana.bytedev.duckdns.org
+serve_from_sub_path = false
+
 
 [database]
 type = postgres
 host = postgres.bytedev.duckdns.org:5432
 user = grafana
 password = {{ grafana_password }}
-ssl_mode: "require"
+ssl_mode = require
 database = grafana
 
 [security]
 admin_user = cecil
 admin_password = {{ grafana_password }}
-secret_key = SW2YcwTIb9zpOOhoPsMm
+secret_key = {{ grafana_secret_key }}
 
 [users]
 allow_sign_up = false

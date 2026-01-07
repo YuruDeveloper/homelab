@@ -419,6 +419,7 @@
         }
       ],
       "title": "Active Connections",
+      "description": "Number of active connections to each database",
       "type": "timeseries"
     },
     {
@@ -603,12 +604,13 @@
             "type": "prometheus",
             "uid": "Prometheus"
           },
-          "expr": "pg_replication_lag{application_name=~\".*\"}",
+          "expr": "pg_stat_replication_pg_wal_lsn_diff{application_name=~\".*\"} or pg_replication_lag{application_name=~\".*\"}",
           "legendFormat": "{{instance}} - {{application_name}}",
           "refId": "A"
         }
       ],
       "title": "Replication Lag (Bytes)",
+      "description": "Replication lag in bytes between primary and replicas. Alert if > 100MB",
       "type": "timeseries"
     },
     {
@@ -789,6 +791,7 @@
         }
       ],
       "title": "Cache Hit Ratio",
+      "description": "Percentage of blocks read from shared buffer cache vs disk. Should be > 0.95 (95%)",
       "type": "timeseries"
     },
     {

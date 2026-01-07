@@ -607,6 +607,7 @@
         }
       ],
       "title": "Memory Usage",
+      "description": "Redis memory usage. Used should stay below Max limit",
       "type": "timeseries"
     },
     {
@@ -698,6 +699,7 @@
         }
       ],
       "title": "Hit Rate",
+      "description": "Cache hit rate (hits / (hits + misses)). Should be > 0.9 (90%)",
       "type": "timeseries"
     },
     {
@@ -872,12 +874,13 @@
             "type": "prometheus",
             "uid": "Prometheus"
           },
-          "expr": "redis_master_repl_offset - on(instance,job,alias) group_right redis_slave_repl_offset",
-          "legendFormat": "{{instance}}",
+          "expr": "redis_master_repl_offset{instance=~\"192.168.2.70:.*\"} - ignoring(master_host,master_port) group_right redis_slave_repl_offset",
+          "legendFormat": "{{master_host}}:{{master_port}} -> {{instance}}",
           "refId": "A"
         }
       ],
       "title": "Replication Lag (Bytes)",
+      "description": "Replication lag in bytes between master and replica. Should be close to 0",
       "type": "timeseries"
     },
     {

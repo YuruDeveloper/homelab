@@ -97,6 +97,12 @@
     dest: /etc/nginx/http.d/default.conf
     mode: "755"
 
+- name: Make stub_status file
+  ansible.builtin.template:
+    src: stub_status.j2
+    dest: /etc/nginx/http.d/stub_status.conf
+    mode: "755"
+
 - name: Make internal file
   ansible.builtin.template:
     src: internal.j2

@@ -39,6 +39,10 @@ services:
     listen_port: 443
     ip: 192.168.2.90
     port: 8082
+  - domain: grafana.bytedev.duckdns.org
+    listen_port: 443
+    ip: 192.168.2.100
+    port: 5000
 
 httpsserviec:
     - domain: proxmox.bytedev.duckdns.org
