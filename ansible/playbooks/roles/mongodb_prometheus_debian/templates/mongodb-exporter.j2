@@ -1,6 +1,22 @@
-# MongoDB Exporter Configuration
-# Systemd service configuration file
+[Unit]
+Description=Prometheus MongoDB Exporter
+After=network.target
 
-# MongoDB connection URI
-# Format: mongodb://username:password@hostname:port
-ARGS="--mongodb.uri=mongodb://{{ mongodb_admin_user }}:{{  pbm_password }}@localhost:{{ mongodb_port }}"
+[Service]
+Type=simple
+User=mongodb_exporter
+Group=mongodb_exporter
+
+ExecStartPre=/bin/mkdir -p /var/log/mongodb_exporter
+ExecStartPre=/bin/chown  mongodb_exporter:mongodb_exporter /var/log/mongodb_exporter
+
+ExecStart=/usr/bin/mongodb_exporter --mongodb.uri=mongodb://{{ mongodb_admin_user }}:{{ mongodb_admin_password }}@localhost:{{ mongodb_port }} --mongodb.direct-connect --collect-all
+
+Restart=always
+RestartSec=5
+
+StandardOutput=file:/var/log/mongodb_exporter/mongodb-exporter.log
+StandardError=file:/var/log/mongodb_exporter/mongodb-exporter-error.log
+
+[Install]
+WantedBy=multi-user.target

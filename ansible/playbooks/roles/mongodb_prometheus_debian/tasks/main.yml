@@ -1,21 +1,36 @@
----
-- name: Install prometheus-mongodb-exporter
+- name: Download mongodb_exporter
+  ansible.builtin.get_url:
+    url: https://github.com/percona/mongodb_exporter/releases/download/v{{ exporter_version }}/mongodb_exporter-{{ exporter_version }}.linux-64-bit.deb
+    dest: /tmp/exporter.deb
+    mode: "0755"
+
+- name: Install mongodb_exporter
   ansible.builtin.apt:
-    name:
-      - prometheus-mongodb-exporter
+    deb: /tmp/exporter.deb
     state: present
 
-- name: Configure mongodb-exporter environment
+- name: Make systemFile
   ansible.builtin.template:
     src: mongodb-exporter.j2
-    dest: /etc/default/prometheus-mongodb-exporter
-    mode: "0600"
+    dest: /etc/systemd/system/mongodb_exporter.service
+    mode: "0644"
     owner: root
     group: root
 
-- name: Enable and start mongodb-exporter service
+- name: Make mongodb_exporter folder
+  ansible.builtin.file:
+    path: /var/log/mongodb_exporter
+    state: directory
+    owner: mongodb_exporter
+    group: mongodb_exporter
+    mode: "755"
+
+- name: Reload daemon
   ansible.builtin.systemd:
-    name: prometheus-mongodb-exporter
+    daemon_reload: true
+
+- name: Enable and start mongodb_exporter service
+  ansible.builtin.systemd:
+    name: mongodb_exporter
     enabled: true
     state: restarted
-    daemon_reload: true
