@@ -1,0 +1,44 @@
+- name: Deploy Observability Agents to Alpine Nodes (except Loki)
+  hosts: alpine:!loki
+  become: true
+  roles:
+    - node_prometheus_alpine
+    - vector_alpine
+
+- name: Deploy Vector Aggregator to Loki
+  hosts: loki
+  become: true
+  roles:
+    - node_prometheus_alpine
+    - vector_loki_aggregator
+
+- name: Deploy Observability Agents to Debian Nodes
+  hosts: debian
+  become: true
+  roles:
+    - node_prometheus_debian
+    - vector_debian
+
+- name: Deploy PostgreSQL Exporter
+  hosts: postgresql
+  become: true
+  roles:
+    - postgres_prometheus_alpine
+
+- name: Deploy MongoDB Exporter
+  hosts: mongodb
+  become: true
+  roles:
+    - mongodb_prometheus_debian
+
+- name: Deploy Redis Exporter
+  hosts: redis
+  become: true
+  roles:
+    - redis_prometheus_alpine
+
+- name: Deploy Nginx Exporter
+  hosts: nginx
+  become: true
+  roles:
+    - nginx_prometheus_alpine

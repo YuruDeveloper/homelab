@@ -68,7 +68,7 @@ backend redis-prime
 {% endfor %}
 
 #---------------------------------------------------------------------
-# HAProxy Statistics Page
+# HAProxy Statistics and Prometheus Metrics
 #---------------------------------------------------------------------
 listen stats
     bind *:8404
@@ -78,3 +78,4 @@ listen stats
     stats refresh 10s
     stats show-legends
     stats show-desc Redis HA Cluster (Prime Auto-Detection)
+    http-request use-service prometheus-exporter if { path /metrics }

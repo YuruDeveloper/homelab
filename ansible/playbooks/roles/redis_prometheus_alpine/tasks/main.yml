@@ -1,0 +1,12 @@
+---
+- name: Install prometheus-redis-exporter
+  community.general.apk:
+    name:
+      - prometheus-redis-exporter
+    state: present
+
+- name: Enable and start redis-exporter service
+  ansible.builtin.service:
+    name: prometheus-redis-exporter
+    enabled: true
+    state: restarted

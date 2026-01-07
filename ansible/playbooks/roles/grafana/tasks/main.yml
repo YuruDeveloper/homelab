@@ -16,6 +16,7 @@
     - /mnt/observability/grafana/provisioning/datasources
     - /mnt/observability/grafana/provisioning/notifiers
     - /mnt/observability/grafana/provisioning/plugins
+    - /mnt/observability/grafana/dashboards
 
 - name: Configure Grafana
   ansible.builtin.template:
@@ -49,13 +50,40 @@
     - regexp: '^cfg:paths\.data='
       line: 'cfg:paths.data=/mnt/observability/grafana'
     - regexp: '^cfg:paths\.provisioning='
-      line: 'cfg:paths.provisioning=/etc/grafana/provisioning'
+      line: 'cfg:paths.provisioning=/mnt/observability/grafana/provisioning'
     - regexp: '^cfg:paths\.plugins='
       line: 'cfg:paths.plugins=/var/lib/grafana/plugins'
     - regexp: '^cfg:log\.mode='
       line: 'cfg:log.mode=console file"'
     - regexp: '^cfg:server\.http_addr='
       state: absent
+
+- name: Deploy datasource provisioning
+  ansible.builtin.template:
+    src: provisioning/datasources/datasources.yml.j2
+    dest: /mnt/observability/grafana/provisioning/datasources/datasources.yml
+    mode: "0777"
+
+- name: Deploy dashboard provisioning
+  ansible.builtin.template:
+    src: provisioning/dashboards/dashboards.yml.j2
+    dest: /mnt/observability/grafana/provisioning/dashboards/dashboards.yml
+    mode: "0777"
+
+- name: Deploy dashboards
+  ansible.builtin.template:
+    src: "{{ item }}"
+    dest: "/mnt/observability/grafana/dashboards/{{ item | basename | regex_replace('\\.j2$', '') }}"
+    mode: "0777"
+  loop:
+    - dashboards/homelab-overview.json.j2
+    - dashboards/node-exporter-full.json.j2
+    - dashboards/postgresql-ha.json.j2
+    - dashboards/mongodb-ha.json.j2
+    - dashboards/redis-ha.json.j2
+    - dashboards/haproxy-stats.json.j2
+    - dashboards/nginx-metrics.json.j2
+    - dashboards/loki-logs.json.j2
 
 - name: Enable and start Grafana
   ansible.builtin.service:

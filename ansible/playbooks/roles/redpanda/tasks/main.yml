@@ -25,6 +25,14 @@
     cmd: rpk connect install
   changed_when: false
 
+- name: Deploy Redpanda configuration
+  ansible.builtin.template:
+    src: redpanda.yaml.j2
+    dest: /etc/redpanda/redpanda.yaml
+    owner: redpanda
+    group: redpanda
+    mode: '0644'
+
 - name: Start redpanda
   ansible.builtin.systemd:
     name: redpanda

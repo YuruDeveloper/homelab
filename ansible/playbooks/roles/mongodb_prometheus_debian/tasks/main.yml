@@ -1,0 +1,21 @@
+---
+- name: Install prometheus-mongodb-exporter
+  ansible.builtin.apt:
+    name:
+      - prometheus-mongodb-exporter
+    state: present
+
+- name: Configure mongodb-exporter environment
+  ansible.builtin.template:
+    src: mongodb-exporter.j2
+    dest: /etc/default/prometheus-mongodb-exporter
+    mode: "0600"
+    owner: root
+    group: root
+
+- name: Enable and start mongodb-exporter service
+  ansible.builtin.systemd:
+    name: prometheus-mongodb-exporter
+    enabled: true
+    state: restarted
+    daemon_reload: true

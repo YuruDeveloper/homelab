@@ -1,0 +1,89 @@
+- name: Install Need Package
+  community.general.apk:
+    name:
+      - tar
+    state: present
+
+- name: Get Vector file
+  ansible.builtin.get_url:
+    url: https://packages.timber.io/vector/latest/vector-latest-x86_64-unknown-linux-musl.tar.gz
+    dest: /tmp/vector.tar.gz
+    mode: "0755"
+
+- name: Untar file
+  ansible.builtin.unarchive:
+    src: /tmp/vector.tar.gz
+    dest: /tmp/
+    mode: "0755"
+    remote_src: true
+
+- name: Move files
+  ansible.builtin.copy:
+    src: "/tmp/vector-x86_64-unknown-linux-musl/bin/vector"
+    dest: /usr/local/bin/
+    mode: "755"
+    remote_src: true
+
+
+- name: Make vector group
+  ansible.builtin.group:
+    name: vector
+    state: present
+    system: true
+
+- name: Make vector user
+  ansible.builtin.user:
+    name: vector
+    group: vector
+    system: true
+    shell: /sbin/nologin
+    home: /var/lib/vector
+    create_home: true
+    state: present
+
+- name: Make vector folder
+  ansible.builtin.file:
+    path: /var/lib/vector
+    state: directory
+    owner: vector
+    group: vector
+    mode: "755"
+
+- name: Make system file
+  ansible.builtin.template:
+    src: vector.j2
+    dest: /etc/init.d/vector
+    mode: "0755"
+
+- name: Make vector folder
+  ansible.builtin.file:
+    path: /etc/vector
+    state: directory
+    owner: vector
+    group: vector
+    mode: "755"
+
+- name: Make ConfigFile
+  ansible.builtin.template:
+    src: vector-aggregator.yaml.j2
+    dest: /etc/vector/vector.yaml
+    owner: vector
+    group: vector
+    mode: "0755"
+
+- name: Remove tempFile
+  ansible.builtin.file:
+    path: /tmp/vector-x86_64-unknown-linux-musl
+    state: absent
+
+- name: Remove Temp Pakage
+  community.general.apk:
+    name:
+      - tar
+    state: absent
+
+- name: Start vector
+  ansible.builtin.service:
+    name: vector
+    state: restarted
+    enabled: true

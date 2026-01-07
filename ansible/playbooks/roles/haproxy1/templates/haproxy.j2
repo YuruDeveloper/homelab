@@ -47,12 +47,25 @@ backend db
     option tcp-check
     timeout connect 5s
     timeout server 30s
-    
+
     tcp-check send-binary 3d00000001000000ffffffffd407000000000000746573742e24636d640000000000ffffffff170000000169734d617374657200000000000000f03f00
     tcp-check expect binary 0869736d61737465720001
-    
+
     {% for i in range(replica_set_members | length) %}
     {% if i != arbiter_index %}
     server {{ replica_set_names[i] }} {{ replica_set_members[i] }}:{{ mongodb_port }} check
     {% endif %}
     {% endfor %}
+
+#---------------------------------------------------------------------
+# HAProxy Statistics and Prometheus Metrics
+#---------------------------------------------------------------------
+listen stats
+    bind *:8404
+    mode http
+    stats enable
+    stats uri /
+    stats refresh 10s
+    stats show-legends
+    stats show-desc MongoDB HA Cluster
+    http-request use-service prometheus-exporter if { path /metrics }

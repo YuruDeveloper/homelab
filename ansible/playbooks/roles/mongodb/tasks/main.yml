@@ -17,7 +17,7 @@
     path: /etc/mongod.conf
     regexp: '^(\s*)bindIp:\s*127\.0\.0\.1'
     line: '\1bindIp: 0.0.0.0'
-    backrefs: yes
+    backrefs: true
     state: present
 
 - name: Setup mongod

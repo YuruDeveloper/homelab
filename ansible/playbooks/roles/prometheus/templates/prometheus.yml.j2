@@ -67,8 +67,8 @@ scrape_configs:
   - job_name: 'mongodb'
     static_configs:
       - targets:
-        - '192.168.2.60:9216'  # mongo0
-        - '192.168.2.61:9216'  # mongo1
+        - '192.168.2.60:9001'  # mongo0
+        - '192.168.2.61:9001'  # mongo1
 
   - job_name: 'redis'
     static_configs:
@@ -79,7 +79,7 @@ scrape_configs:
   - job_name: 'haproxy'
     static_configs:
       - targets:
-        - '192.168.2.30:7000'  # haproxy0 (PostgreSQL)
+        - '192.168.2.30:8404'  # haproxy0 (PostgreSQL)
         - '192.168.2.31:8404'  # haproxy1 (MongoDB)
         - '192.168.2.32:8404'  # haproxy2 (Redis)
 

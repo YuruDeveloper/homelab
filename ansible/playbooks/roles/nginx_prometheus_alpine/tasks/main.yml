@@ -1,0 +1,12 @@
+---
+- name: Install prometheus-nginx-exporter
+  community.general.apk:
+    name:
+      - prometheus-nginx-exporter
+    state: present
+
+- name: Enable and start nginx-exporter service
+  ansible.builtin.service:
+    name: prometheus-nginx-exporter
+    enabled: true
+    state: restarted

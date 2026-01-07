@@ -1,0 +1,20 @@
+---
+- name: Install prometheus-postgres-exporter
+  community.general.apk:
+    name:
+      - prometheus-postgres-exporter
+    state: present
+
+- name: Configure postgres-exporter environment
+  ansible.builtin.template:
+    src: postgres-exporter.j2
+    dest: /etc/conf.d/postgres-exporter
+    mode: "0600"
+    owner: root
+    group: root
+
+- name: Enable and start postgres-exporter service
+  ansible.builtin.service:
+    name: postgres-exporter
+    enabled: true
+    state: restarted

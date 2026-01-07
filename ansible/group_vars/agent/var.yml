@@ -1,0 +1,4 @@
+redpanda_host: "kafka.bytedev.duckdns.org"    
+redpanda_port: "9092"           
+redpanda_topic: "logs"            
+vlan_id: "100"                   

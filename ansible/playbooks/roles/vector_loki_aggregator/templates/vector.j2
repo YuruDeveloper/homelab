@@ -1,0 +1,20 @@
+#!/sbin/openrc-run
+
+name="vector"
+description="Vector - A lightweight, ultra-fast tool for building observability pipelines"
+
+command="/usr/local/bin/vector"
+command_args="--config /etc/vector/vector.yaml"
+command_user="vector:vector"
+command_background="yes"
+pidfile="/run/${RC_SVCNAME}.pid"
+
+depend() {
+    need net
+    after firewall
+}
+
+start_pre() {
+    checkpath --directory --owner vector:vector --mode 0755 /var/lib/vector
+    checkpath --directory --owner vector:vector --mode 0755 /var/log/vector
+}

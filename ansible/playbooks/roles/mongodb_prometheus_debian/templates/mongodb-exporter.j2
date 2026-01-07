@@ -1,0 +1,6 @@
+# MongoDB Exporter Configuration
+# Systemd service configuration file
+
+# MongoDB connection URI
+# Format: mongodb://username:password@hostname:port
+ARGS="--mongodb.uri=mongodb://{{ mongodb_admin_user }}:{{  pbm_password }}@localhost:{{ mongodb_port }}"

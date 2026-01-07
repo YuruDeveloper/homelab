@@ -1,0 +1,12 @@
+---
+- name: Install prometheus-node package
+  community.general.apk:
+    name:
+      - prometheus-node-exporter
+    state: present
+
+- name: Enable and start node service
+  ansible.builtin.service:
+    name: node-exporter
+    enabled: true
+    state: restarted
