@@ -84,7 +84,8 @@
     - dashboards/haproxy-stats.json.j2
     - dashboards/nginx-metrics.json.j2
     - dashboards/loki-logs.json.j2
-
+    - dashboards/zot-metrics.json.j2
+    - dashboards/truenas_scale.json.j2
 - name: Enable and start Grafana
   ansible.builtin.service:
     name: grafana

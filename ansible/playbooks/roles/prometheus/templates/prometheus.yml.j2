@@ -16,8 +16,6 @@ scrape_configs:
         # DNS
         - '192.168.2.2:9100'   # technitium0
         - '192.168.2.3:9100'   # technitium1
-        # Storage
-        - '192.168.2.10:9100'  # truenas
         # Docker
         - '192.168.2.20:9100'  # docker0
         # PostgreSQL HA
@@ -112,3 +110,7 @@ scrape_configs:
     static_configs:
       - targets:
         - '192.168.2.81:7000'  # grafana
+  - job_name: 'truenas'
+    static_configs:
+      - targets:
+        - '192.168.2.81:9108'  # grafana
