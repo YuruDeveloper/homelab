@@ -34,8 +34,9 @@ scrape_configs:
         - '192.168.2.32:9100'  # haproxy2
         - '192.168.2.70:9100'  # redis0
         - '192.168.2.71:9100'  # redis1
-        # Git
+        # GitOps
         - '192.168.2.80:9100'  # gitea
+        - '192.168.2.81:9100'  # zot
         # Redpanda
         - '192.168.2.90:9100'  # redpanda
         # Observability
@@ -107,3 +108,7 @@ scrape_configs:
     static_configs:
       - targets:
         - '192.168.2.100:3000'  # grafana
+  - job_name: 'zot'
+    static_configs:
+      - targets:
+        - '192.168.2.81:7000'  # grafana
