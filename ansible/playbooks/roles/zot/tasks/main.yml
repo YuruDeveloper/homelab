@@ -1,0 +1,70 @@
+- name: Install Need Package
+  community.general.apk:
+    name:
+      - gcompat
+    state: present
+
+- name: Install Zot
+  ansible.builtin.get_url:
+    url: "{{ zot_install_url }}"
+    dest: "/tmp/zot"
+    mode: "0755"
+
+- name: Move files
+  ansible.builtin.copy:
+    src: "/tmp/zot"
+    dest: /usr/local/bin/
+    mode: "755"
+    remote_src: true
+
+- name: Make zot group
+  ansible.builtin.group:
+    name: zot
+    state: present
+    system: true
+
+- name: Make zot user
+  ansible.builtin.user:
+    name: zot
+    group: zot
+    system: true
+    shell: /sbin/nologin
+    home: /var/lib/zot
+    create_home: true
+    state: present
+
+- name: Make zot folder
+  ansible.builtin.file:
+    path: /etc/zot
+    state: directory
+    owner: zot
+    group: zot
+    mode: "755"
+
+- name: Make zot folder
+  ansible.builtin.file:
+    path: /var/lib/zot
+    state: directory
+    owner: zot
+    group: zot
+    mode: "755"
+
+- name: Add system file
+  ansible.builtin.template:
+    src: zot.j2
+    dest: /etc/init.d/zot
+    mode: "755"
+
+- name: Make config file
+  ansible.builtin.template:
+    src: config.json.j2
+    dest: /etc/zot/config.json
+    owner: zot
+    group: zot
+    mode: "755"
+
+- name: Start zot
+  ansible.builtin.service:
+    name: zot
+    state: restarted
+    enabled: true

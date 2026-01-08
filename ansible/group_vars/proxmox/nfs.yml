@@ -35,3 +35,8 @@ nfs_mounts:
     mount_origin: "/mnt/Data/observability"
     mount_point: "/mnt/observability"
     description: "Observability TechStack"
+
+  - name: "zot"
+    mount_origin: "/mnt/Data/zot"
+    mount_point: "/mnt/zot"
+    description: "zot"

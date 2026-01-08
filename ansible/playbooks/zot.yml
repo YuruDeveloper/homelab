@@ -1,0 +1,5 @@
+- name: Setup Zot
+  become: true
+  hosts: zot
+  roles:
+    - zot

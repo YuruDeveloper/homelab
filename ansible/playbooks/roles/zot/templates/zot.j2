@@ -1,0 +1,39 @@
+#!/sbin/openrc-run
+
+name="zot"
+description="zot"
+
+if [ -f /etc/conf.d/zot]; then
+    . /etc/conf.d/zot
+fi
+
+: ${ZOT_USER:=zot}
+: ${ZOT_GROUP:=zot}
+: ${ZOT_WORKDIR:=/var/lib/zot}
+
+command="/usr/local/bin/zot"
+command_args="serve /etc/zot/config.json"
+command_user="${ZOT_USER}:${ZOT_GROUP}"
+command_background=true
+pidfile="/run/${RC_SVCNAME}.pid"
+directory="${ZOT_WORKDIR}"
+
+# 자동 재시작 설정
+respawn_delay=10
+respawn_max=0
+
+output_log="/var/log/zot/zot.log"
+error_log="/var/log/zot/zot-error.log"
+
+depend() {
+    need net
+    after firewall
+}
+
+start_pre() {
+    # 작업 디렉토리 생성 및 권한 설정
+    checkpath --directory --mode 0755 --owner ${ZOT_USER}:${ZOT_GROUP} "${ZOT_WORKDIR}"
+    checkpath --directory --mode 0755 --owner ${ZOT_USER}:${ZOT_GROUP} "/var/log/zot"
+    # 파일 디스크립터 제한 설정
+    ulimit -n 40000
+}

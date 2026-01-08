@@ -263,6 +263,45 @@ module "gitea" {
   depends_on = [module.AlpineTemplate]
 }
 
+module "zot" {
+  source = "./services/zot"
+
+  CommonConfig   = local.CommonLxcConfig
+  TemplateFileId = local.Templates.Alpine
+
+  VmId      = 1010
+  IpAddress = "192.168.2.81/24"
+  Gateway   = local.Networks.internal.Gateway
+
+  depends_on = [module.AlpineTemplate]
+}
+
+module "jenkins" {
+  source = "./services/jenkins"
+  
+  CommonConfig   = local.CommonLxcConfig
+  TemplateFileId = local.Templates.Debian13
+
+  VmId      = 1020
+  IpAddress = "192.168.2.82/24"
+  Gateway   = local.Networks.internal.Gateway
+
+  depends_on = [module.Debian13Template]
+}
+
+module "argocd" {
+  source = "./services/argocd"
+
+  CommonConfig = local.CommonLxcConfig
+  
+  VmId            = 1030
+  IpAddress       = "192.168.2.83/24"
+  Gateway         = local.Networks.internal.Gateway
+  AlpineVirtIsoId = module.AlpineVirtIso.FileId
+
+  depends_on = [module.AlpineVirtIso]
+}
+
 module "redpanda" {
   source = "./services/redpanda"
   OsType         = "debian"
