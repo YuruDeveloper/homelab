@@ -55,12 +55,62 @@ sources:
       strategy: device_and_inode
 
 
+  # DNS (Technitium) Logs (if exists)
+  dns_logs:
+    type: file
+    include:
+      - /var/log/dns/*.log
+    read_from: beginning
+    fingerprint:
+      strategy: device_and_inode
+
+
+  # Zot Logs (if exists)
+  zot_logs:
+    type: file
+    include:
+      - /var/log/zot/*.log
+    read_from: beginning
+    fingerprint:
+      strategy: device_and_inode
+
+
+  # RustFS Logs (if exists)
+  rustfs_logs:
+    type: file
+    include:
+      - /var/log/rustfs/*.log
+    read_from: beginning
+    fingerprint:
+      strategy: device_and_inode
+
+
+  # Grafana Logs (if exists)
+  grafana_logs:
+    type: file
+    include:
+      - /var/lib/grafana/log/*.log
+    read_from: beginning
+    fingerprint:
+      strategy: device_and_inode
+
+
+  # Prometheus Logs (if exists)
+  prometheus_logs:
+    type: file
+    include:
+      - /var/log/prometheus/*.log
+    read_from: beginning
+    fingerprint:
+      strategy: device_and_inode
+
+
 # Transforms - Parse Nginx Access Logs
 transforms:
-  parse_nginx_access:
+  parse_nginx_error:
     type: remap
     inputs:
-      - nginx_access
+      - nginx_error
     source: |
       # Parse Nginx combined log format
       parsed, err = parse_regex(.message, r'^(?P<client_ip>[^ ]+) - (?P<remote_user>[^ ]+) \[(?P<timestamp>[^\]]+)\] "(?P<method>\S+)(?: +(?P<path>[^\"]*?)(?: +\S*)?)?" (?P<status>\d{3}) (?P<bytes_sent>\d+) "(?P<referer>[^\"]*)" "(?P<user_agent>[^\"]*)"$')
@@ -150,7 +200,7 @@ transforms:
                      else if .status_code >= 400 { "warn" }
                      else { "info" }
         .vlan = "{{ vlan_id | default('100') }}"
-        .log_type = "access"
+        .log_type = "error"
       }
 
   # Add Metadata for other logs
@@ -160,7 +210,12 @@ transforms:
       - alpine_messages
       - postgresql_logs
       - redis_logs
-      - nginx_error
+      - nginx_access
+      - dns_logs
+      - zot_logs
+      - rustfs_logs
+      - grafana_logs
+      - prometheus_logs
     source: |
       # Add hostname
       .hostname = get_hostname!()
@@ -175,6 +230,16 @@ transforms:
         .service = "redis"
       } else if contains(string!(.file), "nginx") {
         .service = "nginx"
+      } else if contains(string!(.file), "dns") {
+        .service = "dns"
+      } else if contains(string!(.file), "zot") {
+        .service = "zot"
+      } else if contains(string!(.file), "rustfs") {
+        .service = "rustfs"
+      } else if contains(string!(.file), "grafana") {
+        .service = "grafana"
+      } else if contains(string!(.file), "prometheus") {
+        .service = "prometheus"
       } else {
         .service = "system"
       }

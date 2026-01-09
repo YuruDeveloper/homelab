@@ -62,7 +62,6 @@ all:
               ansible_host: 192.168.2.101
             prometheus:
               ansible_host: 192.168.2.102
-            
     debian:
       children:
         HAmongodb:
@@ -81,4 +80,8 @@ all:
           hosts:
             redpanda0:
               ansible_host: 192.168.2.90
+        GitOpsDebian:
+          hosts:
+            jenkins:
+              ansible_host: 192.168.2.82
               

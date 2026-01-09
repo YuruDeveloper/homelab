@@ -278,7 +278,7 @@ module "zot" {
 
 module "jenkins" {
   source = "./services/jenkins"
-  
+  OsType =  "debian" 
   CommonConfig   = local.CommonLxcConfig
   TemplateFileId = local.Templates.Debian13
 

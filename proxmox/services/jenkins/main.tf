@@ -11,7 +11,7 @@ module "jenkins" {
   CpuCores = 4
   Memory   = 4096
   Swap     = 0
-  DiskSize = 32
+  DiskSize = 64
 
   NetworkBridge = "vmbr1"
   VlanId        = 100

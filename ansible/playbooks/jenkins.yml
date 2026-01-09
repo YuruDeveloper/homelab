@@ -1,0 +1,5 @@
+- name: Setup Jeknins
+  become: true
+  hosts: jenkins
+  roles:
+    - jenkins

@@ -35,6 +35,7 @@ scrape_configs:
         # GitOps
         - '192.168.2.80:9100'  # gitea
         - '192.168.2.81:9100'  # zot
+        - '192.168.2.82:9100'  # jenkins
         # Redpanda
         - '192.168.2.90:9100'  # redpanda
         # Observability
@@ -110,6 +111,13 @@ scrape_configs:
     static_configs:
       - targets:
         - '192.168.2.81:7000'  # zot
+
+  - job_name: 'jenkins'
+    metrics_path: '/prometheus'
+    static_configs:
+      - targets:
+        - '192.168.2.82:8080'  # jenkins
+
   - job_name: 'truenas'
     static_configs:
       - targets:
