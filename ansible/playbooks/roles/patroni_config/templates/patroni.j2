@@ -54,10 +54,11 @@ postgresql:
     restore_command: 'cp /mnt/postgresql-wal/%f %p'
     archive_timeout: 300
     logging_collector: 'on'
+    log_destination: 'stderr,jsonlog'
     log_directory: '/var/log/postgresql'
-    log_filename: 'postgresql-%Y-%m-%d.log'
+    log_filename: 'postgresql-%Y-%m-%d'
     log_rotation_age: '1d'
-    log_min_duration_statement: '1000'
+    log_min_duration_statement: '500'
 
 tags:
   nofailover: false

@@ -121,6 +121,12 @@
     dest: /etc/nginx/http.d/ssl.conf
     mode: "755"
 
+- name: Make logging file
+  ansible.builtin.template:
+    src: logging.j2
+    dest: /etc/nginx/http.d/00-logging.conf
+    mode: "755"
+
 - name: Make https files
   ansible.builtin.template:
     src: https.j2

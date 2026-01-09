@@ -8,7 +8,7 @@ sources:
 
   PostgresqlLogs:
     type: file
-    include: ["/var/log/postgresql/*.log"]
+    include: ["/var/log/postgresql/*.log", "/var/log/postgresql/*.json"]
 
   RedisLogs:
     type: file
@@ -42,6 +42,10 @@ sources:
     type: file
     include: ["/var/log/prometheus/*.log"]
 
+  LokiLogs:
+    type: file
+    include: ["/var/log/loki/*.log"]
+
 # --- Transforms ---
 transforms:
 
@@ -51,47 +55,46 @@ transforms:
     inputs:
       - NginxAccess
     source: |
-      parsed, err = parse_regex(.message, r'^(?P<client_ip>[^ ]+) - (?P<remote_user>[^ ]+) \[(?P<timestamp>[^\]]+)\] "(?P<method>\S+)(?: +(?P<path>[^\"]*?)(?: +\S*)?)?" (?P<status>\d{3}) (?P<bytes_sent>\d+)')
+      parsed, err = parse_json(.message)
 
       if err == null {
-
-        .client_ip = parsed.client_ip
-        .status_code = to_int(parsed.status) ?? 0
-
-        .http_method = upcase(string!(parsed.method))
-        .request_path = parsed.path
-
-        path_lower = downcase(string!(.request_path))
-
-        is_sqli = contains(path_lower, " union ") || contains(path_lower, " select ")
-        is_scanner = .status_code == 444 || .http_method == "PROPFIND" || .http_method == "SEARCH"
-        is_exploit = contains(path_lower, ".env") || contains(path_lower, "wp-admin") || contains(path_lower, ".git")
-
-        if is_sqli {
-          .attack_type = "sql_injection"
-          .threat_score = 5
-        } else if is_exploit {
-          .attack_type = "exploit_probing"
-          .threat_score = 7
-        } else if is_scanner {
-          .attack_type = "web_scanner"
-          .threat_score = 3
-        } else {
-          .attack_type = "none"
-          .threat_score = 0
-        }
-
-        if .status_code >= 500 {
-          .log_level = "error"
-        } else if .status_code >= 400 {
-          .log_level = "warn"
-        } else {
-          .log_level = "info"
-        }
-
-        .log_type = "access"
-        .service = "nginx"
+        .parsed = parsed
       }
+
+      .status_code = to_int(.parsed.status) ?? 0
+      .http_method = upcase(string!(.parsed.request_method))
+      .request_path = .parsed.request_path
+
+      path_lower = downcase(string!(.request_path))
+
+      is_sqli = contains(path_lower, " union ") || contains(path_lower, " select ")
+      is_scanner = .status_code == 444 || .http_method == "PROPFIND" || .http_method == "SEARCH"
+      is_exploit = contains(path_lower, ".env") || contains(path_lower, "wp-admin") || contains(path_lower, ".git")
+
+      if is_sqli {
+        .attack_type = "sql_injection"
+        .threat_score = 5
+      } else if is_exploit {
+        .attack_type = "exploit_probing"
+        .threat_score = 7
+      } else if is_scanner {
+        .attack_type = "web_scanner"
+        .threat_score = 3
+      } else {
+        .attack_type = "none"
+        .threat_score = 0
+      }
+
+      if .status_code >= 500 {
+        .log_level = "error"
+      } else if .status_code >= 400 {
+        .log_level = "warn"
+      } else {
+        .log_level = "info"
+      }
+
+      .log_type = "access"
+      .service = "nginx"
 
   # 2. Nginx Error
   ParseNginxError:
@@ -104,60 +107,97 @@ transforms:
       parsed, err = parse_regex(.message, pattern)
 
       if err == null {
-
-        .client_ip = parsed.ip
-        .error_level = parsed.lvl
-
-        lvl = downcase(string!(parsed.lvl))
-
-        if lvl == "crit" || lvl == "alert" || lvl == "emerg" {
-          .log_level = "error"
-        } else {
-          .log_level = lvl
-        }
-
-        .error_message = parsed.msg
-        .request_path = parsed.req
-
-        msg_lower = downcase(string!(.error_message))
-        req_lower = downcase(string!(.request_path))
-
-        is_forbidden = contains(msg_lower, "forbidden") || contains(msg_lower, "access denied")
-        is_exploit = contains(req_lower, ".env") || contains(req_lower, "../") || contains(req_lower, "etc/passwd")
-        is_connection_issue = contains(msg_lower, "connection refused") || contains(msg_lower, "upstream")
-
-        if is_exploit {
-          .attack_type = "exploit_attempt"
-          .threat_score = 8
-        } else if is_forbidden {
-          .attack_type = "access_denied"
-          .threat_score = 4
-        } else if is_connection_issue {
-          .attack_type = "upstream_error"
-          .threat_score = 1
-        } else {
-          .attack_type = "none"
-          .threat_score = 0
-        }
-
-        .log_type = "error"
-        .service = "nginx"
+        .parsed = parsed
       }
 
-  # 3. Metadata
-  EnrichMetadata:
+      .client_ip = .parsed.ip
+      .error_level = .parsed.lvl
+
+      lvl = downcase(string!(.parsed.lvl))
+
+      if lvl == "crit" || lvl == "alert" || lvl == "emerg" {
+        .log_level = "error"
+      } else {
+        .log_level = lvl
+      }
+
+      .error_message = .parsed.msg
+      .request_path = .parsed.req
+
+      msg_lower = downcase(string!(.error_message))
+      req_lower = downcase(string!(.request_path))
+
+      is_forbidden = contains(msg_lower, "forbidden") || contains(msg_lower, "access denied")
+      is_exploit = contains(req_lower, ".env") || contains(req_lower, "../") || contains(req_lower, "etc/passwd")
+      is_connection_issue = contains(msg_lower, "connection refused") || contains(msg_lower, "upstream")
+
+      if is_exploit {
+        .attack_type = "exploit_attempt"
+        .threat_score = 8
+      } else if is_forbidden {
+        .attack_type = "access_denied"
+        .threat_score = 4
+      } else if is_connection_issue {
+        .attack_type = "upstream_error"
+        .threat_score = 1
+      } else {
+        .attack_type = "none"
+        .threat_score = 0
+      }
+
+      .log_type = "error"
+      .service = "nginx"
+
+  # 3. Postgresql
+  ParsePostgresql:
     type: remap
     inputs:
-      - ParseNginxAccess
-      - ParseNginxError
-      - AlpineMessages
       - PostgresqlLogs
-      - RedisLogs
+    source: |
+      if contains(string!(.file), ".json") {
+        parsed, err = parse_json(.message)
+        if err == null {
+          .parsed = parsed
+        }
+      }
+
+      .log_type = "database"
+      .service = "postgresql"
+
+      if exists(.parsed.error_severity) {
+        .log_level = downcase(string!(.parsed.error_severity))
+      }
+
+  # 4. Generic App Logs
+  ParseAppLogs:
+    type: remap
+    inputs:
       - DnsLogs
       - ZotLogs
       - RustfsLogs
       - GrafanaLogs
       - PrometheusLogs
+      - LokiLogs
+    source: |
+      msg = string!(.message)
+
+      if starts_with(msg, "{") && ends_with(msg, "}") {
+        parsed, err = parse_json(msg)
+        if err == null {
+          .parsed = parsed
+        }
+      }
+
+  # 5. Metadata
+  EnrichMetadata:
+    type: remap
+    inputs:
+      - ParseNginxAccess
+      - ParseNginxError
+      - ParsePostgresql
+      - ParseAppLogs
+      - AlpineMessages
+      - RedisLogs
     source: |
       .hostname = get_hostname!()
       .node_type = "alpine"
@@ -168,7 +208,9 @@ transforms:
       }
 
       if !exists(.log_level) {
+
         msg = downcase(string!(.message))
+
         if contains(msg, "error") || contains(msg, "fatal") || contains(msg, "panic") {
           .log_level = "error"
         } else if contains(msg, "warn") {
@@ -180,7 +222,6 @@ transforms:
         }
       }
 
-      # file_name 스코프 문제 해결
       file_name = ""
 
       if exists(.file.path) {

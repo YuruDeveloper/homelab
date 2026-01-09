@@ -39,6 +39,16 @@
     group: root
     mode: "0644"
 
+- name: Configure Prometheus log format
+  ansible.builtin.lineinfile:
+    path: /etc/conf.d/prometheus
+    regexp: '^prometheus_args='
+    line: 'prometheus_args="--log.format=json"'
+    create: true
+    owner: root
+    group: root
+    mode: "0644"
+
 - name: Remove checkpath from init.d script
   ansible.builtin.lineinfile:
     path: /etc/init.d/prometheus
