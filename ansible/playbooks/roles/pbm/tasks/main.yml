@@ -1,12 +1,18 @@
+- name: Make temp folder
+  ansible.builtin.file:
+    path: /var/lib/tmp
+    state: directory
+    mode: "0755"
+
 - name: Download Percona release package
   ansible.builtin.get_url:
     url: "https://repo.percona.com/apt/percona-release_latest.bookworm_all.deb"
-    dest: "/tmp/percona-release_latest.bookworm_all.deb"
+    dest: "/var/lib/tmp/percona-release_latest.bookworm_all.deb"
     mode: "0644"
 
 - name: Install Percona release package
   ansible.builtin.apt:
-    deb: "/tmp/percona-release_latest.bookworm_all.deb"
+    deb: "/var/lib/tmp/percona-release_latest.bookworm_all.deb"
 
 - name: Enable Percona Server for MongoDB 8.0 repository
   ansible.builtin.command:
@@ -36,7 +42,7 @@
 - name: Deploy PBM Stroage config
   ansible.builtin.template:
     src: pbm.j2
-    dest: /tmp/pbm.yaml
+    dest: /var/lib/tmp/pbm.yaml
     mode: "0600"
 
 - name: Deploy pbm-agent systemd config file
@@ -69,10 +75,15 @@
 
 - name: Apply PBM config
   ansible.builtin.command:
-    cmd: "pbm config --file /tmp/pbm.yaml"
+    cmd: "pbm config --file /var/lib/tmp/pbm.yaml"
   environment:
     PBM_MONGODB_URI: "mongodb://pbmuser:{{ pbm_password }}@127.0.0.1:{{ mongodb_port }}/?authSource=admin"
   changed_when: false
+
+- name: Remove temp folder
+  ansible.builtin.file:
+    path: /var/lib/tmp
+    state: absent
 
 - name: Enable and start PBM agent
   ansible.builtin.systemd:

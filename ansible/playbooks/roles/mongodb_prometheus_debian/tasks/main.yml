@@ -1,13 +1,24 @@
+- name: Make temp folder
+  ansible.builtin.file:
+    path: /var/lib/tmp
+    state: directory
+    mode: "0755"
+
 - name: Download mongodb_exporter
   ansible.builtin.get_url:
     url: https://github.com/percona/mongodb_exporter/releases/download/v{{ exporter_version }}/mongodb_exporter-{{ exporter_version }}.linux-64-bit.deb
-    dest: /tmp/exporter.deb
+    dest: /var/lib/tmp/exporter.deb
     mode: "0755"
 
 - name: Install mongodb_exporter
   ansible.builtin.apt:
-    deb: /tmp/exporter.deb
+    deb: /var/lib/tmp/exporter.deb
     state: present
+
+- name: Remove temp folder
+  ansible.builtin.file:
+    path: /var/lib/tmp
+    state: absent
 
 - name: Make systemFile
   ansible.builtin.template:

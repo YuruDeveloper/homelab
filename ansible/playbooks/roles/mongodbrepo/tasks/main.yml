@@ -2,18 +2,29 @@
   ansible.builtin.apt:
     name: gpg
 
+- name: Make temp folder
+  ansible.builtin.file:
+    path: /var/lib/tmp
+    state: directory
+    mode: "0755"
+
 - name: Gpg key download
   ansible.builtin.get_url:
     url: https://www.mongodb.org/static/pgp/server-8.0.asc
-    dest: /tmp/mongodb-server-8.0.asc
+    dest: /var/lib/tmp/mongodb-server-8.0.asc
     mode: "0644"
 
 - name: MongoDB gpg key dearmor
   ansible.builtin.command:
-    cmd: gpg --dearmor -o /usr/share/keyrings/mongodb-server-8.0.gpg /tmp/mongodb-server-8.0.asc
+    cmd: gpg --dearmor -o /usr/share/keyrings/mongodb-server-8.0.gpg /var/lib/tmp/mongodb-server-8.0.asc
   args:
     creates: /usr/share/keyrings/mongodb-server-8.0.gpg
   become: true
+
+- name: Remove temp folder
+  ansible.builtin.file:
+    path: /var/lib/tmp
+    state: absent
 
 - name: Add MongoDB 8.0 APT repository
   ansible.builtin.apt_repository:

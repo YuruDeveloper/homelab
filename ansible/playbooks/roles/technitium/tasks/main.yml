@@ -10,18 +10,21 @@
 - name: Make dns folder
   ansible.builtin.file:
     state: directory
-    path: "{{ dns_install_dir }}"
+    path: "{{ item }}"
     mode: "755"
+  loop:
+    - "{{ dns_install_dir }}"
+    - "{{ dns_install_dir }}/tmp"
 
 - name: Install dns tar file
   ansible.builtin.get_url:
     url: "{{ dns_download_url }}"
-    dest: /tmp/
+    dest: "{{ dns_install_dir }}/tmp/DnsServerPortable.tar.gz"
     mode: "755"
 
 - name: Untar dns tar file
   ansible.builtin.unarchive:
-    src: /tmp/DnsServerPortable.tar.gz
+    src: "{{ dns_install_dir }}/tmp/DnsServerPortable.tar.gz"
     dest: "{{ dns_install_dir }}"
     remote_src: true
 
@@ -30,6 +33,11 @@
     src: dns.j2
     dest: "/etc/init.d/{{ dns_service_name }}"
     mode: "755"
+
+- name: Remove temp folder
+  ansible.builtin.file:
+    path: "{{ dns_install_dir }}/tmp"
+    state: absent
 
 - name: Start Dns server
   ansible.builtin.service:
@@ -43,17 +51,3 @@
     name:
       - tar
     state: removed
-
-- name: Find temp files
-  ansible.builtin.find:
-    paths:
-      - /tmp/
-    patterns:
-      - "*.tar.gz"
-  register: temp_files
-
-- name: Remove temp files
-  ansible.builtin.file:
-    path: "{{ item.path }}"
-    state: absent
-  loop: "{{ temp_files.files }}"

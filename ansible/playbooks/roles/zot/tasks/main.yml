@@ -4,19 +4,6 @@
       - gcompat
     state: present
 
-- name: Install Zot
-  ansible.builtin.get_url:
-    url: "{{ zot_install_url }}"
-    dest: "/tmp/zot"
-    mode: "0755"
-
-- name: Move files
-  ansible.builtin.copy:
-    src: "/tmp/zot"
-    dest: /usr/local/bin/
-    mode: "755"
-    remote_src: true
-
 - name: Make zot group
   ansible.builtin.group:
     name: zot
@@ -35,19 +22,28 @@
 
 - name: Make zot folder
   ansible.builtin.file:
-    path: /etc/zot
+    path: "{{ item }}"
     state: directory
     owner: zot
     group: zot
     mode: "755"
+  loop:
+    - /etc/zot
+    - /var/lib/zot
+    - /var/lib/zot/tmp
 
-- name: Make zot folder
-  ansible.builtin.file:
-    path: /var/lib/zot
-    state: directory
-    owner: zot
-    group: zot
+- name: Install Zot
+  ansible.builtin.get_url:
+    url: "{{ zot_install_url }}"
+    dest: "/var/lib/zot/tmp/zot"
+    mode: "0755"
+
+- name: Move files
+  ansible.builtin.copy:
+    src: "/var/lib/zot/tmp/zot"
+    dest: /usr/local/bin/
     mode: "755"
+    remote_src: true
 
 - name: Add system file
   ansible.builtin.template:
@@ -62,6 +58,11 @@
     owner: zot
     group: zot
     mode: "755"
+
+- name: Remove temp folder
+  ansible.builtin.file:
+    path: /var/lib/zot/tmp
+    state: absent
 
 - name: Start zot
   ansible.builtin.service:

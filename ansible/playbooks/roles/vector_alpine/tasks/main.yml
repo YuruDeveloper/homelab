@@ -4,26 +4,6 @@
       - tar
     state: present
 
-- name: Get Vector file
-  ansible.builtin.get_url:
-    url: https://packages.timber.io/vector/latest/vector-latest-x86_64-unknown-linux-musl.tar.gz
-    dest: /tmp/vector.tar.gz
-    mode: "0755"
-
-- name: Untar file
-  ansible.builtin.unarchive:
-    src: /tmp/vector.tar.gz
-    dest: /tmp/
-    mode: "0755"
-    remote_src: true
-
-- name: Move files
-  ansible.builtin.copy:
-    src: "/tmp/vector-x86_64-unknown-linux-musl/bin/vector"
-    dest: /usr/local/bin/
-    mode: "755"
-    remote_src: true
-
 - name: Make vector group
   ansible.builtin.group:
     name: vector
@@ -42,19 +22,35 @@
 
 - name: Make vector folder
   ansible.builtin.file:
-    path: /var/lib/vector
+    path: "{{ item }}"
     state: directory
     owner: vector
     group: vector
     mode: "755"
+  loop:
+    - /var/lib/vector
+    - /var/lib/vector/tmp
+    - /etc/vector
 
-- name: Make vector folder
-  ansible.builtin.file:
-    path: /etc/vector
-    state: directory
-    owner: vector
-    group: vector
+- name: Get Vector file
+  ansible.builtin.get_url:
+    url: https://packages.timber.io/vector/latest/vector-latest-x86_64-unknown-linux-musl.tar.gz
+    dest: /var/lib/vector/tmp/vector.tar.gz
+    mode: "0755"
+
+- name: Untar file
+  ansible.builtin.unarchive:
+    src: /var/lib/vector/tmp/vector.tar.gz
+    dest: /var/lib/vector/tmp
+    mode: "0755"
+    remote_src: true
+
+- name: Move files
+  ansible.builtin.copy:
+    src: "/var/lib/vector/tmp/vector-x86_64-unknown-linux-musl/bin/vector"
+    dest: /usr/local/bin/
     mode: "755"
+    remote_src: true
 
 - name: Make system file
   ansible.builtin.template:
@@ -70,14 +66,9 @@
     group: vector
     mode: "0755"
 
-- name: Remove tempFile
+- name: Remove temp folder
   ansible.builtin.file:
-    path: /tmp/vector-x86_64-unknown-linux-musl
-    state: absent
-
-- name: Remove tempFile
-  ansible.builtin.file:
-    path: /tmp/vector.tar.gz
+    path: /var/lib/vector/tmp
     state: absent
 
 - name: Remove Temp Pakage

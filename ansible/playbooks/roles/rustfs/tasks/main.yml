@@ -5,26 +5,6 @@
       - unzip
     state: installed
 
-- name: Install rustfs zip file
-  ansible.builtin.get_url:
-    url: "{{ rustfs_install_url }}"
-    dest: /tmp/rustfs-linux-x86_64-musl-latest.zip
-    mode: "755"
-
-- name: Unzip rustfs archive
-  ansible.builtin.unarchive:
-    src: "/tmp/rustfs-linux-x86_64-musl-latest.zip"
-    dest: /tmp/
-    mode: "755"
-    remote_src: true
-
-- name: Move files
-  ansible.builtin.copy:
-    src: "/tmp/rustfs"
-    dest: /usr/local/bin/
-    mode: "755"
-    remote_src: true
-
 - name: Make rustfs group
   ansible.builtin.group:
     name: rustfs
@@ -41,11 +21,47 @@
     create_home: true
     state: present
 
+- name: Make rustfs folder
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: rustfs
+    group: rustfs
+    mode: "755"
+  loop:
+    - /var/lib/rustfs
+    - /var/lib/rustfs/tmp
+
+- name: Install rustfs zip file
+  ansible.builtin.get_url:
+    url: "{{ rustfs_install_url }}"
+    dest: /var/lib/rustfs/tmp/rustfs-linux-x86_64-musl-latest.zip
+    mode: "755"
+
+- name: Unzip rustfs archive
+  ansible.builtin.unarchive:
+    src: "/var/lib/rustfs/tmp/rustfs-linux-x86_64-musl-latest.zip"
+    dest: /var/lib/rustfs/tmp
+    mode: "755"
+    remote_src: true
+
+- name: Move files
+  ansible.builtin.copy:
+    src: "/var/lib/rustfs/tmp/rustfs"
+    dest: /usr/local/bin/
+    mode: "755"
+    remote_src: true
+
 - name: Add system file
   ansible.builtin.template:
     src: rustfs.j2
     dest: /etc/init.d/rustfs
     mode: "755"
+
+- name: Remove temp folder
+  ansible.builtin.file:
+    path: /var/lib/rustfs/tmp
+    state: absent
 
 - name: Start Rustfs
   ansible.builtin.service:
@@ -59,8 +75,3 @@
     name:
       - unzip
     state: removed
-
-- name: Remove temp file
-  ansible.builtin.file:
-    path: "/tmp/rustfs-linux-x86_64-musl-latest.zip"
-    state: absent

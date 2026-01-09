@@ -4,26 +4,6 @@
       - tar
     state: present
 
-- name: Install nginx-prometheus-exporter
-  ansible.builtin.get_url:
-    url: "https://github.com/nginx/nginx-prometheus-exporter/releases/download/v{{ version }}/nginx-prometheus-exporter_{{ version }}_linux_amd64.tar.gz"
-    dest: /tmp/nginx_exporter.tar.gz
-    mode: "0755"
-
-- name: Ubtar file
-  ansible.builtin.unarchive:
-    src: /tmp/nginx_exporter.tar.gz
-    dest: /tmp/
-    mode: "0755"
-    remote_src: true
-
-- name: Move files
-  ansible.builtin.copy:
-    src: "/tmp/nginx-prometheus-exporter"
-    dest: /usr/local/bin/
-    mode: "755"
-    remote_src: true
-
 - name: Make nginx_exporter group
   ansible.builtin.group:
     name: nginx_exporter
@@ -42,19 +22,35 @@
 
 - name: Make nginx_exporter folder
   ansible.builtin.file:
-    path: /var/lib/nginx_exporter
+    path: "{{ item }}"
     state: directory
     owner: nginx_exporter
     group: nginx_exporter
     mode: "755"
+  loop:
+    - /var/lib/nginx_exporter
+    - /var/lib/nginx_exporter/tmp
+    - /etc/nginx_exporter
 
-- name: Make nginx_exporter folder
-  ansible.builtin.file:
-    path: /etc/nginx_exporter
-    state: directory
-    owner: nginx_exporter
-    group: nginx_exporter
+- name: Install nginx-prometheus-exporter
+  ansible.builtin.get_url:
+    url: "https://github.com/nginx/nginx-prometheus-exporter/releases/download/v{{ version }}/nginx-prometheus-exporter_{{ version }}_linux_amd64.tar.gz"
+    dest: /var/lib/nginx_exporter/tmp/nginx_exporter.tar.gz
+    mode: "0755"
+
+- name: Ubtar file
+  ansible.builtin.unarchive:
+    src: /var/lib/nginx_exporter/tmp/nginx_exporter.tar.gz
+    dest: /var/lib/nginx_exporter/tmp
+    mode: "0755"
+    remote_src: true
+
+- name: Move files
+  ansible.builtin.copy:
+    src: "/var/lib/nginx_exporter/tmp/nginx-prometheus-exporter"
+    dest: /usr/local/bin/
     mode: "755"
+    remote_src: true
 
 - name: Make system file
   ansible.builtin.template:
@@ -62,29 +58,9 @@
     dest: /etc/init.d/nginx_exporter
     mode: "0755"
 
-- name: Remove tempFile
+- name: Remove temp folder
   ansible.builtin.file:
-    path: "/tmp/completions"
-    state: absent
-
-- name: Remove tempFile
-  ansible.builtin.file:
-    path: "/tmp/manpages"
-    state: absent
-
-- name: Remove tempFile
-  ansible.builtin.file:
-    path: "/tmp/README.md"
-    state: absent
-
-- name: Remove tempFile
-  ansible.builtin.file:
-    path: "/tmp/LICENSE"
-    state: absent
-
-- name: Remove tempFile
-  ansible.builtin.file:
-    path: "/tmp/nginx_exporter.tar.gz"
+    path: /var/lib/nginx_exporter/tmp
     state: absent
 
 - name: Remove Temp Package

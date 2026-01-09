@@ -3,16 +3,27 @@
     name:
       - curl
 
+- name: Make temp folder
+  ansible.builtin.file:
+    path: /var/lib/tmp
+    state: directory
+    mode: "0755"
+
 - name: Redpanda APT 설정 스크립트 다운로드
   ansible.builtin.get_url:
     url: https://dl.redpanda.com/nzc4ZYQK3WRGd9sy/redpanda/cfg/setup/bash.deb.sh
-    dest: /tmp/redpanda_setup.sh
+    dest: /var/lib/tmp/redpanda_setup.sh
     mode: '0755'
 
 - name: Redpanda APT 설정 스크립트 실행
   ansible.builtin.command:
-    cmd: /tmp/redpanda_setup.sh
+    cmd: /var/lib/tmp/redpanda_setup.sh
   changed_when: false
+
+- name: Remove temp folder
+  ansible.builtin.file:
+    path: /var/lib/tmp
+    state: absent
 
 - name: Instasll Redpanda
   ansible.builtin.apt:

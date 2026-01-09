@@ -11,7 +11,7 @@ module "nginx" {
   CpuCores = 1
   Memory   = 512
   Swap     = 0
-  DiskSize = 1
+  DiskSize = 5
 
   NetworkBridge = "vmbr1"
   VlanId        = 400

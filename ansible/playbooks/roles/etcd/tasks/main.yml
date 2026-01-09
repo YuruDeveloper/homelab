@@ -5,30 +5,6 @@
       - tar
     state: installed
 
-- name: Install etcd tar file
-  ansible.builtin.get_url:
-    url: "{{ etcd_download_url }}"
-    dest: /tmp/
-    mode: "755"
-
-- name: Untar tar file
-  ansible.builtin.unarchive:
-    src: "/tmp/etcd-v{{ etcd_version }}-linux-amd64.tar.gz"
-    dest: /tmp/
-    mode: "755"
-    remote_src: true
-
-- name: Move files
-  ansible.builtin.copy:
-    src: "/tmp/etcd-v{{ etcd_version }}-linux-amd64/{{ item }}"
-    dest: /usr/local/bin/
-    mode: "755"
-    remote_src: true
-  loop:
-    - etcd
-    - etcdctl
-    - etcdutl
-
 - name: Make etcd group
   ansible.builtin.group:
     name: etcd
@@ -47,17 +23,50 @@
 
 - name: Make etcd folder
   ansible.builtin.file:
-    path: /etc/etcd
+    path: "{{ item }}"
     state: directory
     owner: etcd
     group: etcd
     mode: "755"
+  loop:
+    - /var/lib/etcd
+    - /var/lib/etcd/tmp
+    - /etc/etcd
+
+- name: Install etcd tar file
+  ansible.builtin.get_url:
+    url: "{{ etcd_download_url }}"
+    dest: /var/lib/etcd/tmp/etcd.tar.gz
+    mode: "755"
+
+- name: Untar tar file
+  ansible.builtin.unarchive:
+    src: /var/lib/etcd/tmp/etcd.tar.gz
+    dest: /var/lib/etcd/tmp
+    mode: "755"
+    remote_src: true
+
+- name: Move files
+  ansible.builtin.copy:
+    src: "/var/lib/etcd/tmp/etcd-v{{ etcd_version }}-linux-amd64/{{ item }}"
+    dest: /usr/local/bin/
+    mode: "755"
+    remote_src: true
+  loop:
+    - etcd
+    - etcdctl
+    - etcdutl
 
 - name: Add system file
   ansible.builtin.template:
     src: etcd.j2
     dest: /etc/init.d/etcd
     mode: "755"
+
+- name: Remove temp folder
+  ansible.builtin.file:
+    path: /var/lib/etcd/tmp
+    state: absent
 
 - name: Start Etcd
   ansible.builtin.service:
@@ -71,16 +80,6 @@
     name:
       - tar
     state: removed
-
-- name: Remove temp files
-  ansible.builtin.file:
-    path: "/tmp/etcd-v{{ etcd_version }}-linux-amd64"
-    state: absent
-
-- name: Remove temp files
-  ansible.builtin.file:
-    path: "/tmp/etcd-v{{ etcd_version }}-linux-amd64.tar.gz"
-    state: absent
 
 - name: Set enable status
   ansible.builtin.lineinfile:

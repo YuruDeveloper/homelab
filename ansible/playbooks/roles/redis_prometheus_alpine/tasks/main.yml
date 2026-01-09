@@ -4,26 +4,6 @@
       - tar
     state: present
 
-- name: Install prometheus-redis-exporter
-  ansible.builtin.get_url:
-    url: "{{ redis_exporter_download_url }}"
-    dest: /tmp/exporter.tar.gz
-    mode: "0755"
-
-- name: Ubtar file
-  ansible.builtin.unarchive:
-    src: /tmp/exporter.tar.gz
-    dest: /tmp/
-    mode: "0755"
-    remote_src: true
-
-- name: Move files
-  ansible.builtin.copy:
-    src: "/tmp/redis_exporter-v1.80.1.linux-amd64/redis_exporter"
-    dest: /usr/local/bin/
-    mode: "755"
-    remote_src: true
-
 - name: Make redis_exporter group
   ansible.builtin.group:
     name: redis_exporter
@@ -42,19 +22,35 @@
 
 - name: Make redis_exporter folder
   ansible.builtin.file:
-    path: /var/lib/redis_exporter
+    path: "{{ item }}"
     state: directory
     owner: redis_exporter
     group: redis_exporter
     mode: "755"
+  loop:
+    - /var/lib/redis_exporter
+    - /var/lib/redis_exporter/tmp
+    - /etc/redis_exporter
 
-- name: Make redis_exporter folder
-  ansible.builtin.file:
-    path: /etc/redis_exporter
-    state: directory
-    owner: redis_exporter
-    group: redis_exporter
+- name: Install prometheus-redis-exporter
+  ansible.builtin.get_url:
+    url: "{{ redis_exporter_download_url }}"
+    dest: /var/lib/redis_exporter/tmp/exporter.tar.gz
+    mode: "0755"
+
+- name: Ubtar file
+  ansible.builtin.unarchive:
+    src: /var/lib/redis_exporter/tmp/exporter.tar.gz
+    dest: /var/lib/redis_exporter/tmp
+    mode: "0755"
+    remote_src: true
+
+- name: Move files
+  ansible.builtin.copy:
+    src: "/var/lib/redis_exporter/tmp/redis_exporter-v1.80.1.linux-amd64/redis_exporter"
+    dest: /usr/local/bin/
     mode: "755"
+    remote_src: true
 
 - name: Make system file
   ansible.builtin.template:
@@ -62,17 +58,12 @@
     dest: /etc/init.d/redis_exporter
     mode: "0755"
 
-- name: Remove tempFile
+- name: Remove temp folder
   ansible.builtin.file:
-    path: "/tmp/redis_exporter-v1.80.1.linux-amd64"
+    path: /var/lib/redis_exporter/tmp
     state: absent
 
-- name: Remove tempFile
-  ansible.builtin.file:
-    path: "/tmp/exporter.tar.gz"
-    state: absent
-
-- name: Install Package
+- name: Remove package
   community.general.apk:
     name:
       - tar
