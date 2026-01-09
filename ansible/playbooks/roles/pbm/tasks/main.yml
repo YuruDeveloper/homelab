@@ -70,6 +70,8 @@
 - name: Apply PBM config
   ansible.builtin.command:
     cmd: "pbm config --file /tmp/pbm.yaml"
+  environment:
+    PBM_MONGODB_URI: "mongodb://pbmuser:{{ pbm_password }}@127.0.0.1:{{ mongodb_port }}/?authSource=admin"
   changed_when: false
 
 - name: Enable and start PBM agent

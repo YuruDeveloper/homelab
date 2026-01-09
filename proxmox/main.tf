@@ -150,7 +150,7 @@ module "rustfs" {
 module "haproxy1" {
   source = "./services/haproxy"
   OsType = "debian"
-  DiskSize = 2
+  DiskSize = 5
   CommonConfig   = local.CommonLxcConfig
   TemplateFileId = local.Templates.Debian
 

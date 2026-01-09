@@ -23,7 +23,7 @@ sources:
     read_from: beginning
     fingerprint:
       strategy: device_and_inode
-    ignore_older_secs: 600
+
 
   # Redis Logs (if exists)
   redis_logs:
@@ -33,7 +33,7 @@ sources:
     read_from: beginning
     fingerprint:
       strategy: device_and_inode
-    ignore_older_secs: 600
+
 
   # Nginx Access Logs (if exists)
   nginx_access:
@@ -43,7 +43,7 @@ sources:
     read_from: beginning
     fingerprint:
       strategy: device_and_inode
-    ignore_older_secs: 600
+
 
   # Nginx Error Logs (if exists)
   nginx_error:
@@ -53,17 +53,113 @@ sources:
     read_from: beginning
     fingerprint:
       strategy: device_and_inode
-    ignore_older_secs: 600
 
-# Transforms - Add Metadata
+
+# Transforms - Parse Nginx Access Logs
 transforms:
+  parse_nginx_access:
+    type: remap
+    inputs:
+      - nginx_access
+    source: |
+      # Parse Nginx combined log format
+      parsed, err = parse_regex(.message, r'^(?P<client_ip>[^ ]+) - (?P<remote_user>[^ ]+) \[(?P<timestamp>[^\]]+)\] "(?P<method>\S+)(?: +(?P<path>[^\"]*?)(?: +\S*)?)?" (?P<status>\d{3}) (?P<bytes_sent>\d+) "(?P<referer>[^\"]*)" "(?P<user_agent>[^\"]*)"$')
+
+      if err == null {
+        # Basic fields
+        .client_ip = parsed.client_ip
+        .status_code = to_int!(parsed.status)
+        .http_method = parsed.method
+        .request_path = parsed.path ?? ""
+        .user_agent = parsed.user_agent
+        .bytes_sent = to_int!(parsed.bytes_sent)
+        .referer = parsed.referer
+
+        # Status category
+        .status_category = if .status_code >= 500 { "5xx_server_error" }
+                           else if .status_code >= 400 { "4xx_client_error" }
+                           else if .status_code >= 300 { "3xx_redirect" }
+                           else if .status_code >= 200 { "2xx_success" }
+                           else { "1xx_info" }
+
+        # Blocked request flag
+        .is_blocked = .status_code >= 400
+
+        # Security threat detection
+        path_lower = downcase(string!(.request_path))
+
+        # SQL Injection patterns
+        .is_sql_injection = contains(path_lower, "union") ||
+                            contains(path_lower, "select") ||
+                            contains(path_lower, "--") ||
+                            contains(path_lower, "drop") ||
+                            contains(path_lower, "insert") ||
+                            contains(path_lower, "delete") ||
+                            contains(path_lower, "update") ||
+                            contains(path_lower, "0x") ||
+                            contains(path_lower, "char(")
+
+        # XSS patterns
+        .is_xss = contains(path_lower, "<script") ||
+                  contains(path_lower, "onerror") ||
+                  contains(path_lower, "javascript:") ||
+                  contains(path_lower, "onclick") ||
+                  contains(path_lower, "onload") ||
+                  contains(path_lower, "eval(")
+
+        # Path Traversal patterns
+        .is_path_traversal = contains(string!(.request_path), "../") ||
+                             contains(string!(.request_path), "..\\") ||
+                             contains(path_lower, "%2e%2e")
+
+        # Bot detection
+        user_agent_lower = downcase(string!(.user_agent))
+        .is_bot = contains(user_agent_lower, "bot") ||
+                  contains(user_agent_lower, "crawler") ||
+                  contains(user_agent_lower, "spider") ||
+                  contains(user_agent_lower, "scanner") ||
+                  contains(user_agent_lower, "nikto") ||
+                  contains(user_agent_lower, "nmap") ||
+                  contains(user_agent_lower, "masscan") ||
+                  contains(user_agent_lower, "sqlmap") ||
+                  contains(user_agent_lower, "metasploit") ||
+                  contains(user_agent_lower, "curl") ||
+                  contains(user_agent_lower, "wget") ||
+                  contains(user_agent_lower, "python") ||
+                  contains(user_agent_lower, "go-http")
+
+        # Attack type classification
+        .attack_type = if .is_sql_injection { "sql_injection" }
+                       else if .is_xss { "xss" }
+                       else if .is_path_traversal { "path_traversal" }
+                       else if .is_bot && .is_blocked { "bot_blocked" }
+                       else { "none" }
+
+        # Threat score (weighted sum)
+        .threat_score = to_int(.is_blocked) +
+                        to_int(.is_sql_injection) * 3 +
+                        to_int(.is_xss) * 3 +
+                        to_int(.is_path_traversal) * 2 +
+                        to_int(.is_bot && .is_blocked) * 1
+
+        # Add metadata
+        .hostname = get_hostname!()
+        .node_type = "alpine"
+        .service = "nginx"
+        .log_level = if .status_code >= 500 { "error" }
+                     else if .status_code >= 400 { "warn" }
+                     else { "info" }
+        .vlan = "{{ vlan_id | default('100') }}"
+        .log_type = "access"
+      }
+
+  # Add Metadata for other logs
   add_metadata:
     type: remap
     inputs:
       - alpine_messages
       - postgresql_logs
       - redis_logs
-      - nginx_access
       - nginx_error
     source: |
       # Add hostname
@@ -98,11 +194,15 @@ transforms:
       # Add VLAN info (if available)
       .vlan = "{{ vlan_id | default('100') }}"
 
+      # Add log type
+      .log_type = if contains(string!(.file), "error") { "error" } else { "other" }
+
 # Sinks - Send to Redpanda
 sinks:
   redpanda_logs:
     type: kafka
     inputs:
+      - parse_nginx_access
       - add_metadata
     bootstrap_servers: "{{ redpanda_host | default('192.168.2.90') }}:{{ redpanda_port | default('9092') }}"
     topic: "{{ redpanda_topic | default('logs') }}"

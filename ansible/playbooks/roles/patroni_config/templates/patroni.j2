@@ -53,6 +53,11 @@ postgresql:
     archive_command: 'test ! -f /mnt/postgresql-wal/%f && cp %p /mnt/postgresql-wal/%f'
     restore_command: 'cp /mnt/postgresql-wal/%f %p'
     archive_timeout: 300
+    logging_collector: 'on'
+    log_directory: '/var/log/postgresql'
+    log_filename: 'postgresql-%Y-%m-%d.log'
+    log_rotation_age: '1d'
+    log_min_duration_statement: '1000'
 
 tags:
   nofailover: false

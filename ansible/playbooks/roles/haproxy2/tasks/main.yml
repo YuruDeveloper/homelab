@@ -2,7 +2,29 @@
   community.general.apk:
     name:
       - haproxy
+      - rsyslog
     state: installed
+
+- name: Configure rsyslog for HAProxy
+  ansible.builtin.blockinfile:
+    path: /etc/rsyslog.conf
+    block: |
+      local2.* /var/log/haproxy.log
+    marker: "# {mark} ANSIBLE MANAGED HAPROXY LOG"
+
+- name: Create HAProxy log file
+  ansible.builtin.file:
+    path: /var/log/haproxy.log
+    state: touch
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Restart rsyslog
+  ansible.builtin.service:
+    name: rsyslog
+    state: restarted
+    enabled: true
 
 - name: Make Config file
   ansible.builtin.template:

@@ -48,10 +48,12 @@ all:
           hosts:
             nginx0:
               ansible_host: 192.168.5.2
-        gitea:
+        GitOps:
           hosts:
-            gitea0:
+            gitea:
               ansible_host: 192.168.2.80
+            zot:
+              ansible_host: 192.168.2.81
         observability:
           hosts:
             grafana:
@@ -60,10 +62,7 @@ all:
               ansible_host: 192.168.2.101
             prometheus:
               ansible_host: 192.168.2.102
-        GitOps:
-          hosts:
-            zot:
-              ansible_host: 192.168.2.81
+            
     debian:
       children:
         HAmongodb:
