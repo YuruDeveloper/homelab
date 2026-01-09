@@ -941,7 +941,7 @@ resource "opnsense_firewall_filter" "DmzToMongodb" {
 # DMZ → Redis HAProxy
 resource "opnsense_firewall_filter" "DmzToRedis" {
   enabled     = true
-  sequence    = 61
+  sequence    = 62
   description = "Allow DMZ to Redis HAProxy"
 
   interface = {
@@ -969,7 +969,7 @@ resource "opnsense_firewall_filter" "DmzToRedis" {
 # DMZ → Redpanda
 resource "opnsense_firewall_filter" "DmzToRePandaTcp" {
   enabled     = true
-  sequence    = 62
+  sequence    = 63
   description = "Allow DMZ to Redpanda kafka api"
 
   interface = {
@@ -997,7 +997,7 @@ resource "opnsense_firewall_filter" "DmzToRePandaTcp" {
 # DMZ → Redpanda Rest
 resource "opnsense_firewall_filter" "DmzToRePandaRest" {
   enabled     = true
-  sequence    = 63
+  sequence    = 64
   description = "Allow DMZ to Redpanda kafka rest api"
 
   interface = {
@@ -1025,7 +1025,7 @@ resource "opnsense_firewall_filter" "DmzToRePandaRest" {
 # DMZ → Zot
 resource "opnsense_firewall_filter" "DmzToZot" {
   enabled     = true
-  sequence    = 64
+  sequence    = 65
   description = "Allow DMZ to Zot"
 
   interface = {
@@ -1050,10 +1050,38 @@ resource "opnsense_firewall_filter" "DmzToZot" {
   }
 }
 
+# DMZ → Convertx
+resource "opnsense_firewall_filter" "DmzToConvertx" {
+  enabled     = true
+  sequence    = 66
+  description = "Allow DMZ to Convertx"
+
+  interface = {
+    interface = ["opt5"]
+  }
+
+  filter = {
+    action      = "pass"
+    quick       = true
+    direction   = "in"
+    ip_protocol = "inet"
+    protocol    = "TCP"
+
+    source = {
+      net = "192.168.5.0/24"
+    }
+
+    destination = {
+      net  = "192.168.4.4/32"
+      port = "3000"
+    }
+  }
+}
+
 # DMZ → Block remaining internal networks
 resource "opnsense_firewall_filter" "DmzBlockInternal" {
   enabled     = true
-  sequence    = 65
+  sequence    = 67
   description = "Block DMZ access to remaining internal networks"
 
   interface = {
@@ -1080,7 +1108,7 @@ resource "opnsense_firewall_filter" "DmzBlockInternal" {
 # DMZ → Allow Internet
 resource "opnsense_firewall_filter" "DmzToInternet" {
   enabled     = true
-  sequence    = 66
+  sequence    = 68
   description = "Allow DMZ to Internet"
 
   interface = {
@@ -1107,7 +1135,7 @@ resource "opnsense_firewall_filter" "DmzToInternet" {
 # DMZ IPv6 → Allow Internet
 resource "opnsense_firewall_filter" "DmzToInternetIpv6" {
   enabled     = true
-  sequence    = 67
+  sequence    = 69
   description = "Allow DMZ IPv6 to Internet"
 
   interface = {
@@ -1138,7 +1166,7 @@ resource "opnsense_firewall_filter" "DmzToInternetIpv6" {
 # Wireguard → Allow all to any
 resource "opnsense_firewall_filter" "Wireguard" {
   enabled     = true
-  sequence    = 68
+  sequence    = 70
   description = "Allow Wireguard interface to any"
 
   interface = {
@@ -1165,7 +1193,7 @@ resource "opnsense_firewall_filter" "Wireguard" {
 # Wireguard IPv6 → Allow all to any
 resource "opnsense_firewall_filter" "WireguardIpv6" {
   enabled     = true
-  sequence    = 69
+  sequence    = 71
   description = "Allow Wireguard IPv6 interface to any"
 
   interface = {
@@ -1192,7 +1220,7 @@ resource "opnsense_firewall_filter" "WireguardIpv6" {
 # WAN → Allow Wireguard VPN (UDP 51820)
 resource "opnsense_firewall_filter" "WanAllowWireguard" {
   enabled     = true
-  sequence    = 70
+  sequence    = 72
   description = "Allow WAN to Wireguard VPN (UDP 51820)"
 
   interface = {
@@ -1220,7 +1248,7 @@ resource "opnsense_firewall_filter" "WanAllowWireguard" {
 # WAN → Allow Kafka (TCP 9092)
 resource "opnsense_firewall_filter" "WanAllowKafka" {
   enabled     = true
-  sequence    = 71
+  sequence    = 73
   description = "Allow WAN to Kafka (TCP 9092)"
 
   interface = {

@@ -1,0 +1,23 @@
+- name: Make convertx folder
+  ansible.builtin.file:
+    state: directory
+    path: "/root/convertx"
+    mode: "755"
+
+- name: Deploy convertx
+  community.docker.docker_container:
+    docker_host: unix:///var/run/docker.sock
+    name: convertx
+    image: ghcr.io/c4illin/convertx:latest
+    state: started
+    pull: true
+    recreate: true
+    restart_policy: unless-stopped
+    env:
+      HTTP_ALLOWED: "true"
+      JWT_SECRET: "f36b2ef66cfdd6f8c37a81122accbee3"
+    volumes:
+      - /root/convertx:/app/data
+    networks:
+      - name: macvlan
+        ipv4_address: "{{ convertx_ip }}"
