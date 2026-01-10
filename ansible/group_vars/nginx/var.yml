@@ -55,6 +55,10 @@ services:
     listen_port: 443
     ip: 192.168.2.82
     port: 8080
+  - domain: argocd.bytedev.duckdns.org
+    listen_port: 443
+    ip: 192.168.2.83
+    port: 80
 
 httpsserviec:
     - domain: proxmox.bytedev.duckdns.org

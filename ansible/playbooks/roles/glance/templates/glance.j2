@@ -38,10 +38,13 @@ pages:
                 icon: sh:grafana
               - title: convertx
                 url: https://convertx.bytedev.duckdns.org
-                icon: sh:convert-x  
+                icon: sh:convertx  
               - title: jenkins
                 url: https://jenkins.bytedev.duckdns.org
                 icon: sh:jenkins 
+              - title: argoCD
+                url: https://argocd.bytedev.duckdns.org
+                icon: sh:argo-cd
 
           - type: docker-containers
             cache: 1m
@@ -50,14 +53,21 @@ pages:
                 name: portainer
                 description: manager docker
                 url: https://portainer.bytedev.duckdns.org
-                icon: si:portainer
+                icon: sh:portainer
                 hide: false
               glance:
                 name: glance
-                icon: di:glance
+                icon: sh:glance
                 description: dashboard
                 url: https://glance.bytedev.duckdns.org
                 hide: false
+              convertx:
+                name: convertx
+                icon: sh:convertx
+                description: dashboard
+                url: https://convertx.bytedev.duckdns.org
+                hide: false
+
       - size: small
         widgets:
           - type: weather

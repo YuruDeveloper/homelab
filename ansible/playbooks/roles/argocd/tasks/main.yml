@@ -39,6 +39,7 @@
         name: argocd-cmd-params-cm
       data:
         server.insecure: "true"
+        metrics.enabled: "true"
 
 - name: Restart ArgoCD
   ansible.builtin.command:
@@ -67,3 +68,10 @@
                       name: argocd-server
                       port:
                         number: 80
+                - path: /metrics
+                  pathType: Prefix
+                  backend:
+                    service:
+                      name: argocd-server
+                      port:
+                        number: 8082
