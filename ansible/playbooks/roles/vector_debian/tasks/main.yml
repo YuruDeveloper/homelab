@@ -4,15 +4,27 @@
     state: present
     system: true
 
+- name: Get all groups
+  ansible.builtin.getent:
+    database: group
+
 - name: Make vector user
   ansible.builtin.user:
     name: vector
     group: vector
+    groups: "{{ ansible_facts.getent_group.keys() | intersect(['adm', 'mongodb', 'haproxy', 'jenkins']) }}"
+    append: true
     system: true
     shell: /sbin/nologin
     home: /var/lib/vector
     create_home: true
     state: present
+
+- name: Set permissions for log files
+  ansible.builtin.file:
+    path: /var/log/mongodb/mongod.log
+    mode: "0644"
+  ignore_errors: true
 
 
 - name: Make vector folder

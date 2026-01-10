@@ -54,6 +54,8 @@ all:
               ansible_host: 192.168.2.80
             zot:
               ansible_host: 192.168.2.81
+            argocd:
+              ansible_host: 192.168.2.83
         observability:
           hosts:
             grafana:

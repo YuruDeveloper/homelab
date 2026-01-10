@@ -1,0 +1,21 @@
+{% if server_ip is defined and token is defined %}
+# Agent Mode Configuration
+server: {{ server_ip }}
+token: {{ token }}
+node-label:
+  - "node.kubernetes.io/instance-type=k3s-agent"
+{% else %}
+# Server Mode Configuration
+write-kubeconfig-mode: "0644"
+{% if cluster_init is defined and cluster_init %}
+cluster-init: true
+{% endif %}
+{% if tls_san is defined %}
+tls-san:
+{% for san in tls_san %}
+  - {{ san }}
+{% endfor %}
+{% endif %}
+node-taint:
+  - "node-role.kubernetes.io/control-plane:NoSchedule"
+{% endif %}

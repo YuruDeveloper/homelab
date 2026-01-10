@@ -1,0 +1,2 @@
+url: "https://github.com/k3s-io/k3s/releases/download/{{ version }}%2Bk3s1/k3s"
+version: "v1.35.0"

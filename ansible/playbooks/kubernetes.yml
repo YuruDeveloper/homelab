@@ -1,0 +1,14 @@
+- name: Setup Server
+  become: true
+  hosts: server
+  roles:
+    - k3s
+
+- name: Setup agent
+  become: true
+  hosts: agent
+  vars:
+    server_ip: "192.168.3.2"
+    token: "{{ hostvars['server'].k3s_server_token }}"
+  roles:
+    - k3s

@@ -1,0 +1,41 @@
+#!/sbin/openrc-run
+
+name="k3s"
+description="lightweghit kubernetes"
+
+if [ -f /etc/conf.d/k3s ]; then
+    . /etc/conf.d/k3s
+fi
+
+: ${K3S_USER:=root}
+: ${K3S_GROUP:=root}
+: ${K3S_WORKDIR:=/var/lib/rancher/k3s}
+
+command="/usr/local/bin/k3s"
+command_user="${K3S_USER}:${K3S_GROUP}"
+{% if server_ip is defined and token is defined %}
+command_args="agent --server {{ server_ip }} --token {{ token }}"
+{% else %}
+command_args="server"
+{% endif %}
+command_background=true
+pidfile="/run/${RC_SVCNAME}.pid"
+directory="${K3S_WORKDIR}"
+
+# 자동 재시작 설정
+respawn_delay=10
+respawn_max=0
+
+output_log="/var/log/k3s/k3s.log"
+error_log="/var/log/k3s/k3s-error.log"
+
+depend() {
+    need net
+    after firewall
+}
+
+start_pre() {
+    checkpath --directory --mode 0755 --owner ${K3S_USER}:${K3S_GROUP} "${K3S_WORKDIR}"
+    checkpath --directory --mode 0755 --owner ${K3S_USER}:${K3S_GROUP} "/var/log/k3s"
+    ulimit -n 40000
+}

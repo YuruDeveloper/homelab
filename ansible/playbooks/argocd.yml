@@ -1,0 +1,6 @@
+- name: Setup ArgoCD
+  become: true
+  hosts: argocd
+  roles:
+    - k3s
+    - argocd
