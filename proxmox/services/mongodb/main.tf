@@ -8,9 +8,9 @@ module "mongodb" {
   VmId     = var.VmId
   Hostname = "mongodb"
 
-  CpuCores = 2
-  Memory   = 2048
-  Swap     = 0
+  CpuCores = 1
+  Memory   = 1024
+  Swap     = 512
   DiskSize = 16
 
   NetworkBridge = "vmbr1"

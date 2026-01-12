@@ -8,9 +8,9 @@ module "grafana" {
   VmId     = var.VmId
   Hostname = "grafana"
 
-  CpuCores = 2
-  Memory   = 2048
-  Swap     = 0
+  CpuCores = 1
+  Memory   = 512
+  Swap     = 512
   DiskSize = 2
 
   NetworkBridge = "vmbr1"

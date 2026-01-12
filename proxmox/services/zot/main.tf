@@ -9,8 +9,8 @@ module "zot" {
   Hostname = "zot"
 
   CpuCores = 1
-  Memory   = 1024
-  Swap     = 0
+  Memory   = 512
+  Swap     = 512
   DiskSize = 5
 
   NetworkBridge = "vmbr1"

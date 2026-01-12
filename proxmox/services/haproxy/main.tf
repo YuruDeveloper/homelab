@@ -9,8 +9,8 @@ module "haproxy" {
   Hostname = "haproxy"
 
   CpuCores = 1
-  Memory   = 512
-  Swap     = 0
+  Memory   = 256
+  Swap     = 1024
   DiskSize = var.DiskSize
 
   NetworkBridge = "vmbr1"

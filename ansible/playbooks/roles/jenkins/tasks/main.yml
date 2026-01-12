@@ -39,6 +39,7 @@
       - openjdk-21-jre
       - fontconfig
       - docker-ce-cli
+      - git
     state: present
 
 - name: Remove gpg
@@ -58,6 +59,12 @@
 - name: Reload jenkins
   ansible.builtin.systemd:
     daemon_reload: true
+
+- name: Insert docker environment
+  ansible.builtin.lineinfile:
+    path: "/etc/environment"
+    line: "export DOCKER_HOST=192.168.2.20:2375"
+    state: present
 
 - name: Start jenkins
   ansible.builtin.systemd:

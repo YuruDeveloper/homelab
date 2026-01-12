@@ -16,7 +16,7 @@ resource "proxmox_virtual_environment_vm" "docker" {
   }
 
   memory {
-    dedicated = 4096
+    dedicated = 3072
   }
 
   efi_disk {

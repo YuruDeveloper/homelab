@@ -186,6 +186,14 @@
     mode: "755"
   loop: "{{ streams }}"
 
+- name: Set client_max_body_size in nginx.conf
+  ansible.builtin.lineinfile:
+    path: /etc/nginx/nginx.conf
+    regexp: '^\s*client_max_body_size'
+    line: '    client_max_body_size 1G;'
+    insertafter: 'http {'
+    state: present
+
 - name: Reload nginx
   ansible.builtin.service:
     name: nginx

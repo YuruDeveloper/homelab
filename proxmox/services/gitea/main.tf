@@ -9,8 +9,8 @@ module "gitea" {
   Hostname = "gitea"
 
   CpuCores = 1
-  Memory   = 4096
-  Swap     = 0
+  Memory   = 512
+  Swap     = 1024
   DiskSize = 2
 
   NetworkBridge = "vmbr1"

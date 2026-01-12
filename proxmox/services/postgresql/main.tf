@@ -9,8 +9,8 @@ module "postgresql" {
   Hostname = "postgresql"
 
   CpuCores = 2
-  Memory   = 2048
-  Swap     = 0
+  Memory   = 1024
+  Swap     = 512
   DiskSize = 16
 
   NetworkBridge = "vmbr1"

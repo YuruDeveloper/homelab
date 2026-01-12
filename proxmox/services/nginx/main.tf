@@ -9,8 +9,8 @@ module "nginx" {
   Hostname = "nginx"
 
   CpuCores = 1
-  Memory   = 512
-  Swap     = 0
+  Memory   = 256
+  Swap     = 256
   DiskSize = 5
 
   NetworkBridge = "vmbr1"

@@ -8,8 +8,8 @@ module "jenkins" {
   VmId     = var.VmId
   Hostname = "jenkins"
 
-  CpuCores = 4
-  Memory   = 4096
+  CpuCores = 2
+  Memory   = 2048
   Swap     = 0
   DiskSize = 64
 

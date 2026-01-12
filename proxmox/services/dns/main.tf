@@ -10,7 +10,7 @@ module "dns" {
 
   CpuCores = 1
   Memory   = 512
-  Swap     = 0
+  Swap     = 512
   DiskSize = 1
 
   NetworkBridge = "vmbr1"

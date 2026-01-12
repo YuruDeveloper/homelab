@@ -10,7 +10,7 @@ module "rustfs" {
 
   CpuCores = 2
   Memory   = 2048
-  Swap     = 0
+  Swap     = 1024
   DiskSize = 4
 
   NetworkBridge = "vmbr1"

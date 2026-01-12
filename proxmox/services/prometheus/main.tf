@@ -8,9 +8,9 @@ module "prometheus" {
   VmId     = var.VmId
   Hostname = "prometheus"
 
-  CpuCores = 2
-  Memory   = 2048
-  Swap     = 0
+  CpuCores = 1
+  Memory   = 256
+  Swap     = 512
   DiskSize = 2
 
   NetworkBridge = "vmbr1"

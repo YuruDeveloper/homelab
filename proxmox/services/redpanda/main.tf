@@ -9,8 +9,8 @@ module "redpanda" {
   Hostname = "redpanda"
 
   CpuCores = 4
-  Memory   = 4096
-  Swap     = 0
+  Memory   = 3072
+  Swap     = 1024
   DiskSize = 16
 
   NetworkBridge = "vmbr1"

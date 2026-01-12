@@ -9,8 +9,8 @@ module "redis" {
   Hostname = "redis"
 
   CpuCores = 2
-  Memory   = 2048
-  Swap     = 0
+  Memory   = 1024
+  Swap     = 512
   DiskSize = 5
 
   NetworkBridge = "vmbr1"
