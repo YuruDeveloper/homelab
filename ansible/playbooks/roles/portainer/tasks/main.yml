@@ -8,7 +8,7 @@
   community.docker.docker_container:
     docker_host: unix:///var/run/docker.sock
     name: portainer
-    image: portainer/portainer-ce:latest
+    image: zot.bytedev.duckdns.org/portainer/portainer-ce:latest
     state: started
     pull: true
     recreate: true

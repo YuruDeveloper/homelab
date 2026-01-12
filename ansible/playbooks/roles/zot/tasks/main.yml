@@ -31,6 +31,7 @@
     - /etc/zot
     - /var/lib/zot
     - /var/lib/zot/tmp
+    - /var/log/zot
 
 - name: Install Zot
   ansible.builtin.get_url:

@@ -12,11 +12,11 @@ resource "proxmox_virtual_environment_vm" "docker" {
   boot_order = ["scsi0"]
 
   cpu {
-    cores = 1
+    cores = 4
   }
 
   memory {
-    dedicated = 2048
+    dedicated = 4096
   }
 
   efi_disk {
@@ -27,7 +27,7 @@ resource "proxmox_virtual_environment_vm" "docker" {
 
   disk {
     datastore_id = var.CommonConfig.DatastoreId
-    size         = 16
+    size         = 64
     interface    = "scsi0"
   }
 

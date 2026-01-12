@@ -10,6 +10,19 @@
     name: networking
     state: restarted
 
+
+- name: Enable Alpine community repository
+  ansible.builtin.lineinfile:
+    path: /etc/apk/repositories
+    regexp: '^#\s*(.*community.*)'
+    line: '\1'
+    backrefs: true
+    state: present
+
+- name: Update APK cache
+  community.general.apk:
+    update_cache: true
+
 - name: Download Docker and Need Packages
   community.general.apk:
     update_cache: false
@@ -19,11 +32,41 @@
       - py3-requests
       - py3-docker-py
 
+- name: Insert option into DOCKER_OPTS
+  ansible.builtin.lineinfile:
+    path: /etc/conf.d/docker
+    regexp: '^DOCKER_OPTS=".*"$'
+    line: 'DOCKER_OPTS="--host=unix:///var/run/docker.sock --host=tcp://0.0.0.0:2375"'
+
+- name: Make Jenkins Folder
+  ansible.builtin.file:
+    path: /root/jenkins
+    state: directory
+    mode: "0755"
+
+- name: Make Docker Folder
+  ansible.builtin.file:
+    path: /etc/docker
+    state: directory
+    mode: "0755"
+
+- name: Make daemon.json  
+  ansible.builtin.template:
+    src: daemon.json.j2
+    dest: /etc/docker/daemon.json
+    mode: "0644"
+
 - name: Start Docker
   ansible.builtin.service:
     name: docker
-    state: started
+    state: restarted
     enabled: true
+
+- name: Wait for Docker socket
+  ansible.builtin.wait_for:
+    path: /var/run/docker.sock
+    state: present
+    timeout: 30
 
 - name: Add macvlan network
   community.docker.docker_network:

@@ -150,7 +150,7 @@
             "type": "loki",
             "uid": "Loki"
           },
-          "expr": "sum(count_over_time({hostname=~\"$host\", service=~\"$service\", service_name=~\"$service_name\", vlan=~\"$vlan\", node_type=~\"$node_type\", log_level=~\"error|fatal\"} [$__interval]))",
+          "expr": "sum(count_over_time({hostname=~\"$host\", service=~\"$service\", service_name=~\"$service_name\", vlan=~\"$vlan\", node_type=~\"$node_type\", log_level=~\"error|fatal\"} |~ \"$search\" [$__interval]))",
           "refId": "A"
         }
       ],
@@ -218,7 +218,7 @@
             "type": "loki",
             "uid": "Loki"
           },
-          "expr": "sum(count_over_time({hostname=~\"$host\", service=~\"$service\", service_name=~\"$service_name\", vlan=~\"$vlan\", node_type=~\"$node_type\", log_level=\"warn\"} [$__interval]))",
+          "expr": "sum(count_over_time({hostname=~\"$host\", service=~\"$service\", service_name=~\"$service_name\", vlan=~\"$vlan\", node_type=~\"$node_type\", log_level=\"warn\"} |~ \"$search\" [$__interval]))",
           "refId": "A"
         }
       ],
@@ -278,7 +278,7 @@
             "type": "loki",
             "uid": "Loki"
           },
-          "expr": "sum(count_over_time({hostname=~\"$host\", service=~\"$service\", service_name=~\"$service_name\", vlan=~\"$vlan\", node_type=~\"$node_type\", log_level=\"info\"} [$__interval]))",
+          "expr": "sum(count_over_time({hostname=~\"$host\", service=~\"$service\", service_name=~\"$service_name\", vlan=~\"$vlan\", node_type=~\"$node_type\", log_level=\"info\"} |~ \"$search\" [$__interval]))",
           "refId": "A"
         }
       ],
@@ -338,7 +338,7 @@
             "type": "loki",
             "uid": "Loki"
           },
-          "expr": "sum(count_over_time({hostname=~\"$host\", service=~\"$service\", service_name=~\"$service_name\", vlan=~\"$vlan\", node_type=~\"$node_type\", log_level=\"debug\"} [$__interval]))",
+          "expr": "sum(count_over_time({hostname=~\"$host\", service=~\"$service\", service_name=~\"$service_name\", vlan=~\"$vlan\", node_type=~\"$node_type\", log_level=\"debug\"} |~ \"$search\" [$__interval]))",
           "refId": "A"
         }
       ],
@@ -398,7 +398,7 @@
             "type": "loki",
             "uid": "Loki"
           },
-          "expr": "count(count by (hostname) (count_over_time({hostname=~\"$host\", service=~\"$service\", service_name=~\"$service_name\", vlan=~\"$vlan\", node_type=~\"$node_type\", log_level=~\"$level\"} [1m])))",
+          "expr": "count(count by (hostname) (count_over_time({hostname=~\"$host\", service=~\"$service\", service_name=~\"$service_name\", vlan=~\"$vlan\", node_type=~\"$node_type\", log_level=~\"$level\"} |~ \"$search\" [1m])))",
           "refId": "A"
         }
       ],
@@ -1336,7 +1336,7 @@
             "type": "loki",
             "uid": "Loki"
           },
-          "expr": "sum by (hostname) (count_over_time({hostname=~\"$host\", service=~\"$service\", service_name=~\"$service_name\", vlan=~\"$vlan\", node_type=~\"$node_type\", log_level=~\"$level\"} [$__interval]))",
+          "expr": "sum by (hostname) (count_over_time({hostname=~\"$host\", service=~\"$service\", service_name=~\"$service_name\", vlan=~\"$vlan\", node_type=~\"$node_type\", log_level=~\"$level\"} |~ \"$search\" [$__interval]))",
           "refId": "A"
         }
       ],
