@@ -1,0 +1,23 @@
+- name: Make convertx folder
+  ansible.builtin.file:
+    state: directory
+    path: "/root/codeserver"
+    mode: "755"
+
+- name: Deploy code_server
+  community.docker.docker_container:
+    docker_host: unix:///var/run/docker.sock
+    name: code_server
+    image: zot.bytedev.duckdns.org/code_server:latest
+    state: started
+    pull: true
+    recreate: true
+    restart_policy: unless-stopped
+    dns_servers:
+      - 8.8.8.8
+      - 8.8.4.4
+    volumes:
+      - /root/codeserver:/home/cecil/workspace
+    networks:
+      - name: macvlan
+        ipv4_address: "{{ code_server_ip }}"

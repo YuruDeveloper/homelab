@@ -59,6 +59,10 @@ services:
     listen_port: 443
     ip: 192.168.2.83
     port: 80
+  - domain: code.bytedev.duckdns.org
+    listen_port: 443
+    ip: 192.168.4.5
+    port: 7070
 
 httpsserviec:
     - domain: proxmox.bytedev.duckdns.org

@@ -14,9 +14,11 @@
     portainer_ip: "192.168.4.2"
     glance_ip: "192.168.4.3"
     convertx_ip: "192.168.4.4"
+    code_server_ip: "192.168.4.5"
     technitium0_apikey: "{{ api1 }}"
     technitium1_apikey: "{{ api2 }}"
   roles:
     - portainer
     - glance
     - convertx
+    - codeserver
