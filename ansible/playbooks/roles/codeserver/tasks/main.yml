@@ -1,9 +1,21 @@
-- name: Make convertx folder
+- name: Make code_server folder
   ansible.builtin.file:
     state: directory
     path: "/root/codeserver"
     mode: "755"
 
+- name: Make code_server folder
+  ansible.builtin.file:
+    state: directory
+    path: "{{ item }}"
+    mode: "755"
+    owner: "10000"
+    group: "10000"
+  loop:
+    - "/root/codeserver/config"
+    - "/root/codeserver/share"
+    - "/root/codeserver/workspace"
+    
 - name: Deploy code_server
   community.docker.docker_container:
     docker_host: unix:///var/run/docker.sock
@@ -17,7 +29,9 @@
       - 8.8.8.8
       - 8.8.4.4
     volumes:
-      - /root/codeserver:/home/cecil/workspace
+      - /root/codeserver/config:/home/cecil/.config/code-server
+      - /root/codeserver/share:/home/cecil/.local/share/code-server
+      - /root/codeserver/workspace:/home/cecil/workspace
     networks:
       - name: macvlan
         ipv4_address: "{{ code_server_ip }}"
