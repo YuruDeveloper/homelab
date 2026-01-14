@@ -48,7 +48,7 @@ all:
           hosts:
             nginx0:
               ansible_host: 192.168.5.2
-        GitOps:
+        gitops:
           hosts:
             gitea:
               ansible_host: 192.168.2.80
