@@ -45,7 +45,9 @@ sources:
   LokiLogs:
     type: file
     include: ["/var/log/loki/*.log"]
-
+  GiteaLogs:
+    type: file
+    include: ["/var/log/gitea/gitea/*.log"]
 # --- Transforms ---
 transforms:
 
@@ -178,6 +180,7 @@ transforms:
       - GrafanaLogs
       - PrometheusLogs
       - LokiLogs
+      - GiteaLogs
     source: |
       msg = string!(.message)
 
@@ -197,7 +200,7 @@ transforms:
       - ParsePostgresql
       - ParseAppLogs
       - AlpineMessages
-      - RedisLogs
+      - RedisLogscla
     source: |
       .hostname = get_hostname!()
       .node_type = "alpine"
@@ -244,6 +247,8 @@ transforms:
           .service = "grafana"
         } else if contains(file_name, "prometheus") {
           .service = "prometheus"
+        } else if contains(file_name, "gitea") {
+          .service = "gitea"
         } else {
           .service = "system"
         }
