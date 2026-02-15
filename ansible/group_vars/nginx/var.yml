@@ -63,6 +63,10 @@ services:
     listen_port: 443
     ip: 192.168.4.5
     port: 7070
+  - domain: metube.bytedev.duckdns.org
+    listen_port: 443
+    ip: 192.168.4.6
+    port: 8081
 
 httpsserviec:
     - domain: proxmox.bytedev.duckdns.org

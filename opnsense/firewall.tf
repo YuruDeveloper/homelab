@@ -1162,10 +1162,38 @@ resource "opnsense_firewall_filter" "DmzToArgocd" {
   }
 }
 
+# DMZ → metube
+resource "opnsense_firewall_filter" "DmzToMetube" {
+  enabled     = true
+  sequence    = 70
+  description = "Allow DMZ to metube"
+
+  interface = {
+    interface = ["opt5"]
+  }
+
+  filter = {
+    action      = "pass"
+    quick       = true
+    direction   = "in"
+    ip_protocol = "inet"
+    protocol    = "TCP"
+
+    source = {
+      net = "192.168.5.0/24"
+    }
+
+    destination = {
+      net  = "192.168.4.6/32"
+      port = "8081"
+    }
+  }
+}
+
 # DMZ → Block remaining internal networks
 resource "opnsense_firewall_filter" "DmzBlockInternal" {
   enabled     = true
-  sequence    = 70
+  sequence    = 71
   description = "Block DMZ access to remaining internal networks"
 
   interface = {
@@ -1192,7 +1220,7 @@ resource "opnsense_firewall_filter" "DmzBlockInternal" {
 # DMZ → Allow Internet
 resource "opnsense_firewall_filter" "DmzToInternet" {
   enabled     = true
-  sequence    = 71
+  sequence    = 72
   description = "Allow DMZ to Internet"
 
   interface = {
@@ -1219,7 +1247,7 @@ resource "opnsense_firewall_filter" "DmzToInternet" {
 # DMZ IPv6 → Allow Internet
 resource "opnsense_firewall_filter" "DmzToInternetIpv6" {
   enabled     = true
-  sequence    = 72
+  sequence    = 73
   description = "Allow DMZ IPv6 to Internet"
 
   interface = {

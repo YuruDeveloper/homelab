@@ -1,0 +1,20 @@
+- name: Make metube folder
+  ansible.builtin.file:
+    state: directory
+    path: "/root/metube"
+    mode: "755"
+
+- name: Deploy metube
+  community.docker.docker_container:
+    docker_host: unix:///var/run/docker.sock
+    name: metube
+    image: ghcr.io/alexta69/metube:latest
+    state: started
+    pull: true
+    recreate: true
+    restart_policy: unless-stopped
+    volumes:
+      - /root/metube:/downloads
+    networks:
+      - name: macvlan
+        ipv4_address: "{{ metube_ip }}"
