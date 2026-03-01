@@ -1190,10 +1190,66 @@ resource "opnsense_firewall_filter" "DmzToMetube" {
   }
 }
 
+# DMZ → openclaw
+resource "opnsense_firewall_filter" "DmzToOpenclaw" {
+  enabled     = true
+  sequence    = 71
+  description = "Allow DMZ to openclaw"
+
+  interface = {
+    interface = ["opt5"]
+  }
+
+  filter = {
+    action      = "pass"
+    quick       = true
+    direction   = "in"
+    ip_protocol = "inet"
+    protocol    = "TCP"
+
+    source = {
+      net = "192.168.5.0/24"
+    }
+
+    destination = {
+      net  = "192.168.2.200/32"
+      port = "18789"
+    }
+  }
+}
+
+# DMZ → SearXNG
+resource "opnsense_firewall_filter" "DmzToSearxng" {
+  enabled     = true
+  sequence    = 72
+  description = "Allow DMZ to SearXNG"
+
+  interface = {
+    interface = ["opt5"]
+  }
+
+  filter = {
+    action      = "pass"
+    quick       = true
+    direction   = "in"
+    ip_protocol = "inet"
+    protocol    = "TCP"
+
+    source = {
+      net = "192.168.5.0/24"
+    }
+
+    destination = {
+      net  = "192.168.4.7/32"
+      port = "8080"
+    }
+  }
+}
+
 # DMZ → Block remaining internal networks
 resource "opnsense_firewall_filter" "DmzBlockInternal" {
   enabled     = true
-  sequence    = 71
+  sequence    = 73
   description = "Block DMZ access to remaining internal networks"
 
   interface = {
@@ -1220,7 +1276,7 @@ resource "opnsense_firewall_filter" "DmzBlockInternal" {
 # DMZ → Allow Internet
 resource "opnsense_firewall_filter" "DmzToInternet" {
   enabled     = true
-  sequence    = 72
+  sequence    = 74
   description = "Allow DMZ to Internet"
 
   interface = {
@@ -1247,7 +1303,7 @@ resource "opnsense_firewall_filter" "DmzToInternet" {
 # DMZ IPv6 → Allow Internet
 resource "opnsense_firewall_filter" "DmzToInternetIpv6" {
   enabled     = true
-  sequence    = 73
+  sequence    = 75
   description = "Allow DMZ IPv6 to Internet"
 
   interface = {
@@ -1272,7 +1328,7 @@ resource "opnsense_firewall_filter" "DmzToInternetIpv6" {
 }
 
 # ============================================
-# 방화벽 규칙 - Wireguard VPN (opt6)
+# 방화벽 규칙 - Wireguard VPN (opt7)
 # ============================================
 
 # Wireguard → Allow all to any
@@ -1282,7 +1338,7 @@ resource "opnsense_firewall_filter" "Wireguard" {
   description = "Allow Wireguard interface to any"
 
   interface = {
-    interface = ["opt6"]
+    interface = ["opt7"]
   }
 
   filter = {
@@ -1293,7 +1349,7 @@ resource "opnsense_firewall_filter" "Wireguard" {
     protocol    = "any"
 
     source = {
-      net = "opt6"
+      net = "opt7"
     }
 
     destination = {
@@ -1309,7 +1365,7 @@ resource "opnsense_firewall_filter" "WireguardIpv6" {
   description = "Allow Wireguard IPv6 interface to any"
 
   interface = {
-    interface = ["opt6"]
+    interface = ["opt7"]
   }
 
   filter = {
@@ -1320,7 +1376,7 @@ resource "opnsense_firewall_filter" "WireguardIpv6" {
     protocol    = "any"
 
     source = {
-      net = "opt6"
+      net = "opt7"
     }
 
     destination = {
@@ -1329,11 +1385,11 @@ resource "opnsense_firewall_filter" "WireguardIpv6" {
   }
 }
 
-# WAN → Allow Wireguard VPN (UDP 51820)
+# WAN → Allow Wireguard VPN (UDP 3478)
 resource "opnsense_firewall_filter" "WanAllowWireguard" {
   enabled     = true
   sequence    = 75
-  description = "Allow WAN to Wireguard VPN (UDP 51820)"
+  description = "Allow WAN to Wireguard VPN (UDP 3478)"
 
   interface = {
     interface = ["wan"]
@@ -1352,7 +1408,7 @@ resource "opnsense_firewall_filter" "WanAllowWireguard" {
 
     destination = {
       net  = "any"
-      port = "51820"
+      port = "3478"
     }
   }
 }

@@ -1,0 +1,30 @@
+- name: Make searxng folder
+  ansible.builtin.file:
+    state: directory
+    path: "/root/searxng"
+    mode: "755"
+
+- name: Make settings.yml
+  ansible.builtin.template:
+    src: settings.j2
+    dest: "/root/searxng/settings.yml"
+    mode: "644"
+
+- name: Deploy SearXNG
+  community.docker.docker_container:
+    docker_host: unix:///var/run/docker.sock
+    name: searxng
+    image: docker.io/searxng/searxng:latest
+    state: started
+    pull: true
+    recreate: true
+    restart_policy: unless-stopped
+    env:
+      SEARXNG_BASE_URL: "https://searxng.bytedev.duckdns.org/"
+    volumes:
+      - /root/searxng:/etc/searxng
+    networks:
+      - name: macvlan
+        ipv4_address: "{{ searxng_ip }}"
+    dns_servers:
+      - 8.8.8.8

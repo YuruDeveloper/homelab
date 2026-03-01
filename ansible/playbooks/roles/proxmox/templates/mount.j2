@@ -7,7 +7,7 @@ Wants=network-online.target
 What={{ truenas_ip }}:{{ mount_origin }}
 Where={{ mount_point }}
 Type=nfs
-Options={{ nfs_mount_options }},nofail,x-systemd.automount
+Options={{ nfs_mount_options }},rw,hard,nosuid,nodev,noatime,nodiratime,_netdev,nofail
 
 [Install]
 WantedBy=remote-fs.target

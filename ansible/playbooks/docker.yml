@@ -16,6 +16,9 @@
     convertx_ip: "192.168.4.4"
     code_server_ip: "192.168.4.5"
     metube_ip : "192.168.4.6"
+    searxng_ip: "192.168.4.7"
+    searxng_secret_key: "{{ vault_searxng_secret_key }}"
+    searxng_redis_password: "{{ vault_redis_password }}"
     technitium0_apikey: "{{ api1 }}"
     technitium1_apikey: "{{ api2 }}"
   roles:
@@ -24,3 +27,4 @@
     - convertx
     - codeserver
     - metube
+    - searxng

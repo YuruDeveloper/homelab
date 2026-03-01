@@ -1,0 +1,39 @@
+---
+# Role: SearXNG
+# Description: SearXNG 프라이버시 중심 메타 검색엔진 컨테이너 배포
+
+galaxy_info:
+  role_name: searxng
+  author: cecil
+  description: SearXNG privacy-respecting metasearch engine container deployment
+  license: MIT
+  min_ansible_version: "2.9"
+  platforms:
+    - name: Alpine
+      versions:
+        - all
+
+# 변수 구조
+# Required Variables:
+#   - searxng_ip: (string) SearXNG 컨테이너 IP 주소
+#       예: "192.168.4.7"
+#   - searxng_secret_key: (string) SearXNG 시크릿 키 (vault_searxng_secret_key)
+#       생성: openssl rand -hex 32
+#   - searxng_redis_password: (string) Redis 인증 패스워드 (vault_redis_password)
+#
+# Provided Variables:
+#   - SearXNG가 {{ searxng_ip }}:8080에서 실행됨
+#
+# 네트워크 요구사항:
+#   - 포트 8080 (SearXNG 웹 UI)
+#   - Docker macvlan 네트워크
+#   - Redis 접근 가능 (redis.bytedev.duckdns.org:6379 → Nginx → HAProxy → Redis)
+#
+# 중요 사항:
+#   ⚠️ 이 Role을 실행하기 전에 Docker가 실행 중이어야 합니다!
+#   ⚠️ docker vault에 vault_searxng_secret_key, vault_redis_password 추가 필요
+#   ⚠️ searxng_ip는 macvlan 네트워크 대역 내여야 합니다 (192.168.4.x)
+
+# 의존성 설명
+# - 선행 Role: Docker (docker_network 필요)
+# - 후속 Role: 없음

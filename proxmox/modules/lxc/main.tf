@@ -51,7 +51,7 @@ resource "proxmox_virtual_environment_container" "LxcContainer" {
       replicate = false
     }
   }
-
+  
   operating_system {
     template_file_id = var.TemplateFileId
     type             = var.OsType

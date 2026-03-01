@@ -19,7 +19,9 @@ module "postgresql" {
   Gateway       = var.Gateway
 
   Unprivileged = true
-
+  EnableKeyctl  = true
+  EnableNesting = true
+  
   MountPoints = [
     {
       volume      = "/mnt/postgresql"

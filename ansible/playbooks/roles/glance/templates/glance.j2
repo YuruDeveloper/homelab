@@ -51,9 +51,12 @@ pages:
               - title: code
                 url: https://code.bytedev.duckdns.org
                 icon: sh:visual-studio-code
-              - tile: metube
+              - title: metube
                 url: https://metube.bytedev.duckdns.org
                 icon: sh:youtube
+              - title: searxng
+                url: https://searxng.bytedev.duckdns.org
+                icon: sh:searxng
 
           - type: docker-containers
             cache: 1m
@@ -73,8 +76,26 @@ pages:
               convertx:
                 name: convertx
                 icon: sh:convertx
-                description: dashboard
+                description: file converter
                 url: https://convertx.bytedev.duckdns.org
+                hide: false
+              code-server:
+                name: code-server
+                icon: sh:visual-studio-code
+                description: web ide
+                url: https://code.bytedev.duckdns.org
+                hide: false
+              metube:
+                name: metube
+                icon: sh:youtube
+                description: video downloader
+                url: https://metube.bytedev.duckdns.org
+                hide: false
+              searxng:
+                name: searxng
+                icon: sh:searxng
+                description: meta search engine
+                url: https://searxng.bytedev.duckdns.org
                 hide: false
 
       - size: small

@@ -67,6 +67,14 @@ services:
     listen_port: 443
     ip: 192.168.4.6
     port: 8081
+  - domain: searxng.bytedev.duckdns.org
+    listen_port: 443
+    ip: 192.168.4.7
+    port: 8080
+  - domain: openclaw.bytedev.duckdns.org
+    listen_port: 443
+    ip: 192.168.2.200
+    port: 18789
 
 httpsserviec:
     - domain: proxmox.bytedev.duckdns.org

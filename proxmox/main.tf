@@ -352,6 +352,31 @@ module "prometheus" {
   VmId = 1202
   IpAddress = "192.168.2.102/24"
   Gateway = local.Networks.internal.Gateway
-  
+
   depends_on = [module.AlpineTemplate]
+}
+
+module "claw" {
+  source = "./modules/lxc"
+
+  CommonConfig   = local.CommonLxcConfig
+  OsType         = "debian"
+  TemplateFileId = local.Templates.Debian13
+
+  VmId     = 5000
+  Hostname = "claw"
+
+  CpuCores = 2
+  Memory   = 2048
+  Swap     = 2048
+  DiskSize = 16
+
+  IpAddress = "192.168.2.200/24"
+  Gateway   = local.Networks.internal.Gateway
+
+  Unprivileged  = true
+  EnableKeyctl  = true
+  EnableNesting = true
+
+  depends_on = [module.Debian13Template]
 }

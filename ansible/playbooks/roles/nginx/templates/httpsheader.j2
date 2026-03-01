@@ -7,6 +7,8 @@ proxy_set_header X-Real-IP $remote_addr;
 # 프록시 체인의 모든 IP (CDN, 로드밸런서 환경)
 proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
 
+proxy_set_header X-Forwarded-User $remote_user;
+
 # 원본 프로토콜 (HTTP/HTTPS)
 proxy_set_header X-Forwarded-Proto $scheme;
 
