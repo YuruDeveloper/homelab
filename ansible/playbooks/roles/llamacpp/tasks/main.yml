@@ -1,0 +1,181 @@
+- name: Install build tools and Vulkan runtime packages
+  ansible.builtin.apt:
+    update_cache: true
+    name:
+      - build-essential
+      - cmake
+      - tar
+      - git
+      - libgomp1
+      - libvulkan-dev
+      - glslang-tools
+      - glslc
+      - spirv-tools
+      - mesa-vulkan-drivers
+      - curl
+      - libssl-dev
+    state: present
+
+- name: Download Vulkan-Headers source
+  ansible.builtin.get_url:
+    url: "https://github.com/KhronosGroup/Vulkan-Headers/archive/refs/tags/{{ vulkan_headers_version }}.tar.gz"
+    dest: /tmp/vulkan-headers.tar.gz
+    mode: "0644"
+
+- name: Extract Vulkan-Headers
+  ansible.builtin.unarchive:
+    src: /tmp/vulkan-headers.tar.gz
+    dest: /tmp/
+    remote_src: true
+
+- name: Install Vulkan C headers to /usr/local/include
+  ansible.builtin.copy:
+    src: "/tmp/Vulkan-Headers-{{ vulkan_headers_version | regex_replace('^v', '') }}/include/"
+    dest: /usr/local/include/
+    remote_src: true
+
+- name: Download Vulkan-Hpp source
+  ansible.builtin.get_url:
+    url: "https://github.com/KhronosGroup/Vulkan-Hpp/archive/refs/tags/{{ vulkan_headers_version }}.tar.gz"
+    dest: /tmp/vulkan-hpp.tar.gz
+    mode: "0644"
+
+- name: Extract Vulkan-Hpp
+  ansible.builtin.unarchive:
+    src: /tmp/vulkan-hpp.tar.gz
+    dest: /tmp/
+    remote_src: true
+
+- name: Install Vulkan-Hpp C++ headers to /usr/local/include
+  ansible.builtin.copy:
+    src: "/tmp/Vulkan-Hpp-{{ vulkan_headers_version | regex_replace('^v', '') }}/vulkan/"
+    dest: /usr/local/include/vulkan/
+    remote_src: true
+
+- name: Create llamacpp group
+  ansible.builtin.group:
+    name: llamacpp
+    system: true
+    state: present
+
+- name: Create llamacpp user
+  ansible.builtin.user:
+    name: llamacpp
+    group: llamacpp
+    groups: render,video
+    system: true
+    shell: /usr/sbin/nologin
+    home: /var/lib/llamacpp
+    create_home: true
+    state: present
+
+- name: Create directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: llamacpp
+    group: llamacpp
+    mode: "0755"
+  loop:
+    - /var/lib/llamacpp
+    - /var/log/llamacpp
+
+- name: Check installed llama.cpp version
+  ansible.builtin.stat:
+    path: /usr/local/lib/llamacpp.version
+  register: llama_version_file
+
+- name: Read installed version
+  ansible.builtin.slurp:
+    src: /usr/local/lib/llamacpp.version
+  register: installed_version
+  when: llama_version_file.stat.exists
+
+- name: Set build flag
+  ansible.builtin.set_fact:
+    llama_needs_build: >-
+      {{ not llama_version_file.stat.exists or
+         (installed_version.content | b64decode | trim) != llama_version }}
+
+- name: Create tmp directory
+  ansible.builtin.file:
+    path: /var/lib/llamacpp/tmp
+    state: directory
+    owner: llamacpp
+    group: llamacpp
+    mode: "0755"
+  when: llama_needs_build
+
+- name: Download llama.cpp source
+  ansible.builtin.get_url:
+    url: "{{ llama_source_url }}"
+    dest: "/var/lib/llamacpp/tmp/llama-source.tar.gz"
+    mode: "0644"
+  when: llama_needs_build
+
+- name: Untar llama.cpp source archive
+  ansible.builtin.unarchive:
+    src: "/var/lib/llamacpp/tmp/llama-source.tar.gz"
+    dest: /var/lib/llamacpp/tmp
+    remote_src: true
+  when: llama_needs_build
+
+- name: Configure llama.cpp with cmake (Vulkan, Release)
+  ansible.builtin.command:
+    cmd: cmake -B build -DGGML_VULKAN=ON -DGGML_VULKAN_VALIDATE=OFF -DCMAKE_BUILD_TYPE=Release -DLLAMA_OPENSSL=ON
+    chdir: "/var/lib/llamacpp/tmp/llama.cpp-{{ llama_version }}"
+  when: llama_needs_build
+
+- name: Build llama.cpp
+  ansible.builtin.command:
+    cmd: cmake --build build --config Release -j {{ llama_cmake_jobs }}
+    chdir: "/var/lib/llamacpp/tmp/llama.cpp-{{ llama_version }}"
+  when: llama_needs_build
+
+- name: Install llama.cpp to /usr/local
+  ansible.builtin.command:
+    cmd: cmake --install build --prefix /usr/local
+    chdir: "/var/lib/llamacpp/tmp/llama.cpp-{{ llama_version }}"
+  when: llama_needs_build
+
+- name: Update shared library cache
+  ansible.builtin.command:
+    cmd: ldconfig
+  become: true
+  when: llama_needs_build
+
+- name: Save installed llama.cpp version
+  ansible.builtin.copy:
+    content: "{{ llama_version }}"
+    dest: /usr/local/lib/llamacpp.version
+    mode: "0644"
+  when: llama_needs_build
+
+- name: Remove temp directory
+  ansible.builtin.file:
+    path: /var/lib/llamacpp/tmp
+    state: absent
+  when: llama_needs_build
+
+- name: Set ownership
+  ansible.builtin.file:
+    path: /var/lib/llamacpp
+    state: directory
+    owner: llamacpp
+    group: llamacpp
+    recurse: true
+
+- name: Install systemd service
+  ansible.builtin.template:
+    src: llama-server.j2
+    dest: /etc/systemd/system/llama-server.service
+    mode: "0644"
+
+- name: Reload systemd
+  ansible.builtin.systemd:
+    daemon_reload: true
+
+- name: Enable llama-server service
+  ansible.builtin.service:
+    name: llama-server
+    enabled: true

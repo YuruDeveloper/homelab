@@ -51,7 +51,18 @@ resource "proxmox_virtual_environment_container" "LxcContainer" {
       replicate = false
     }
   }
-  
+
+  dynamic "device_passthrough" {
+    for_each = var.DevicePassthrough
+    content {
+      path       = device_passthrough.value.path
+      mode       = device_passthrough.value.mode
+      gid        = device_passthrough.value.gid
+      uid        = device_passthrough.value.uid
+      deny_write = device_passthrough.value.deny_write
+    }
+  }
+
   operating_system {
     template_file_id = var.TemplateFileId
     type             = var.OsType

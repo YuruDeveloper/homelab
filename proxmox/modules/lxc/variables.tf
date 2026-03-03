@@ -126,3 +126,15 @@ variable "MountPoints" {
   description = "마운트 포인트 목록 (bind mount). volume 형식: 'mp=/호스트/경로' (Proxmox 호스트의 디렉토리를 컨테이너에 bind mount)"
   default     = []
 }
+
+variable "DevicePassthrough" {
+  type = list(object({
+    path       = string
+    mode       = optional(string, "0660")
+    gid        = optional(number)
+    uid        = optional(number)
+    deny_write = optional(bool, false)
+  }))
+  description = "장치 패스스루 목록 (예: GPU /dev/dri/renderD128)"
+  default     = []
+}

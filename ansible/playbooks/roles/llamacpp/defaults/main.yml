@@ -1,0 +1,9 @@
+llama_version: "b8192"
+llama_source_url: "https://github.com/ggml-org/llama.cpp/archive/refs/tags/{{ llama_version }}.tar.gz"
+llama_cmake_jobs: 2
+vulkan_headers_version: "v1.4.313"
+llama_port: 8080
+llama_host: "0.0.0.0"
+llama_gpu_layers: 99
+llama_ctx_size: 131072
+llama_model_file: "unsloth/Qwen3.5-4B-GGUF:Q4_K_M"

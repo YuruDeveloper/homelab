@@ -1,0 +1,5 @@
+- name: Setup llama.cpp
+  become: true
+  hosts: llamacpp
+  roles:
+    - llamacpp

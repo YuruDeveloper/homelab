@@ -356,6 +356,19 @@ module "prometheus" {
   depends_on = [module.AlpineTemplate]
 }
 
+module "llamacpp" {
+  source = "./services/llamacpp"
+
+  CommonConfig   = local.CommonLxcConfig
+  TemplateFileId = local.Templates.Debian
+
+  VmId      = 1300
+  IpAddress = "192.168.2.110/24"
+  Gateway   = local.Networks.internal.Gateway
+
+  depends_on = [module.DebianTemplate]
+}
+
 module "claw" {
   source = "./modules/lxc"
 
