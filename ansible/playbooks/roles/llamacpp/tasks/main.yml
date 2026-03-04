@@ -21,6 +21,7 @@
     url: "https://github.com/KhronosGroup/Vulkan-Headers/archive/refs/tags/{{ vulkan_headers_version }}.tar.gz"
     dest: /tmp/vulkan-headers.tar.gz
     mode: "0644"
+    checksum: "{{ (vulkan_headers_checksum | string | length > 0) | ternary(vulkan_headers_checksum, omit) }}"
 
 - name: Extract Vulkan-Headers
   ansible.builtin.unarchive:
@@ -33,12 +34,14 @@
     src: "/tmp/Vulkan-Headers-{{ vulkan_headers_version | regex_replace('^v', '') }}/include/"
     dest: /usr/local/include/
     remote_src: true
+    mode: preserve
 
 - name: Download Vulkan-Hpp source
   ansible.builtin.get_url:
     url: "https://github.com/KhronosGroup/Vulkan-Hpp/archive/refs/tags/{{ vulkan_headers_version }}.tar.gz"
     dest: /tmp/vulkan-hpp.tar.gz
     mode: "0644"
+    checksum: "{{ (vulkan_hpp_checksum | string | length > 0) | ternary(vulkan_hpp_checksum, omit) }}"
 
 - name: Extract Vulkan-Hpp
   ansible.builtin.unarchive:
@@ -51,6 +54,7 @@
     src: "/tmp/Vulkan-Hpp-{{ vulkan_headers_version | regex_replace('^v', '') }}/vulkan/"
     dest: /usr/local/include/vulkan/
     remote_src: true
+    mode: preserve
 
 - name: Create llamacpp group
   ansible.builtin.group:
@@ -85,17 +89,39 @@
     path: /usr/local/lib/llamacpp.version
   register: llama_version_file
 
+- name: Check installed llama.cpp build signature
+  ansible.builtin.stat:
+    path: /usr/local/lib/llamacpp.buildsig
+  register: llama_buildsig_file
+
 - name: Read installed version
   ansible.builtin.slurp:
     src: /usr/local/lib/llamacpp.version
   register: installed_version
   when: llama_version_file.stat.exists
 
+- name: Read installed build signature
+  ansible.builtin.slurp:
+    src: /usr/local/lib/llamacpp.buildsig
+  register: installed_buildsig
+  when: llama_buildsig_file.stat.exists
+
+- name: Set desired build signature
+  ansible.builtin.set_fact:
+    llama_build_signature: >-
+      {{ {
+          'version': llama_version,
+          'source_url': llama_source_url,
+          'cmake_flags': llama_cmake_flags
+      } | to_json }}
+
 - name: Set build flag
   ansible.builtin.set_fact:
     llama_needs_build: >-
       {{ not llama_version_file.stat.exists or
-         (installed_version.content | b64decode | trim) != llama_version }}
+         (installed_version.content | b64decode | trim) != llama_version or
+         not llama_buildsig_file.stat.exists or
+         (installed_buildsig.content | b64decode | trim) != (llama_build_signature | trim) }}
 
 - name: Create tmp directory
   ansible.builtin.file:
@@ -111,6 +137,7 @@
     url: "{{ llama_source_url }}"
     dest: "/var/lib/llamacpp/tmp/llama-source.tar.gz"
     mode: "0644"
+    checksum: "{{ (llama_source_checksum | string | length > 0) | ternary(llama_source_checksum, omit) }}"
   when: llama_needs_build
 
 - name: Untar llama.cpp source archive
@@ -122,32 +149,44 @@
 
 - name: Configure llama.cpp with cmake (Vulkan, Release)
   ansible.builtin.command:
-    cmd: cmake -B build -DGGML_VULKAN=ON -DGGML_VULKAN_VALIDATE=OFF -DCMAKE_BUILD_TYPE=Release -DLLAMA_OPENSSL=ON
+    cmd: "cmake -B build -DCMAKE_BUILD_TYPE=Release {{ llama_cmake_flags | join(' ') }}"
     chdir: "/var/lib/llamacpp/tmp/llama.cpp-{{ llama_version }}"
+  changed_when: true
   when: llama_needs_build
 
 - name: Build llama.cpp
   ansible.builtin.command:
     cmd: cmake --build build --config Release -j {{ llama_cmake_jobs }}
     chdir: "/var/lib/llamacpp/tmp/llama.cpp-{{ llama_version }}"
+  changed_when: true
   when: llama_needs_build
 
 - name: Install llama.cpp to /usr/local
   ansible.builtin.command:
     cmd: cmake --install build --prefix /usr/local
     chdir: "/var/lib/llamacpp/tmp/llama.cpp-{{ llama_version }}"
+  changed_when: true
+  notify: Restart llama-server
   when: llama_needs_build
 
 - name: Update shared library cache
   ansible.builtin.command:
     cmd: ldconfig
   become: true
+  changed_when: true
   when: llama_needs_build
 
 - name: Save installed llama.cpp version
   ansible.builtin.copy:
     content: "{{ llama_version }}"
     dest: /usr/local/lib/llamacpp.version
+    mode: "0644"
+  when: llama_needs_build
+
+- name: Save installed llama.cpp build signature
+  ansible.builtin.copy:
+    content: "{{ llama_build_signature }}"
+    dest: /usr/local/lib/llamacpp.buildsig
     mode: "0644"
   when: llama_needs_build
 
@@ -170,12 +209,12 @@
     src: llama-server.j2
     dest: /etc/systemd/system/llama-server.service
     mode: "0644"
+  notify:
+    - Reload systemd
+    - Restart llama-server
 
-- name: Reload systemd
+- name: Enable and start llama-server service
   ansible.builtin.systemd:
-    daemon_reload: true
-
-- name: Enable llama-server service
-  ansible.builtin.service:
     name: llama-server
     enabled: true
+    state: started

@@ -1,9 +1,19 @@
 llama_version: "b8192"
 llama_source_url: "https://github.com/ggml-org/llama.cpp/archive/refs/tags/{{ llama_version }}.tar.gz"
+llama_source_checksum: ""
 llama_cmake_jobs: 2
+llama_cmake_flags:
+  - -DGGML_VULKAN=ON
+  - -DGGML_VULKAN_VALIDATE=OFF
+  - -DLLAMA_OPENSSL=ON
 vulkan_headers_version: "v1.4.313"
+vulkan_headers_checksum: ""
+vulkan_hpp_checksum: ""
 llama_port: 8080
 llama_host: "0.0.0.0"
 llama_gpu_layers: 99
 llama_ctx_size: 131072
 llama_model_file: "unsloth/Qwen3.5-4B-GGUF:Q4_K_M"
+llama_server_extra_args:
+  - --parallel
+  - "8"

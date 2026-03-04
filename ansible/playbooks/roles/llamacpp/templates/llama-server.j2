@@ -1,6 +1,7 @@
 [Unit]
 Description=llama.cpp server
-After=network.target
+After=network-online.target
+Wants=network-online.target
 
 [Service]
 Type=simple
@@ -8,10 +9,15 @@ User=llamacpp
 Group=llamacpp
 WorkingDirectory=/var/lib/llamacpp
 
-ExecStart=/usr/local/bin/llama-server --host {{ llama_host }} --port {{ llama_port }} -hf {{ llama_model_file }} -ngl {{ llama_gpu_layers }}  --ctx-size {{ llama_ctx_size }}
+ExecStart=/usr/local/bin/llama-server --host {{ llama_host }} --port {{ llama_port }} -hf {{ llama_model_file }} -ngl {{ llama_gpu_layers }} --ctx-size {{ llama_ctx_size }}{% if llama_server_extra_args | length > 0 %} {{ llama_server_extra_args | join(' ') }}{% endif %}
 
 Restart=on-failure
 RestartSec=10
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=true
+ReadWritePaths=/var/lib/llamacpp /var/log/llamacpp
 
 StandardOutput=append:/var/log/llamacpp/server.log
 StandardError=append:/var/log/llamacpp/server-error.log
