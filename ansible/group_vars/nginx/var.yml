@@ -75,6 +75,10 @@ services:
     listen_port: 443
     ip: 192.168.2.200
     port: 18789
+  - domain: llama.bytedev.duckdns.org
+    listen_port: 443
+    ip: 192.168.2.110
+    port: 8080
 
 httpsserviec:
     - domain: proxmox.bytedev.duckdns.org

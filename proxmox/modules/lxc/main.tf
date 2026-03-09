@@ -4,7 +4,7 @@ resource "proxmox_virtual_environment_container" "LxcContainer" {
   unprivileged = var.Unprivileged
   cpu {
     cores = var.CpuCores
-    units = 1
+    units = 12
   }
 
   memory {

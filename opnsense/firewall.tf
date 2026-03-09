@@ -1246,10 +1246,38 @@ resource "opnsense_firewall_filter" "DmzToSearxng" {
   }
 }
 
+# DMZ → llama.cpp
+resource "opnsense_firewall_filter" "DmzToLlamacpp" {
+  enabled     = true
+  sequence    = 73
+  description = "Allow DMZ to llama.cpp"
+
+  interface = {
+    interface = ["opt5"]
+  }
+
+  filter = {
+    action      = "pass"
+    quick       = true
+    direction   = "in"
+    ip_protocol = "inet"
+    protocol    = "TCP"
+
+    source = {
+      net = "192.168.5.0/24"
+    }
+
+    destination = {
+      net  = "192.168.2.110/32"
+      port = "8080"
+    }
+  }
+}
+
 # DMZ → Block remaining internal networks
 resource "opnsense_firewall_filter" "DmzBlockInternal" {
   enabled     = true
-  sequence    = 73
+  sequence    = 74
   description = "Block DMZ access to remaining internal networks"
 
   interface = {
@@ -1276,7 +1304,7 @@ resource "opnsense_firewall_filter" "DmzBlockInternal" {
 # DMZ → Allow Internet
 resource "opnsense_firewall_filter" "DmzToInternet" {
   enabled     = true
-  sequence    = 74
+  sequence    = 75
   description = "Allow DMZ to Internet"
 
   interface = {
@@ -1303,7 +1331,7 @@ resource "opnsense_firewall_filter" "DmzToInternet" {
 # DMZ IPv6 → Allow Internet
 resource "opnsense_firewall_filter" "DmzToInternetIpv6" {
   enabled     = true
-  sequence    = 75
+  sequence    = 76
   description = "Allow DMZ IPv6 to Internet"
 
   interface = {

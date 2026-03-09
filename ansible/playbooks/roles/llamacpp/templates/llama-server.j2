@@ -11,6 +11,7 @@ WorkingDirectory=/var/lib/llamacpp
 
 ExecStart=/usr/local/bin/llama-server --host {{ llama_host }} --port {{ llama_port }} -hf {{ llama_model_file }} -ngl {{ llama_gpu_layers }} --ctx-size {{ llama_ctx_size }}{% if llama_server_extra_args | length > 0 %} {{ llama_server_extra_args | join(' ') }}{% endif %}
 
+Environment=RADV_PERFTEST=nogttspill
 Restart=on-failure
 RestartSec=10
 NoNewPrivileges=true
