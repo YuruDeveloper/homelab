@@ -1,4 +1,4 @@
-llama_version: "b8192"
+llama_version: "b8248"
 llama_source_url: "https://github.com/ggml-org/llama.cpp/archive/refs/tags/{{ llama_version }}.tar.gz"
 llama_source_checksum: ""
 llama_cmake_jobs: 2
@@ -16,13 +16,19 @@ vulkan_headers_checksum: ""
 vulkan_hpp_checksum: ""
 llama_port: 8080
 llama_host: "0.0.0.0"
-llama_gpu_layers: 38
+llama_gpu_layers: 50
 llama_ctx_size: 256000
 llama_model_file: "HauhauCS/Qwen3.5-9B-Uncensored-HauhauCS-Aggressive:Q4_K_M"
 llama_server_extra_args:
   - --parallel
   - "2"
   - "--cache-type-k"
-  - "q4_0"
+  - "q8_0"
   - "--cache-type-v"
-  - "q4_0"
+  - "q8_0"
+  - --flash-attn
+  - "on"
+  - --batch-size
+  - "1024"
+  - --ubatch-size 
+  - "256"
