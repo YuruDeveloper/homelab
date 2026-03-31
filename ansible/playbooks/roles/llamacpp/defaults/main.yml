@@ -23,11 +23,9 @@ llama_server_extra_args:
   - --parallel
   - "2"
   - "--cache-type-k"
-  - "q8_0"
+  - "q4_0"
   - "--cache-type-v"
-  - "q8_0"
-  - --flash-attn
-  - "on"
+  - "q4_0"
   - --batch-size
   - "1024"
   - --ubatch-size 
