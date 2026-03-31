@@ -382,7 +382,7 @@ module "claw" {
   CpuCores = 2
   Memory   = 2048
   Swap     = 2048
-  DiskSize = 16
+  DiskSize = 64
 
   IpAddress = "192.168.2.200/24"
   Gateway   = local.Networks.internal.Gateway
