@@ -85,7 +85,7 @@ resource "openwrt_firewall_forwarding" "client_service" {
   dest = openwrt_firewall_zone.service.name
 }
 
-resource "openwrt_firewall_forwarding" "client_kubernets" {
+resource "openwrt_firewall_forwarding" "client_kubernetes" {
   src  = openwrt_firewall_zone.client.name
   dest = openwrt_firewall_zone.kubernetes.name
 }
@@ -120,38 +120,38 @@ resource "openwrt_firewall_forwarding" "dmz_wan" {
 }
 
 resource "openwrt_firewall_forwarding" "wireguard_wan" {
-  src  = openwrt_network_interface.wireguard.name
+  src  = openwrt_firewall_zone.wireguard.name
   dest = openwrt_firewall_zone.wan.name
 }
 
 resource "openwrt_firewall_forwarding" "wireguard_hardware" {
-  src  = openwrt_network_interface.wireguard.name
+  src  = openwrt_firewall_zone.wireguard.name
   dest = openwrt_firewall_zone.hardware.name
 }
 
 resource "openwrt_firewall_forwarding" "wireguard_client" {
-  src  = openwrt_network_interface.wireguard.name
+  src  = openwrt_firewall_zone.wireguard.name
   dest = openwrt_firewall_zone.client.name
 }
 
 
 resource "openwrt_firewall_forwarding" "wireguard_service" {
-  src  = openwrt_network_interface.wireguard.name
+  src  = openwrt_firewall_zone.wireguard.name
   dest = openwrt_firewall_zone.service.name
 }
 
-resource "openwrt_firewall_forwarding" "wireguard_kubernets" {
-  src  = openwrt_network_interface.wireguard.name
+resource "openwrt_firewall_forwarding" "wireguard_kubernetes" {
+  src  = openwrt_firewall_zone.wireguard.name
   dest = openwrt_firewall_zone.kubernetes.name
 }
 
 resource "openwrt_firewall_forwarding" "wireguard_container" {
-  src  = openwrt_network_interface.wireguard.name
+  src  = openwrt_firewall_zone.wireguard.name
   dest = openwrt_firewall_zone.container.name
 }
 
 resource "openwrt_firewall_forwarding" "wireguard_dmz" {
-  src  = openwrt_network_interface.wireguard.name
+  src  = openwrt_firewall_zone.wireguard.name
   dest = openwrt_firewall_zone.dmz.name
 }
 
@@ -295,85 +295,125 @@ resource "openwrt_uci_section" "kafka" {
   }
 }
 
-resource "openwrt_firewall_rule" "wan_https" {
-  name      = "Allow WAN to Nginx HTTPS"
+resource "openwrt_firewall_rule" "wan_wireguard" {
+  name      = "Allow WAN to WireGuard VPN"
   src       = openwrt_firewall_zone.wan.name
-  dest      = openwrt_firewall_zone.dmz.name
-  dest_ip   = "192.168.5.2"
-  dest_port = "443"
-  proto     = "tcp"
-  target    = "ACCEPT"
-}
-
-
-resource "openwrt_firewall_rule" "wan_http" {
-  name      = "Allow WAN to Nginx HTTP"
-  src       = openwrt_firewall_zone.wan.name
-  dest      = openwrt_firewall_zone.dmz.name
-  dest_ip   = "192.168.5.2"
-  dest_port = "80"
-  proto     = "tcp"
-  target    = "ACCEPT"
-}
-
-
-resource "openwrt_firewall_rule" "wan_postgresql" {
-  name      = "Allow WAN to Nginx Postgresql"
-  src       = openwrt_firewall_zone.wan.name
-  dest      = openwrt_firewall_zone.dmz.name
-  dest_ip   = "192.168.5.2"
-  dest_port = "5432"
-  proto     = "tcp"
-  target    = "ACCEPT"
-}
-
-resource "openwrt_firewall_rule" "wan_mongodb" {
-  name      = "Allow WAN to Nginx MongoDB"
-  src       = openwrt_firewall_zone.wan.name
-  dest      = openwrt_firewall_zone.dmz.name
-  dest_ip   = "192.168.5.2"
-  dest_port = "27017"
-  proto     = "tcp"
-  target    = "ACCEPT"
-}
-
-
-resource "openwrt_firewall_rule" "wan_valkey" {
-  name      = "Allow WAN to Nginx Valkey"
-  src       = openwrt_firewall_zone.wan.name
-  dest      = openwrt_firewall_zone.dmz.name
-  dest_ip   = "192.168.5.2"
-  dest_port = "6396"
-  proto     = "tcp"
-  target    = "ACCEPT"
-}
-
-resource "openwrt_firewall_rule" "wan_s3" {
-  name      = "Allow WAN to Nginx S3"
-  src       = openwrt_firewall_zone.wan.name
-  dest      = openwrt_firewall_zone.dmz.name
-  dest_ip   = "192.168.5.2"
-  dest_port = "9000"
-  proto     = "tcp"
-  target    = "ACCEPT"
-}
-
-resource "openwrt_firewall_rule" "wan_kaafka" {
-  name      = "Allow WAN to Nginx Kafka"
-  src       = openwrt_firewall_zone.wan.name
-  dest      = openwrt_firewall_zone.dmz.name
-  dest_ip   = "192.168.5.2"
-  dest_port = "9092"
-  proto     = "tcp"
-  target    = "ACCEPT"
-}
-
-resource "openwrt_firewall_rule" "wan_wire_guard" {
-  name      = "Allow WAN to Nginx Wire guard"
-  src       = openwrt_firewall_zone.wan.name
-  dest_ip   = "192.168.5.2"
   dest_port = "3478"
   proto     = "udp"
   target    = "ACCEPT"
+}
+
+resource "openwrt_firewall_rule" "hardware_dhcp" {
+  name      = "Allow Hardware DHCP"
+  src       = openwrt_firewall_zone.hardware.name
+  dest_ip   = "255.255.255.255"
+  dest_port = "67"
+  proto     = "udp"
+  target    = "ACCEPT"
+}
+
+resource "openwrt_firewall_rule" "hardware_dns0" {
+  name      = "Allow Hardware to DNS0"
+  src       = openwrt_firewall_zone.hardware.name
+  dest      = openwrt_firewall_zone.service.name
+  dest_ip   = "192.168.2.2"
+  dest_port = "53"
+  proto     = "tcp udp"
+  target    = "ACCEPT"
+}
+
+resource "openwrt_firewall_rule" "hardware_dns1" {
+  name      = "Allow Hardware to DNS1"
+  src       = openwrt_firewall_zone.hardware.name
+  dest      = openwrt_firewall_zone.service.name
+  dest_ip   = "192.168.2.3"
+  dest_port = "53"
+  proto     = "tcp udp"
+  target    = "ACCEPT"
+}
+
+resource "openwrt_firewall_rule" "kubernetes_dhcp" {
+  name      = "Allow Kubernetes DHCP"
+  src       = openwrt_firewall_zone.kubernetes.name
+  dest_ip   = "255.255.255.255"
+  dest_port = "67"
+  proto     = "udp"
+  target    = "ACCEPT"
+}
+
+resource "openwrt_firewall_rule" "kubernetes_dns0" {
+  name      = "Allow Kubernetes to DNS0"
+  src       = openwrt_firewall_zone.kubernetes.name
+  dest      = openwrt_firewall_zone.service.name
+  dest_ip   = "192.168.2.2"
+  dest_port = "53"
+  proto     = "tcp udp"
+  target    = "ACCEPT"
+}
+
+resource "openwrt_firewall_rule" "kubernetes_dns1" {
+  name      = "Allow Kubernetes to DNS1"
+  src       = openwrt_firewall_zone.kubernetes.name
+  dest      = openwrt_firewall_zone.service.name
+  dest_ip   = "192.168.2.3"
+  dest_port = "53"
+  proto     = "tcp udp"
+  target    = "ACCEPT"
+}
+
+resource "openwrt_firewall_rule" "container_dhcp" {
+  name      = "Allow Container DHCP"
+  src       = openwrt_firewall_zone.container.name
+  dest_ip   = "255.255.255.255"
+  dest_port = "67"
+  proto     = "udp"
+  target    = "ACCEPT"
+}
+
+resource "openwrt_firewall_rule" "container_dns0" {
+  name      = "Allow Container to DNS0"
+  src       = openwrt_firewall_zone.container.name
+  dest      = openwrt_firewall_zone.service.name
+  dest_ip   = "192.168.2.2"
+  dest_port = "53"
+  proto     = "tcp udp"
+  target    = "ACCEPT"
+}
+
+resource "openwrt_firewall_rule" "container_dns1" {
+  name      = "Allow Container to DNS1"
+  src       = openwrt_firewall_zone.container.name
+  dest      = openwrt_firewall_zone.service.name
+  dest_ip   = "192.168.2.3"
+  dest_port = "53"
+  proto     = "tcp udp"
+  target    = "ACCEPT"
+}
+
+resource "openwrt_firewall_rule" "dmz_dhcp" {
+  name      = "Allow DMZ DHCP"
+  src       = openwrt_firewall_zone.dmz.name
+  dest_ip   = "255.255.255.255"
+  dest_port = "67"
+  proto     = "udp"
+  target    = "ACCEPT"
+}
+
+resource "openwrt_firewall_rule" "kubernetes_dmz_proxy" {
+  name    = "Allow Kubernetes to DMZ Proxy"
+  src     = openwrt_firewall_zone.kubernetes.name
+  dest    = openwrt_firewall_zone.dmz.name
+  dest_ip = "192.168.5.2"
+  proto   = "all"
+  target  = "ACCEPT"
+}
+
+resource "openwrt_firewall_rule" "container_dmz_proxy" {
+  name    = "Allow Container to DMZ Proxy"
+  src     = openwrt_firewall_zone.container.name
+  dest    = openwrt_firewall_zone.dmz.name
+  dest_ip = "192.168.5.2"
+  proto   = "all"
+  target  = "ACCEPT"
 }
 
