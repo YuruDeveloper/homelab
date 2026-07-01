@@ -4,6 +4,12 @@ resource "openwrt_network_device" "br_lan" {
   ports = var.serivce_lan_devices
 }
 
+resource "openwrt_network_device" "br_client" {
+  name  = "client_bridge"
+  type  = "bridge"
+  ports = [var.client_lan_device]
+}
+
 resource "openwrt_network_bridge_vlan" "vlan1" {
   device = openwrt_network_device.br_lan.name
   vlan   = 1
@@ -65,7 +71,7 @@ resource "openwrt_network_interface" "hardware" {
 resource "openwrt_network_interface" "client" {
   name   = "client"
   proto  = "static"
-  device = var.client_lan_device
+  device = openwrt_network_device.br_client.name
   ipaddr = ["192.168.1.1/24"]
   auto   = "1"
 }
@@ -115,4 +121,8 @@ resource "openwrt_network_interface" "wireguard" {
   proto  = "wireguard"
   auto   = "1"
   ipaddr = ["100.100.0.1/24"]
+
+  lifecycle {
+    ignore_changes = [gateway]
+  }
 }

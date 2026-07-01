@@ -338,3 +338,42 @@ resource "openwrt_firewall_rule" "wan_mongodb" {
 }
 
 
+resource "openwrt_firewall_rule" "wan_valkey" {
+  name      = "Allow WAN to Nginx Valkey"
+  src       = openwrt_firewall_zone.wan.name
+  dest      = openwrt_firewall_zone.dmz.name
+  dest_ip   = "192.168.5.2"
+  dest_port = "6396"
+  proto     = "tcp"
+  target    = "ACCEPT"
+}
+
+resource "openwrt_firewall_rule" "wan_s3" {
+  name      = "Allow WAN to Nginx S3"
+  src       = openwrt_firewall_zone.wan.name
+  dest      = openwrt_firewall_zone.dmz.name
+  dest_ip   = "192.168.5.2"
+  dest_port = "9000"
+  proto     = "tcp"
+  target    = "ACCEPT"
+}
+
+resource "openwrt_firewall_rule" "wan_kaafka" {
+  name      = "Allow WAN to Nginx Kafka"
+  src       = openwrt_firewall_zone.wan.name
+  dest      = openwrt_firewall_zone.dmz.name
+  dest_ip   = "192.168.5.2"
+  dest_port = "9092"
+  proto     = "tcp"
+  target    = "ACCEPT"
+}
+
+resource "openwrt_firewall_rule" "wan_wire_guard" {
+  name      = "Allow WAN to Nginx Wire guard"
+  src       = openwrt_firewall_zone.wan.name
+  dest_ip   = "192.168.5.2"
+  dest_port = "3478"
+  proto     = "udp"
+  target    = "ACCEPT"
+}
+

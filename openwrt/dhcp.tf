@@ -1,71 +1,127 @@
 resource "openwrt_dhcp_dnsmasq" "main" {
   domainneeded      = true
   localise_queries  = true
-  rebind_protection = true
-  rebind_localhost  = true
+  rebind_protection = false
+  rebind_localhost  = false
   authoritative     = true
   readethers        = true
   leasefile         = "/tmp/dhcp.leases"
   resolvfile        = "/tmp/resolv.conf.d/resolv.conf.auto"
   localservice      = true
-  server            = ["1.1.1.1", "1.0.0.1"]
 }
 
-resource "openwrt_dhcp_pool" "hardware" {
-  name      = "hardware"
-  interface = openwrt_network_interface.hardware.name
-  start     = 100
-  limit     = 150
-  leasetime = "12h"
-  ignore    = false
+resource "openwrt_uci_section" "hardware_pool" {
+  config = "dhcp"
+  type   = "dhcp"
+  name   = "hardware"
+  options = {
+    interface   = openwrt_network_interface.hardware.name
+    dhcpv4      = "server"
+    start       = 100
+    limit       = 150
+    leasetime   = "12h"
+    ignore      = false
+    dhcp_option = "6,1.1.1.1,1.0.0.1"
+  }
 
-  depends_on = [openwrt_network_interface.hardware]
+  lifecycle {
+    ignore_changes = [options[".anonymous"]]
+  }
 }
 
-resource "openwrt_dhcp_pool" "client" {
-  name      = "client"
-  interface = openwrt_network_interface.client.name
-  start     = 100
-  limit     = 150
-  leasetime = "12h"
-  ignore    = false
+resource "openwrt_uci_section" "client_pool" {
+  config = "dhcp"
+  type   = "dhcp"
+  name   = "client"
+  options = {
+    interface   = openwrt_network_interface.client.name
+    dhcpv4      = "server"
+    start       = 100
+    limit       = 150
+    leasetime   = "12h"
+    ignore      = false
+    dhcp_option = "6,1.1.1.1,1.0.0.1"
+  }
 
-  depends_on = [openwrt_network_interface.client]
+  lifecycle {
+    ignore_changes = [options[".anonymous"]]
+  }
 }
 
-resource "openwrt_dhcp_pool" "service" {
-  name      = "service"
-  interface = openwrt_network_interface.service.name
-  start     = 100
-  limit     = 150
-  leasetime = "12h"
-  ignore    = false
+resource "openwrt_uci_section" "service_pool" {
+  config = "dhcp"
+  type   = "dhcp"
+  name   = "service"
+  options = {
+    interface   = openwrt_network_interface.service.name
+    dhcpv4      = "server"
+    start       = 100
+    limit       = 150
+    leasetime   = "12h"
+    ignore      = false
+    dhcp_option = "6,1.1.1.1,1.0.0.1"
+  }
+
+  lifecycle {
+    ignore_changes = [options[".anonymous"]]
+  }
 }
 
-resource "openwrt_dhcp_pool" "kubernetes" {
-  name      = "kubernetes"
-  interface = openwrt_network_interface.kubernetes.name
-  start     = 100
-  limit     = 150
-  leasetime = "12h"
-  ignore    = false
+resource "openwrt_uci_section" "kubernetes_pool" {
+  config = "dhcp"
+  type   = "dhcp"
+  name   = "kubernetes"
+  options = {
+    interface   = openwrt_network_interface.kubernetes.name
+    dhcpv4      = "server"
+    start       = 100
+    limit       = 150
+    leasetime   = "12h"
+    ignore      = false
+    dhcp_option = "6,1.1.1.1,1.0.0.1"
+  }
+
+  lifecycle {
+    ignore_changes = [options[".anonymous"]]
+  }
 }
 
-resource "openwrt_dhcp_pool" "container" {
-  name      = "container"
-  interface = openwrt_network_interface.container.name
-  start     = 100
-  limit     = 150
-  leasetime = "12h"
-  ignore    = false
+resource "openwrt_uci_section" "container_pool" {
+  config = "dhcp"
+  type   = "dhcp"
+  name   = "container"
+  options = {
+    interface   = openwrt_network_interface.container.name
+    dhcpv4      = "server"
+    start       = 100
+    limit       = 150
+    leasetime   = "12h"
+    ignore      = false
+    dhcp_option = "6,1.1.1.1,1.0.0.1"
+  }
+
+  lifecycle {
+    ignore_changes = [options[".anonymous"]]
+  }
 }
 
-resource "openwrt_dhcp_pool" "dmz" {
-  name      = "dmz"
-  interface = openwrt_network_interface.dmz.name
-  start     = 100
-  limit     = 150
-  leasetime = "12h"
-  ignore    = false
+
+resource "openwrt_uci_section" "dmz_pool" {
+  config = "dhcp"
+  type   = "dhcp"
+  name   = "dmz"
+  options = {
+    interface   = openwrt_network_interface.dmz.name
+    dhcpv4      = "server"
+    start       = 100
+    limit       = 150
+    leasetime   = "12h"
+    ignore      = false
+    dhcp_option = "6,1.1.1.1,1.0.0.1"
+  }
+
+  lifecycle {
+    ignore_changes = [options[".anonymous"]]
+  }
 }
 
