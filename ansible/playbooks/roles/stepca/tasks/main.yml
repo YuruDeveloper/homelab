@@ -17,6 +17,7 @@
     - /etc/step-ca/certs
     - /etc/step-ca/secrets
     - /etc/step-ca/config
+    - /etc/step-ca/db
 
 - name: Make intermediate_ca.crt
   ansible.builtin.template:

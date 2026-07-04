@@ -6,11 +6,15 @@
         "address": ":443",
         "insecureAddress": "",
         "dnsNames": [
-                "192.168.2.2",
+                "192.168.2.6",
                 "ca.home.arpa"
         ],
         "logger": {
                 "format": "text"
+        },
+        "db": {
+                "type": "badgerv2",
+                "dataSource": "/etc/step-ca/db"
         },
         "authority": {
                 "provisioners": [

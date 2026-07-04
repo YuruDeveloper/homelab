@@ -100,10 +100,31 @@ resource "openwrt_firewall_forwarding" "client_dmz" {
   dest = openwrt_firewall_zone.dmz.name
 }
 
+resource "openwrt_firewall_forwarding" "service_hardware" {
+  src  = openwrt_firewall_zone.service.name
+  dest = openwrt_firewall_zone.hardware.name
+}
+
+resource "openwrt_firewall_forwarding" "service_kubernetes" {
+  src  = openwrt_firewall_zone.service.name
+  dest = openwrt_firewall_zone.kubernetes.name
+}
+
+resource "openwrt_firewall_forwarding" "service_container" {
+  src  = openwrt_firewall_zone.service.name
+  dest = openwrt_firewall_zone.container.name
+}
+
+resource "openwrt_firewall_forwarding" "service_dmz" {
+  src  = openwrt_firewall_zone.service.name
+  dest = openwrt_firewall_zone.dmz.name
+}
+
 resource "openwrt_firewall_forwarding" "service_wan" {
   src  = openwrt_firewall_zone.service.name
   dest = openwrt_firewall_zone.wan.name
 }
+
 resource "openwrt_firewall_forwarding" "kubernetes_wan" {
   src  = openwrt_firewall_zone.kubernetes.name
   dest = openwrt_firewall_zone.wan.name
@@ -420,6 +441,7 @@ resource "openwrt_firewall_rule" "container_dmz_proxy" {
 resource "openwrt_firewall_rule" "hardware_ca_proxy" {
   name      = "Allow Hardware to CA Proxy"
   src       = openwrt_firewall_zone.hardware.name
+  dest      = openwrt_firewall_zone.service.name
   dest_ip   = "192.168.2.6"
   dest_port = "443"
   proto     = "tcp"
@@ -429,6 +451,7 @@ resource "openwrt_firewall_rule" "hardware_ca_proxy" {
 resource "openwrt_firewall_rule" "kubernetes_ca_proxy" {
   name      = "Allow Kubernetes to CA Proxy"
   src       = openwrt_firewall_zone.kubernetes.name
+  dest      = openwrt_firewall_zone.service.name
   dest_ip   = "192.168.2.6"
   dest_port = "443"
   proto     = "tcp"
@@ -438,6 +461,7 @@ resource "openwrt_firewall_rule" "kubernetes_ca_proxy" {
 resource "openwrt_firewall_rule" "container_ca_proxy" {
   name      = "Allow Container to CA Proxy"
   src       = openwrt_firewall_zone.container.name
+  dest      = openwrt_firewall_zone.service.name
   dest_ip   = "192.168.2.6"
   dest_port = "443"
   proto     = "tcp"
