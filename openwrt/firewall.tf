@@ -417,6 +417,33 @@ resource "openwrt_firewall_rule" "container_dmz_proxy" {
   target  = "ACCEPT"
 }
 
+resource "openwrt_firewall_rule" "hardware_ca_proxy" {
+  name      = "Allow Hardware to CA Proxy"
+  src       = openwrt_firewall_zone.hardware.name
+  dest_ip   = "192.168.2.6"
+  dest_port = "443"
+  proto     = "tcp"
+  target    = "ACCEPT"
+}
+
+resource "openwrt_firewall_rule" "kubernetes_ca_proxy" {
+  name      = "Allow Kubernetes to CA Proxy"
+  src       = openwrt_firewall_zone.kubernetes.name
+  dest_ip   = "192.168.2.6"
+  dest_port = "443"
+  proto     = "tcp"
+  target    = "ACCEPT"
+}
+
+resource "openwrt_firewall_rule" "container_ca_proxy" {
+  name      = "Allow Container to CA Proxy"
+  src       = openwrt_firewall_zone.container.name
+  dest_ip   = "192.168.2.6"
+  dest_port = "443"
+  proto     = "tcp"
+  target    = "ACCEPT"
+}
+
 resource "openwrt_firewall_rule" "proxmox_turenas_proxy" {
   name    = "Allow Proxmox to Truenas Proxy"
   src     = openwrt_firewall_zone.hardware.name

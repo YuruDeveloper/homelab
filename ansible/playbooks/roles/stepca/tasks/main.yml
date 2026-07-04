@@ -1,0 +1,65 @@
+- name: Install Need Package
+  community.general.apk:
+    update_cache: false
+    name:
+      - step-certificates
+      - step-cli
+    state: installed
+
+- name: Create step-ca directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: step-ca
+    group: step-ca
+    mode: "0755"
+  loop:
+    - /etc/step-ca/certs
+    - /etc/step-ca/secrets
+    - /etc/step-ca/config
+
+- name: Make intermediate_ca.crt
+  ansible.builtin.template:
+    src: intermediate_ca.crt.j2
+    dest: /etc/step-ca/certs/intermediate_ca.crt
+    owner: step-ca
+    group: step-ca
+    mode: "644"
+
+- name: Make root_ca_crt
+  ansible.builtin.template:
+    src: root_ca.crt.j2
+    dest: /etc/step-ca/certs/root_ca.crt
+    owner: step-ca
+    group: step-ca
+    mode: "644"
+
+- name: Make intermediate_ca_key
+  ansible.builtin.template:
+    src: intermediate_ca_key.j2
+    dest: /etc/step-ca/secrets/intermediate_ca_key
+    owner: step-ca
+    group: step-ca
+    mode: "600"
+
+- name: Make password
+  ansible.builtin.template:
+    src: password.txt.j2
+    dest: /etc/step-ca/password.txt
+    owner: step-ca
+    group: step-ca
+    mode: "600"
+
+- name: Make ca.json
+  ansible.builtin.template:
+    src: ca.json.j2
+    dest: /etc/step-ca/config/ca.json
+    owner: step-ca
+    group: step-ca
+    mode: "644"
+
+- name: Start step-ca
+  ansible.builtin.service:
+    name: step-ca
+    state: restarted
+    enabled: true
