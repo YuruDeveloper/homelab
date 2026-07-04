@@ -14,15 +14,15 @@ nfs_mounts:
   - name: "git"
     mount_origin: "/mnt/Data/git"
     mount_point: "/mnt/git"
-    description: "Gitea Repositories"
+    description: "Git Repositories"
 
   - name: "gitlarge"
-    mount_origin: "/mnt/Data/gitLarge"
+    mount_origin: "/mnt/Data/gitlarge"
     mount_point: "/mnt/gitlarge"
-    description: "Gitea LFS Storage"
-
+    description: "Git LFS Storage"
+ 
   - name: "objectstorage"
-    mount_origin: "/mnt/Data/objectStorage"
+    mount_origin: "/mnt/Data/objectstorage"
     mount_point: "/mnt/objectstorage"
     description: "Object Storage"
   
@@ -34,9 +34,9 @@ nfs_mounts:
   - name: "observability"
     mount_origin: "/mnt/Data/observability"
     mount_point: "/mnt/observability"
-    description: "Observability TechStack"
+    description: "Observability"
 
-  - name: "zot"
-    mount_origin: "/mnt/Data/zot"
-    mount_point: "/mnt/zot"
-    description: "zot"
+  - name: "artifact"
+    mount_origin: "/mnt/Data/artifact"
+    mount_point: "/mnt/artifact"
+    description: "artifact"

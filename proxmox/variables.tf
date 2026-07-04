@@ -5,7 +5,7 @@ variable "proxmox_password" {
 
 variable "proxmox_node" {
   type    = string
-  default = "Server"
+  default = "proxmox"
 }
 variable "public_key" {
   type = string

@@ -2,7 +2,7 @@
   community.general.apk:
     update_cache: false
     name:
-      - aspnetcore8-runtime
+      - aspnetcore10-runtime
       - icu
       - tar
     state: installed

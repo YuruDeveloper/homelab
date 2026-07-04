@@ -417,3 +417,13 @@ resource "openwrt_firewall_rule" "container_dmz_proxy" {
   target  = "ACCEPT"
 }
 
+resource "openwrt_firewall_rule" "proxmox_turenas_proxy" {
+  name    = "Allow Proxmox to Truenas Proxy"
+  src     = openwrt_firewall_zone.hardware.name
+  src_ip = "192.168.0.2"
+  dest    = openwrt_firewall_zone.service.name
+  dest_ip = "192.168.2.10"
+  proto   = "all"
+  target  = "ACCEPT"
+}
+

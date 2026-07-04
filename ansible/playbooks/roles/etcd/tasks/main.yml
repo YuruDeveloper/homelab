@@ -3,6 +3,7 @@
     update_cache: false
     name:
       - tar
+      - logrotate
     state: installed
 
 - name: Make etcd group
@@ -62,6 +63,22 @@
     src: etcd.j2
     dest: /etc/init.d/etcd
     mode: "755"
+
+- name: Make logrotate config folder
+  ansible.builtin.file:
+    path: /etc/logrotate.d
+    state: directory
+    owner: root
+    group: root
+    mode: "755"
+
+- name: Add etcd logrotate config
+  ansible.builtin.template:
+    src: etcd.logrotate.j2
+    dest: /etc/logrotate.d/etcd
+    owner: root
+    group: root
+    mode: "644"
 
 - name: Remove temp folder
   ansible.builtin.file:

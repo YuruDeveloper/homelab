@@ -1,0 +1,11 @@
+/var/log/etcd/*.log {
+    size {{ etcd_logrotate_size }}
+    rotate {{ etcd_logrotate_rotate }}
+    missingok
+    notifempty
+    copytruncate
+{% if etcd_logrotate_compress | bool %}
+    compress
+    delaycompress
+{% endif %}
+}

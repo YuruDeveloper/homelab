@@ -1,1 +1,6 @@
-etcd_version: "3.6.5"
+etcd_version: "3.6.13"
+etcd_download_url: "https://github.com/etcd-io/etcd/releases/download/v{{ etcd_version }}/etcd-v{{ etcd_version }}-linux-amd64.tar.gz"
+
+etcd_logrotate_size: "10M"
+etcd_logrotate_rotate: 5
+etcd_logrotate_compress: false

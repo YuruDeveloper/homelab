@@ -9,8 +9,8 @@ locals {
   }
 
   Templates = {
-    Alpine = module.AlpineTemplate.TemplateFileId
-    Debian = module.DebianTemplate.TemplateFileId
+    Alpine   = module.AlpineTemplate.TemplateFileId
+    Debian   = module.DebianTemplate.TemplateFileId
     Debian13 = module.Debian13Template.TemplateFileId
   }
 
@@ -31,23 +31,23 @@ module "AlpineTemplate" {
 
   ProxmoxNode        = var.proxmox_node
   DatastoreId        = "local"
-  AlpineVersion      = "3.22"
-  AlpineTemplateDate = "20250617"
+  AlpineVersion      = "3.23"
+  AlpineTemplateDate = "20260116"
 }
 
 module "DebianTemplate" {
-  source = "./modules/debian-template"
-  ProxmoxNode        = var.proxmox_node
-  DatastoreId        = "local"
-  DebianVersion = "12"
-  DebianDetailVersion = "12.7-1"
+  source              = "./modules/debian-template"
+  ProxmoxNode         = var.proxmox_node
+  DatastoreId         = "local"
+  DebianVersion       = "12"
+  DebianDetailVersion = "12.12-1"
 }
 
 module "Debian13Template" {
-  source = "./modules/debian-template"
-  ProxmoxNode        = var.proxmox_node
-  DatastoreId        = "local"
-  DebianVersion = "13"
+  source              = "./modules/debian-template"
+  ProxmoxNode         = var.proxmox_node
+  DatastoreId         = "local"
+  DebianVersion       = "13"
   DebianDetailVersion = "13.1-2"
 }
 
@@ -56,7 +56,7 @@ module "AlpineVirtIso" {
 
   ProxmoxNode   = var.proxmox_node
   DatastoreId   = "local"
-  AlpineVersion = "3.23"
+  AlpineVersion = "3.24"
 }
 
 module "truenas" {
@@ -64,7 +64,7 @@ module "truenas" {
 
   ProxmoxNode = var.proxmox_node
 
-  VmId        = 300
+  VmId        = 200
   DatastoreId = "local-lvm"
 
 }
@@ -75,7 +75,8 @@ module "technitium0" {
   CommonConfig   = local.CommonLxcConfig
   TemplateFileId = local.Templates.Alpine
 
-  VmId      = 200
+  Hostname  = "technitium0"
+  VmId      = 100
   IpAddress = "192.168.2.2/24"
   Gateway   = local.Networks.internal.Gateway
 
@@ -88,7 +89,8 @@ module "technitium1" {
   CommonConfig   = local.CommonLxcConfig
   TemplateFileId = local.Templates.Alpine
 
-  VmId      = 201
+  Hostname  = "technitium1"
+  VmId      = 101
   IpAddress = "192.168.2.3/24"
   Gateway   = local.Networks.internal.Gateway
 
@@ -100,10 +102,10 @@ module "haproxy0" {
 
   CommonConfig   = local.CommonLxcConfig
   TemplateFileId = local.Templates.Alpine
-  DiskSize = 1
-  VmId      = 500
-  IpAddress = "192.168.2.30/24"
-  Gateway   = local.Networks.internal.Gateway
+  Hostname       = "postgresql-haproxy"
+  VmId           = 300
+  IpAddress      = "192.168.2.20/24"
+  Gateway        = local.Networks.internal.Gateway
 
   depends_on = [module.AlpineTemplate]
 }
@@ -114,8 +116,9 @@ module "postgreslave0" {
   CommonConfig   = local.CommonLxcConfig
   TemplateFileId = local.Templates.Alpine
 
-  VmId      = 510
-  IpAddress = "192.168.2.40/24"
+  Hostname  = "postgresql0"
+  VmId      = 310
+  IpAddress = "192.168.2.30/24"
   Gateway   = local.Networks.internal.Gateway
 
   depends_on = [module.AlpineTemplate]
@@ -127,8 +130,9 @@ module "postgreslave1" {
   CommonConfig   = local.CommonLxcConfig
   TemplateFileId = local.Templates.Alpine
 
-  VmId      = 511
-  IpAddress = "192.168.2.41/24"
+  Hostname  = "postgresql1"
+  VmId      = 311
+  IpAddress = "192.168.2.31/24"
   Gateway   = local.Networks.internal.Gateway
 
   depends_on = [module.AlpineTemplate]
@@ -140,48 +144,50 @@ module "rustfs" {
   CommonConfig   = local.CommonLxcConfig
   TemplateFileId = local.Templates.Alpine
 
-  VmId      = 600
-  IpAddress = "192.168.2.50/24"
+  VmId      = 700
+  IpAddress = "192.168.2.70/24"
   Gateway   = local.Networks.internal.Gateway
 
   depends_on = [module.AlpineTemplate]
 }
 
 module "haproxy1" {
-  source = "./services/haproxy"
-  OsType = "debian"
-  DiskSize = 5
+  source         = "./services/haproxy"
+  OsType         = "debian"
+  Hostname       = "mongodb-haproxy"
   CommonConfig   = local.CommonLxcConfig
   TemplateFileId = local.Templates.Debian
 
-  VmId = 700
-  IpAddress = "192.168.2.31/24"
+  VmId      = 400
+  IpAddress = "192.168.2.21/24"
   Gateway   = local.Networks.internal.Gateway
 
   depends_on = [module.DebianTemplate]
 }
 
 module "mongodb0" {
-  source = "./services/mongodb"
-  OsType = "debian"
+  source         = "./services/mongodb"
+  OsType         = "debian"
   CommonConfig   = local.CommonLxcConfig
   TemplateFileId = local.Templates.Debian
 
-  VmId = 710
-  IpAddress = "192.168.2.60/24"
+  Hostname  = "mongodb0"
+  VmId      = 410
+  IpAddress = "192.168.2.40/24"
   Gateway   = local.Networks.internal.Gateway
 
   depends_on = [module.DebianTemplate]
 }
 
 module "mongodb1" {
-  source = "./services/mongodb"
-  OsType = "debian"
+  source         = "./services/mongodb"
+  OsType         = "debian"
   CommonConfig   = local.CommonLxcConfig
   TemplateFileId = local.Templates.Debian
 
-  VmId = 711
-  IpAddress = "192.168.2.61/24"
+  Hostname  = "mongodb1"
+  VmId      = 411
+  IpAddress = "192.168.2.41/24"
   Gateway   = local.Networks.internal.Gateway
 
   depends_on = [module.DebianTemplate]
@@ -192,21 +198,22 @@ module "haproxy2" {
 
   CommonConfig   = local.CommonLxcConfig
   TemplateFileId = local.Templates.Alpine
-  DiskSize = 1
-  VmId      = 800
-  IpAddress = "192.168.2.32/24"
-  Gateway   = local.Networks.internal.Gateway
+  Hostname       = "valkey-haproxy"
+  VmId           = 500
+  IpAddress      = "192.168.2.22/24"
+  Gateway        = local.Networks.internal.Gateway
 
   depends_on = [module.AlpineTemplate]
 }
 
 module "redis0" {
-  source = "./services/redis"
+  source         = "./services/redis"
   CommonConfig   = local.CommonLxcConfig
   TemplateFileId = local.Templates.Alpine
-  VmId = 810
-  IpAddress = "192.168.2.70/24"
-  Gateway   = local.Networks.internal.Gateway
+  Hostname       = "valkey0"
+  VmId           = 510
+  IpAddress      = "192.168.2.50/24"
+  Gateway        = local.Networks.internal.Gateway
 
   depends_on = [module.AlpineTemplate]
 }
@@ -214,12 +221,13 @@ module "redis0" {
 
 
 module "redis1" {
-  source = "./services/redis"
+  source         = "./services/redis"
   CommonConfig   = local.CommonLxcConfig
   TemplateFileId = local.Templates.Alpine
-  VmId = 811
-  IpAddress = "192.168.2.71/24"
-  Gateway   = local.Networks.internal.Gateway
+  Hostname       = "valkey1"
+  VmId           = 511
+  IpAddress      = "192.168.2.51/24"
+  Gateway        = local.Networks.internal.Gateway
 
   depends_on = [module.AlpineTemplate]
 }
@@ -228,9 +236,9 @@ module "docker" {
   source = "./services/docker"
 
   CommonConfig = local.CommonLxcConfig
-  
-  VmId            = 400
-  IpAddress       = "192.168.2.20/24"
+
+  VmId            = 1200
+  IpAddress       = "192.168.2.120/24"
   Gateway         = local.Networks.internal.Gateway
   AlpineVirtIsoId = module.AlpineVirtIso.FileId
 
@@ -243,21 +251,22 @@ module "nginx" {
   CommonConfig   = local.CommonLxcConfig
   TemplateFileId = local.Templates.Alpine
 
-  VmId      = 900
+  VmId      = 3000
   IpAddress = "192.168.5.2/24"
   Gateway   = local.Networks.dmz.Gateway
 
   depends_on = [module.AlpineTemplate]
 }
 
-module "gitea" {
-  source = "./services/gitea"
+module "forgejo" {
+  source = "./services/forgejo"
 
   CommonConfig   = local.CommonLxcConfig
   TemplateFileId = local.Templates.Alpine
 
+  Hostname  = "forgejo"
   VmId      = 1000
-  IpAddress = "192.168.2.80/24"
+  IpAddress = "192.168.2.100/24"
   Gateway   = local.Networks.internal.Gateway
 
   depends_on = [module.AlpineTemplate]
@@ -269,91 +278,37 @@ module "zot" {
   CommonConfig   = local.CommonLxcConfig
   TemplateFileId = local.Templates.Alpine
 
-  VmId      = 1010
-  IpAddress = "192.168.2.81/24"
+  VmId      = 1002
+  IpAddress = "192.168.2.102/24"
   Gateway   = local.Networks.internal.Gateway
 
   depends_on = [module.AlpineTemplate]
 }
 
 module "jenkins" {
-  source = "./services/jenkins"
-  OsType =  "debian" 
+  source         = "./services/jenkins"
+  OsType         = "debian"
   CommonConfig   = local.CommonLxcConfig
   TemplateFileId = local.Templates.Debian13
 
-  VmId      = 1020
-  IpAddress = "192.168.2.82/24"
+  VmId      = 1001
+  IpAddress = "192.168.2.101/24"
   Gateway   = local.Networks.internal.Gateway
 
   depends_on = [module.Debian13Template]
 }
 
-module "argocd" {
-  source = "./services/argocd"
-
-  CommonConfig = local.CommonLxcConfig
-  
-  VmId            = 1030
-  IpAddress       = "192.168.2.83/24"
-  Gateway         = local.Networks.internal.Gateway
-  AlpineVirtIsoId = module.AlpineVirtIso.FileId
-
-  depends_on = [module.AlpineVirtIso]
-}
-
 module "redpanda" {
-  source = "./services/redpanda"
+  source         = "./services/redpanda"
   OsType         = "debian"
-  CommonConfig = local.CommonLxcConfig
+  CommonConfig   = local.CommonLxcConfig
   TemplateFileId = local.Templates.Debian13
 
-  VmId = 1100
-  IpAddress = "192.168.2.90/24"
-  Gateway = local.Networks.internal.Gateway
+  VmId      = 800
+  IpAddress = "192.168.2.80/24"
+  Gateway   = local.Networks.internal.Gateway
 
   depends_on = [module.Debian13Template]
-}
-
-module "grafana" {
-  source = "./services/grafana"
-
-  CommonConfig   = local.CommonLxcConfig
-  TemplateFileId = local.Templates.Alpine
-
-  VmId = 1200
-  IpAddress = "192.168.2.100/24"
-  Gateway = local.Networks.internal.Gateway
-  
-  depends_on = [module.AlpineTemplate]
-}
-
-
-module "loki" {
-  source = "./services/loki"
-
-  CommonConfig   = local.CommonLxcConfig
-  TemplateFileId = local.Templates.Alpine
-
-  VmId = 1201
-  IpAddress = "192.168.2.101/24"
-  Gateway = local.Networks.internal.Gateway
-  
-  depends_on = [module.AlpineTemplate]
-}
-
-
-module "prometheus" {
-  source = "./services/prometheus"
-
-  CommonConfig   = local.CommonLxcConfig
-  TemplateFileId = local.Templates.Alpine
-
-  VmId = 1202
-  IpAddress = "192.168.2.102/24"
-  Gateway = local.Networks.internal.Gateway
-
-  depends_on = [module.AlpineTemplate]
 }
 
 module "llamacpp" {
@@ -363,7 +318,7 @@ module "llamacpp" {
   TemplateFileId = local.Templates.Debian
 
   VmId      = 1300
-  IpAddress = "192.168.2.110/24"
+  IpAddress = "192.168.2.130/24"
   Gateway   = local.Networks.internal.Gateway
 
   depends_on = [module.DebianTemplate]

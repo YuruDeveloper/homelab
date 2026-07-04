@@ -10,6 +10,7 @@ resource "openwrt_dhcp_dnsmasq" "main" {
   localservice      = true
 }
 
+
 resource "openwrt_uci_section" "hardware_pool" {
   config = "dhcp"
   type   = "dhcp"
@@ -17,11 +18,12 @@ resource "openwrt_uci_section" "hardware_pool" {
   options = {
     interface   = openwrt_network_interface.hardware.name
     dhcpv4      = "server"
+    dhcpv6      = "none"
     start       = 100
     limit       = 150
     leasetime   = "12h"
     ignore      = false
-    dhcp_option = "6,1.1.1.1,1.0.0.1"
+    dhcp_option = "6,192.168.2.2,192.168.2.3"
   }
 
   lifecycle {
@@ -36,11 +38,12 @@ resource "openwrt_uci_section" "client_pool" {
   options = {
     interface   = openwrt_network_interface.client.name
     dhcpv4      = "server"
+    dhcpv6      = "none"
     start       = 100
     limit       = 150
     leasetime   = "12h"
     ignore      = false
-    dhcp_option = "6,1.1.1.1,1.0.0.1"
+    dhcp_option = "6,192.168.2.2,192.168.2.3"
   }
 
   lifecycle {
@@ -55,11 +58,12 @@ resource "openwrt_uci_section" "service_pool" {
   options = {
     interface   = openwrt_network_interface.service.name
     dhcpv4      = "server"
+    dhcpv6      = "none"
     start       = 100
     limit       = 150
     leasetime   = "12h"
     ignore      = false
-    dhcp_option = "6,1.1.1.1,1.0.0.1"
+    dhcp_option = "6,192.168.2.2,192.168.2.3"
   }
 
   lifecycle {
@@ -74,11 +78,12 @@ resource "openwrt_uci_section" "kubernetes_pool" {
   options = {
     interface   = openwrt_network_interface.kubernetes.name
     dhcpv4      = "server"
+    dhcpv6      = "none"
     start       = 100
     limit       = 150
     leasetime   = "12h"
     ignore      = false
-    dhcp_option = "6,1.1.1.1,1.0.0.1"
+    dhcp_option = "6,192.168.2.2,192.168.2.3"
   }
 
   lifecycle {
@@ -93,11 +98,12 @@ resource "openwrt_uci_section" "container_pool" {
   options = {
     interface   = openwrt_network_interface.container.name
     dhcpv4      = "server"
+    dhcpv6      = "none"
     start       = 100
     limit       = 150
     leasetime   = "12h"
     ignore      = false
-    dhcp_option = "6,1.1.1.1,1.0.0.1"
+    dhcp_option = "6,192.168.2.2,192.168.2.3"
   }
 
   lifecycle {
@@ -113,6 +119,7 @@ resource "openwrt_uci_section" "dmz_pool" {
   options = {
     interface   = openwrt_network_interface.dmz.name
     dhcpv4      = "server"
+    dhcpv6      = "none"
     start       = 100
     limit       = 150
     leasetime   = "12h"
@@ -124,4 +131,3 @@ resource "openwrt_uci_section" "dmz_pool" {
     ignore_changes = [options[".anonymous"]]
   }
 }
-
