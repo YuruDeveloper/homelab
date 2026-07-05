@@ -1,0 +1,115 @@
+- name: Install Need Package
+  community.general.apk:
+    update_cache: false
+    name:
+      - certbot
+      - ca-certificates
+    state: installed
+
+- name: Make certificate folder
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "755"
+  loop:
+    - /usr/local/share/ca-certificates
+    - /etc/certificate/server
+    - /etc/certificate/client
+
+- name: create ca.crt
+  ansible.builtin.template:
+    src: ca.crt.j2
+    dest: /usr/local/share/ca-certificates/homelab-ca.crt
+  register: cert_create
+
+- name: Update CA store
+  ansible.builtin.command: /usr/sbin/update-ca-certificates
+  when: cert_create.changed
+
+- name: Create server certificate
+  ansible.builtin.command:
+    cmd: >
+     certbot certonly
+     --standalone
+     --non-interactive
+     --agree-tos
+     --keep-until-expiring
+     --email {{ acme_email }}
+     --server {{ acme_server_server }}
+     -d {{ server_name }}
+     --config-dir /etc/certificate/server
+     --work-dir /var/lib/certbot
+     --logs-dir /var/log/certbot
+
+- name: Link server fullchain
+  ansible.builtin.file:
+    src: "/etc/certificate/server/live/{{ server_name }}/fullchain.pem"
+    dest: /etc/certificate/server/server.crt
+    state: link
+    force: true
+
+- name: Link server key
+  ansible.builtin.file:
+    src: "/etc/certificate/server/live/{{ server_name }}/privkey.pem"
+    dest: /etc/certificate/server/server.key
+    state: link
+    force: true
+
+- name: Create client certificate
+  ansible.builtin.command:
+    cmd: >
+     certbot certonly
+     --standalone
+     --non-interactive
+     --agree-tos
+     --keep-until-expiring
+     --email {{ acme_email }}
+     --server {{ acme_server_client }}
+     -d {{ server_name }}
+     --config-dir /etc/certificate/client
+     --work-dir /var/lib/certbot
+     --logs-dir /var/log/certbot
+
+- name: Link client fullchain
+  ansible.builtin.file:
+    src: "/etc/certificate/client/live/{{ server_name }}/fullchain.pem"
+    dest: /etc/certificate/client/client.crt
+    state: link
+    force: true
+
+- name: Link client key
+  ansible.builtin.file:
+    src: "/etc/certificate/client/live/{{ server_name }}/privkey.pem"
+    dest: /etc/certificate/client/client.key
+    state: link
+    force: true
+
+- name: Configure server certificate renewal 
+  ansible.builtin.cron: 
+    name: renew server certificate
+    minute: 0
+    hour: "*/1"
+    user: root
+    job: >-
+      REQUESTS_CA_BUNDLE=/etc/ssl/cert.pem
+      SSL_CERT_FILE=/etc/ssl/cert.pem
+      certbot renew -q 
+      --config-dir /etc/certificate/server
+      --work-dir /var/lib/certbot
+      --logs-dir /var/log/certbot
+
+- name: Configure client certificate renewal 
+  ansible.builtin.cron: 
+    name: renew client certificate
+    minute: 0
+    hour: "*/1"
+    user: root
+    job: >-
+      REQUESTS_CA_BUNDLE=/etc/ssl/cert.pem
+      SSL_CERT_FILE=/etc/ssl/cert.pem
+      certbot renew -q 
+      --config-dir /etc/certificate/client
+      --work-dir /var/lib/certbot
+      --logs-dir /var/log/certbot

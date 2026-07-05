@@ -1,0 +1,4 @@
+server_name: ""
+acme_server: ""
+acme_email: ""
+acme_challenge: http

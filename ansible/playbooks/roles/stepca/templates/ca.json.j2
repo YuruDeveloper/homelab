@@ -34,7 +34,7 @@
                         },
                         {
                                 "type": "ACME",
-                                "name": "lab-acme",
+                                "name": "lab-acme-server",
                                 "claims": {
                                         "enableSSHCA": true,
                                         "disableRenewal": false,
@@ -42,7 +42,25 @@
                                         "disableSmallstepExtensions": false
                                 },
                                 "options": {
-                                        "x509": {},
+                                        "x509": {
+                                                "templateFile": "/etc/step-ca/templates/server.tpl"
+                                        },
+                                        "ssh": {}
+                                }
+                        },
+                        {
+                                "type": "ACME",
+                                "name": "lab-acme-client",
+                                "claims": {
+                                        "enableSSHCA": true,
+                                        "disableRenewal": false,
+                                        "allowRenewalAfterExpiry": false,
+                                        "disableSmallstepExtensions": false
+                                },
+                                "options": {
+                                        "x509": {
+                                                "templateFile": "/etc/step-ca/templates/client.tpl"
+                                        },
                                         "ssh": {}
                                 }
                         }

@@ -1,3 +1,20 @@
+- name: Set cert
+  hosts: technitium0
+  become: true
+  roles:
+    - alpine_cert
+  vars:
+    server_name: "technitium0.home.arpa"
+
+- name: Set cert
+  hosts: technitium1
+  become: true
+  roles:
+    - alpine_cert
+  vars:
+    server_name: "technitium1.home.arpa"
+
+
 - name: Install DNS
   hosts: dns
   become: true

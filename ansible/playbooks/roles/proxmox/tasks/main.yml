@@ -78,3 +78,13 @@
   register: mount_check
   changed_when: false
   failed_when: mount_check.rc != 0
+
+- name: create ca.crt
+  ansible.builtin.template:
+    src: crt.j2
+    dest: /usr/local/share/ca-certificates/homelab-ca.crt
+  register: cert_create
+
+- name: Update CA store
+  ansible.builtin.command: /usr/sbin/update-ca-certificates
+  when: cert_create.changed
