@@ -5,6 +5,7 @@
       - aspnetcore10-runtime
       - icu
       - tar
+      - openssl
     state: installed
 
 - name: Make dns folder
@@ -39,10 +40,31 @@
     path: "{{ dns_install_dir }}/tmp"
     state: absent
 
+- name: Create PKCS#12 certificate for Technitium
+  community.crypto.openssl_pkcs12:
+    action: export
+    path: "/etc/certificate/server/server.pfx"
+    privatekey_path: "/etc/certificate/server/server.key"
+    certificate_path: "/etc/certificate/server/server.crt"
+    other_certificates: "/etc/certificate/server/chain.crt"
+    friendly_name: "technitium"
+    passphrase: ""
+    mode: "0600"
+    owner: root
+    group: root
+
+- name: Install Technitium certificate deploy hook
+  ansible.builtin.template:
+    src: hook.sh.j2
+    dest: /etc/certificate/server/renewal-hooks/deploy/hook.sh
+    owner: root
+    group: root
+    mode: "0755"
+
 - name: Start Dns server
   ansible.builtin.service:
     name: "{{ dns_service_name }}"
-    state: started
+    state: restarted
     enabled: true
 
 - name: Remove temp Package

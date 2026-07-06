@@ -1,26 +1,32 @@
-- name: Etcd Config
+- name: Etcd Configa and Set cert
   hosts: haproxy0
   become: true
   vars:
     etcd_member_index: 0
+    server_name: "postgresql-haproxy.home.arpa"
   roles:
     - etcd_config
+    - alpine_cert
 
-- name: Etcd Config
+- name: Etcd Config and Set cert
   hosts: db0
   become: true
   vars:
     etcd_member_index: 1
+    server_name: "postgresql0.home.arpa"
   roles:
     - etcd_config
+    - alpine_cert
 
-- name: Etcd Config
+- name: Etcd Config and Set cert
   hosts: db1
   become: true
   vars:
     etcd_member_index: 2
+    server_name: "postgresql1.home.arpa"
   roles:
     - etcd_config
+    - alpine_cert
 
 - name: Install Etcd
   hosts: HApostgresql

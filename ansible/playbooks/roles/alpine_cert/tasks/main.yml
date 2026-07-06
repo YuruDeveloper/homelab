@@ -57,6 +57,13 @@
     state: link
     force: true
 
+- name: Link server chain 
+  ansible.builtin.file:
+    src: "/etc/certificate/server/live/{{ server_name }}/chain.pem"
+    dest: /etc/certificate/server/chain.crt
+    state: link
+    force: true
+
 - name: Create client certificate
   ansible.builtin.command:
     cmd: >
@@ -83,6 +90,13 @@
   ansible.builtin.file:
     src: "/etc/certificate/client/live/{{ server_name }}/privkey.pem"
     dest: /etc/certificate/client/client.key
+    state: link
+    force: true
+
+- name: Link client chain 
+  ansible.builtin.file:
+    src: "/etc/certificate/client/live/{{ server_name }}/chain.pem"
+    dest: /etc/certificate/client/chain.crt
     state: link
     force: true
 
