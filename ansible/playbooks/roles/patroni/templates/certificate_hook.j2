@@ -5,4 +5,4 @@ if [ -f /run/patroni.pid ]; then
     kill -HUP "$(cat /run/patroni.pid)"
 fi
 # PostgreSQL only re-reads ssl_cert_file/ssl_key_file on reload.
-su postgres -c "psql -c 'SELECT pg_reload_conf();'"
+su postgres -c "pg_ctl reload -D /var/lib/postgresql/{{ postgresql_version }}/data"

@@ -1,6 +1,6 @@
 {% raw %}
 {
-    "subject": {{ toJson .Subject }},
+    "subject": {"organization": "homelab", "commonName": {{ toJson .Subject.CommonName }}},
     "sans": {{ toJson .SANs }},
     "keyUsage": ["digitalSignature", "keyEncipherment"],
     "extKeyUsage": ["serverAuth","clientAuth"]

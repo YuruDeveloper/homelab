@@ -15,6 +15,8 @@ command="/usr/local/bin/etcd"
 command_user="${ETCD_USER}:${ETCD_GROUP}"
 command_background=true
 pidfile="/run/${RC_SVCNAME}.pid"
+# etcd graceful shutdown (leadership transfer) can exceed the 5s default.
+retry="SIGTERM/30/SIGKILL/5"
 directory="${ETCD_WORKDIR}"
 
 # 자동 재시작 설정

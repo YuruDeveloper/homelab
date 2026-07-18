@@ -243,6 +243,6 @@ CLAUDE.md
 GEMINI.md
 AGENTS.md
 scripts
-target.md
+target.toml
 AGENTS
 continue.md

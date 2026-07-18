@@ -4,9 +4,9 @@ replica_set_names:
   - "db1"
 
 replica_set_members:
-  - 192.168.2.31
-  - 192.168.2.60
-  - 192.168.2.61
+  - mongodb-haproxy.home.arpa
+  - mongodb0.home.arpa
+  - mongodb1.home.arpa
 
 replica_set_name: "hamongo0"
 

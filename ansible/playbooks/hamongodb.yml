@@ -1,3 +1,27 @@
+- name:  Set cert
+  hosts: haproxy1
+  become: true
+  vars:
+    server_name: "mongodb-haproxy.home.arpa"
+  roles:
+    - debian_cert
+
+- name: Set cert
+  hosts: db2
+  become: true
+  vars:
+    server_name: "mongodb0.home.arpa"
+  roles:
+    - debian_cert
+
+- name: Set cert
+  hosts: db3
+  become: true
+  vars:
+    server_name: "mongodb1.home.arpa"
+  roles:
+    - debian_cert
+
 - name: Set Repo
   become: true
   hosts: HAmongodb
@@ -12,7 +36,7 @@
 
 - name: Install Arbiter
   become: true
-  hosts: proxy1
+  hosts: haproxy1
   roles:
     - mongodbarbiter
 
