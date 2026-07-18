@@ -6,14 +6,14 @@ module "mongodb" {
   TemplateFileId = var.TemplateFileId
 
   VmId     = var.VmId
-  Hostname = "mongodb"
+  Hostname = var.Hostname
 
   CpuCores = 1
   Memory   = 1024
   Swap     = 512
-  DiskSize = 16
+  DiskSize = 20
 
-  NetworkBridge = "vmbr1"
+  NetworkBridge = "vmbr0"
   VlanId        = 100
   IpAddress     = var.IpAddress
   Gateway       = var.Gateway

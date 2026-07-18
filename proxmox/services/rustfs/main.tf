@@ -11,9 +11,9 @@ module "rustfs" {
   CpuCores = 2
   Memory   = 2048
   Swap     = 1024
-  DiskSize = 4
+  DiskSize = 5
 
-  NetworkBridge = "vmbr1"
+  NetworkBridge = "vmbr0"
   VlanId        = 100
   IpAddress     = var.IpAddress
   Gateway       = var.Gateway

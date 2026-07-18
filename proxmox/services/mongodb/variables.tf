@@ -23,6 +23,12 @@ variable "TemplateFileId" {
   description = "LXC 템플릿 파일 ID"
 }
 
+variable "Hostname" {
+  type        = string
+  description = "LXC 컨테이너 호스트네임"
+  default     = "mongodb"
+}
+
 # 서비스별 개별 설정
 variable "VmId" {
   type        = number

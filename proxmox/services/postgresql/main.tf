@@ -6,22 +6,22 @@ module "postgresql" {
   TemplateFileId = var.TemplateFileId
 
   VmId     = var.VmId
-  Hostname = "postgresql"
+  Hostname = var.Hostname
 
   CpuCores = 2
   Memory   = 1024
   Swap     = 512
-  DiskSize = 16
+  DiskSize = 20
 
-  NetworkBridge = "vmbr1"
+  NetworkBridge = "vmbr0"
   VlanId        = 100
   IpAddress     = var.IpAddress
   Gateway       = var.Gateway
 
-  Unprivileged = true
+  Unprivileged  = true
   EnableKeyctl  = true
   EnableNesting = true
-  
+
   MountPoints = [
     {
       volume      = "/mnt/postgresql"

@@ -10,10 +10,10 @@ module "jenkins" {
 
   CpuCores = 2
   Memory   = 2048
-  Swap     = 0
+  Swap     = 1024
   DiskSize = 64
 
-  NetworkBridge = "vmbr1"
+  NetworkBridge = "vmbr0"
   VlanId        = 100
   IpAddress     = var.IpAddress
   Gateway       = var.Gateway

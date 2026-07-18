@@ -8,12 +8,12 @@ module "llamacpp" {
   VmId     = var.VmId
   Hostname = "llamacpp"
 
-  CpuCores = 2
-  Memory   = 2048
-  Swap     = 2560
+  CpuCores = 1
+  Memory   = 512
+  Swap     = 512
   DiskSize = 32
 
-  NetworkBridge = "vmbr1"
+  NetworkBridge = "vmbr0"
   VlanId        = 100
   IpAddress     = var.IpAddress
   Gateway       = var.Gateway

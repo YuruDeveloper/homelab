@@ -26,7 +26,7 @@ variable "TemplateFileId" {
 variable "Hostname" {
   type        = string
   description = "LXC 컨테이너 호스트네임"
-  default     = "haproxy"
+  default     = "gitea"
 }
 
 # 서비스별 개별 설정

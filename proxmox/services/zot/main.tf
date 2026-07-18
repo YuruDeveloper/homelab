@@ -13,7 +13,7 @@ module "zot" {
   Swap     = 512
   DiskSize = 5
 
-  NetworkBridge = "vmbr1"
+  NetworkBridge = "vmbr0"
   VlanId        = 100
   IpAddress     = var.IpAddress
   Gateway       = var.Gateway

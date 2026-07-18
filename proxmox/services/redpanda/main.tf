@@ -13,7 +13,7 @@ module "redpanda" {
   Swap     = 1024
   DiskSize = 16
 
-  NetworkBridge = "vmbr1"
+  NetworkBridge = "vmbr0"
   VlanId        = 100
   IpAddress     = var.IpAddress
   Gateway       = var.Gateway

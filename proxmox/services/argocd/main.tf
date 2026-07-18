@@ -32,12 +32,12 @@ resource "proxmox_virtual_environment_vm" "argocd" {
   }
 
   network_device {
-    bridge  = "vmbr1"
+    bridge  = "vmbr0"
     vlan_id = 100
   }
 
   network_device {
-    bridge  = "vmbr1"
+    bridge  = "vmbr0"
     vlan_id = 300
   }
 

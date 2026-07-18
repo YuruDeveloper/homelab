@@ -6,14 +6,14 @@ module "redis" {
   TemplateFileId = var.TemplateFileId
 
   VmId     = var.VmId
-  Hostname = "redis"
+  Hostname = var.Hostname
 
   CpuCores = 2
   Memory   = 1024
   Swap     = 512
   DiskSize = 5
 
-  NetworkBridge = "vmbr1"
+  NetworkBridge = "vmbr0"
   VlanId        = 100
   IpAddress     = var.IpAddress
   Gateway       = var.Gateway

@@ -1,22 +1,22 @@
-resource "proxmox_virtual_environment_download_file" "truenas" {
+resource "proxmox_download_file" "truenas" {
   content_type = "iso"
   datastore_id = "local"
-  node_name = var.ProxmoxNode
-  url = "https://download.sys.truenas.net/TrueNAS-SCALE-Fangtooth/25.04.2.4/TrueNAS-SCALE-25.04.2.4.iso"
+  node_name    = var.ProxmoxNode
+  url          = "https://download.sys.truenas.net/TrueNAS-SCALE-Goldeye/25.10.4/TrueNAS-SCALE-25.10.4.iso"
 }
 
 resource "proxmox_virtual_environment_vm" "truenas" {
-  name = "truenas"
+  name      = "truenas"
   node_name = var.ProxmoxNode
 
   vm_id = var.VmId
 
-  bios = "ovmf"
+  bios    = "ovmf"
   machine = "q35"
 
   scsi_hardware = "virtio-scsi-pci"
 
-  boot_order = [ "scsi0" ]
+  boot_order = ["scsi0"]
 
   cpu {
     cores = 2
@@ -28,38 +28,38 @@ resource "proxmox_virtual_environment_vm" "truenas" {
 
   efi_disk {
     datastore_id = var.DatastoreId
-    file_format = "raw"
-    type = "4m"
+    file_format  = "raw"
+    type         = "4m"
   }
 
   disk {
     datastore_id = var.DatastoreId
-    size = 16
-    interface = "scsi0"
+    size         = 16
+    interface    = "scsi0"
   }
 
   disk {
-    datastore_id = ""
-    path_in_datastore =  "/dev/disk/by-id/ata-HS-SSD-WAVE_S__256G_30164514896"
-    file_format = "raw"
-    interface = "sata0"
-    size = 238
+    datastore_id      = ""
+    path_in_datastore = "/dev/disk/by-id/ata-HS-SSD-WAVE_S__256G_30164514896"
+    file_format       = "raw"
+    interface         = "sata0"
+    size              = 238
   }
 
   disk {
-    datastore_id = ""
+    datastore_id      = ""
     path_in_datastore = "/dev/disk/by-id/ata-HS-SSD-WAVE_S__256G_30170974145"
-    file_format = "raw"
-    interface = "sata1"
-    size = 238
+    file_format       = "raw"
+    interface         = "sata1"
+    size              = 238
   }
 
   network_device {
-    bridge = "vmbr1"
+    bridge  = "vmbr0"
     vlan_id = 100
   }
 
   cdrom {
-    file_id = proxmox_virtual_environment_download_file.truenas.id
+    file_id = proxmox_download_file.truenas.id
   }
 }

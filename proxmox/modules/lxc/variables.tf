@@ -64,7 +64,7 @@ variable "DiskSize" {
 variable "NetworkBridge" {
   type        = string
   description = "네트워크 브리지"
-  default     = "vmbr1"
+  default     = "vmbr0"
 }
 
 variable "VlanId" {

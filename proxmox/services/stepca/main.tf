@@ -1,4 +1,4 @@
-module "nginx" {
+module "stepca" {
   source = "../../modules/lxc"
 
   CommonConfig   = var.CommonConfig
@@ -6,19 +6,17 @@ module "nginx" {
   TemplateFileId = var.TemplateFileId
 
   VmId     = var.VmId
-  Hostname = "nginx"
+  Hostname = var.Hostname
 
   CpuCores = 1
-  Memory   = 256
-  Swap     = 256
-  DiskSize = 2
+  Memory   = 512
+  Swap     = 512
+  DiskSize = 8
 
   NetworkBridge = "vmbr0"
-  VlanId        = 400
+  VlanId        = 100
   IpAddress     = var.IpAddress
   Gateway       = var.Gateway
-
-  Dns = ["1.1.1.1", "8.8.8.8"]
 
   Unprivileged = true
 }

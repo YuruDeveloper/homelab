@@ -6,14 +6,14 @@ module "haproxy" {
   TemplateFileId = var.TemplateFileId
 
   VmId     = var.VmId
-  Hostname = "haproxy"
+  Hostname = var.Hostname
 
   CpuCores = 1
-  Memory   = 256
-  Swap     = 1024
-  DiskSize = var.DiskSize
+  Memory   = 512
+  Swap     = 512
+  DiskSize = 2
 
-  NetworkBridge = "vmbr1"
+  NetworkBridge = "vmbr0"
   VlanId        = 100
   IpAddress     = var.IpAddress
   Gateway       = var.Gateway

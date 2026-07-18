@@ -97,6 +97,20 @@ module "technitium1" {
   depends_on = [module.AlpineTemplate]
 }
 
+module "stepca" {
+  source = "./services/stepca"
+
+  CommonConfig   = local.CommonLxcConfig
+  TemplateFileId = local.Templates.Alpine
+
+  Hostname  = "stepca"
+  VmId      = 110
+  IpAddress = "192.168.2.6/24"
+  Gateway   = local.Networks.internal.Gateway
+
+  depends_on = [module.AlpineTemplate]
+}
+
 module "haproxy0" {
   source = "./services/haproxy"
 

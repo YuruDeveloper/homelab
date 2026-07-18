@@ -1,4 +1,4 @@
-resource "proxmox_virtual_environment_download_file" "AlpineVirtIso" {
+resource "proxmox_download_file" "AlpineVirtIso" {
   content_type = "iso"
   datastore_id = var.DatastoreId
   node_name    = var.ProxmoxNode

@@ -1,4 +1,4 @@
-module "prometheus" {
+module "gitea" {
   source = "../../modules/lxc"
 
   CommonConfig   = var.CommonConfig
@@ -6,12 +6,12 @@ module "prometheus" {
   TemplateFileId = var.TemplateFileId
 
   VmId     = var.VmId
-  Hostname = "prometheus"
+  Hostname = var.Hostname
 
   CpuCores = 1
-  Memory   = 256
-  Swap     = 512
-  DiskSize = 2
+  Memory   = 1536
+  Swap     = 1024
+  DiskSize = 5
 
   NetworkBridge = "vmbr0"
   VlanId        = 100
@@ -22,8 +22,13 @@ module "prometheus" {
 
   MountPoints = [
     {
-      volume      = "/mnt/observability"
-      mount_point = "/mnt/observability"
+      volume      = "/mnt/git"
+      mount_point = "/var/lib/gitea/data/gitea-repositories"
+      read_only   = false
+    },
+    {
+      volume      = "/mnt/gitlarge"
+      mount_point = "/var/lib/gitea/data/lfs"
       read_only   = false
     }
   ]
