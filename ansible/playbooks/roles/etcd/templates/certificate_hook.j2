@@ -1,0 +1,6 @@
+#!/bin/sh
+set -eu
+# etcd cannot hot-reload certificates; restart is required.
+# All members renew on the same cron schedule — stagger restarts to avoid losing quorum.
+sleep $(( $(hostname | cksum | cut -d ' ' -f 1) % 120 ))
+rc-service etcd restart

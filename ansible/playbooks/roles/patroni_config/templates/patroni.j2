@@ -16,6 +16,9 @@ etcd3:
 restapi:
   listen: 0.0.0.0:8008
   connect_address: {{ etcd_member_dns_name[etcd_member_index]  }}:8008
+  certfile: /etc/certificate/certificate.crt
+  keyfile: /etc/certificate/certificate.key
+  cafile: /usr/local/share/ca-certificates/homelab-ca.crt
 
 bootstrap:
   dcs:
@@ -31,9 +34,9 @@ bootstrap:
         ssl_key_file: /etc/certificate/certificate.key
       pg_hba:
         - host replication replicator 127.0.0.1/32 md5
-        - host replication replicator {{ subnet }} md5
+        - hostssl replication replicator {{ subnet }} md5
         - host all all 127.0.0.1/32 md5
-        - host all all {{ subnet }} md5
+        - hostssl all all {{ subnet }} md5
   
   initdb:
     - encoding: UTF8

@@ -6,6 +6,12 @@
       - ca-certificates
     state: installed
 
+- name: Add key group
+  ansible.builtin.group:
+    name: key
+    state: present
+    system: true
+
 - name: Make certificate folder
   ansible.builtin.file:
     path: "{{ item }}"
@@ -48,6 +54,9 @@
     src: key.sh.j2
     dest: /etc/certificate/renewal-hooks/deploy/key.sh
     mode: "755"
+
+- name: Apply key group permissions
+  ansible.builtin.command: /etc/certificate/renewal-hooks/deploy/key.sh
 
 - name: Link certificate fullchain
   ansible.builtin.file:

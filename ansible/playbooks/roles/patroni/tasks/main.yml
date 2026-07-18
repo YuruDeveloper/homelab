@@ -12,6 +12,12 @@
       - linux-headers
     state: installed
 
+- name: Add postgres user to key group
+  ansible.builtin.user:
+    name: postgres
+    groups: key
+    append: true
+
 - name: Make Patroni folder
   ansible.builtin.file:
     path: /etc/patroni
@@ -31,6 +37,12 @@
   ansible.builtin.template:
     src: patroni.j2
     dest: "/etc/init.d/patroni"
+    mode: "755"
+
+- name: Deploy certificate renewal hook
+  ansible.builtin.template:
+    src: certificate_hook.j2
+    dest: /etc/certificate/renewal-hooks/deploy/patroni.sh
     mode: "755"
 
 - name: Start Patroni

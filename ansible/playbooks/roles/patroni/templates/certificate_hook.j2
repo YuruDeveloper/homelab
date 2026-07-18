@@ -1,0 +1,8 @@
+#!/bin/sh
+set -eu
+# SIGHUP makes Patroni reload its config and the REST API TLS context.
+if [ -f /run/patroni.pid ]; then
+    kill -HUP "$(cat /run/patroni.pid)"
+fi
+# PostgreSQL only re-reads ssl_cert_file/ssl_key_file on reload.
+su postgres -c "psql -c 'SELECT pg_reload_conf();'"

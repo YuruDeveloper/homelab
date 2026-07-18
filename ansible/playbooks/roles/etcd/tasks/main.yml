@@ -16,6 +16,8 @@
   ansible.builtin.user:
     name: etcd
     group: etcd
+    groups: key
+    append: true
     system: true
     shell: /sbin/nologin
     home: /var/lib/etcd
@@ -84,6 +86,12 @@
   ansible.builtin.file:
     path: /var/lib/etcd/tmp
     state: absent
+
+- name: Deploy certificate renewal hook
+  ansible.builtin.template:
+    src: certificate_hook.j2
+    dest: /etc/certificate/renewal-hooks/deploy/etcd.sh
+    mode: "755"
 
 - name: Start Etcd
   ansible.builtin.service:

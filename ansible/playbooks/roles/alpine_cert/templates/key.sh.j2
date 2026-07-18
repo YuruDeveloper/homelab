@@ -1,3 +1,7 @@
-chmod 0600 /etc/certificate/live/{{ server_name }}/privkey.pem
-chmod 0600 /etc/certificate/live/{{ server_name }}/fullchain.pem
-chmod 0600 /etc/certificate/live/{{ server_name }}/chain.pem
+#!/bin/sh
+set -eu
+chgrp key /etc/certificate/live /etc/certificate/archive
+chmod 0750 /etc/certificate/live /etc/certificate/archive
+chgrp -R key /etc/certificate/live/{{ server_name }} /etc/certificate/archive/{{ server_name }}
+chmod 0750 /etc/certificate/live/{{ server_name }} /etc/certificate/archive/{{ server_name }}
+chmod 0640 /etc/certificate/archive/{{ server_name }}/*.pem

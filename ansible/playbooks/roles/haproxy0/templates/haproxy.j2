@@ -53,7 +53,7 @@ backend db
 
     {% for i in range(etcd_member_dns_name | length) %}
     {% if i != etcd_member_index %}
- server {{ etcd_member_names[i] }} {{ etcd_member_dns_name[i] }}:5432 port 8008 check
+ server {{ etcd_member_names[i] }} {{ etcd_member_dns_name[i] }}:5432 port 8008 check check-ssl verify required ca-file /usr/local/share/ca-certificates/homelab-ca.crt verifyhost {{ etcd_member_dns_name[i] }}
     {% endif %}
     {% endfor %}
 
