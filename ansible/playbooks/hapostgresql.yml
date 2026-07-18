@@ -34,6 +34,12 @@
   roles:
     - etcd
 
+- name: Install Postgresql
+  hosts: postgresql
+  become: true
+  roles:
+    - postgresql
+
 - name: Patroni Config
   hosts: db0
   become: true
@@ -50,11 +56,10 @@
   roles:
     - patroni_config
 
-- name: Install Postgresql and Patroni
+- name: Install Patroni
   hosts: postgresql
   become: true
   roles:
-    - postgresql
     - patroni
 
 - name: Install haproxy and setup

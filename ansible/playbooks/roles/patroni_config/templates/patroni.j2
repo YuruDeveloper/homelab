@@ -3,16 +3,19 @@ namespace: /service/
 name: {{ etcd_member_names[etcd_member_index] }}
 
 {% set clusters = [] %}
-{% for i in range(etcd_member_ips | length) %}
-{% set _ = clusters.append(etcd_member_ips[i] + ':2379') %}
+{% for i in range(etcd_member_dns_name | length) %}
+{% set _ = clusters.append(etcd_member_dns_name[i] + ':2379') %}
 {% endfor %}
 etcd3:
   hosts: {{ clusters | join(',') }}
-  protocol: http
+  protocol: https
+  cacert: /usr/local/share/ca-certificates/homelab-ca.crt
+  cert: /etc/certificate/certificate.crt
+  key: /etc/certificate/certificate.key
 
 restapi:
   listen: 0.0.0.0:8008
-  connect_address: {{ etcd_member_ips[etcd_member_index]  }}:8008
+  connect_address: {{ etcd_member_dns_name[etcd_member_index]  }}:8008
 
 bootstrap:
   dcs:
@@ -22,7 +25,10 @@ bootstrap:
     maximum_lag_on_failover: 1048576
     postgresql:
       parameters:
-        ssl: 'off'
+        ssl: 'true'
+        ssl_ca_file: /usr/local/share/ca-certificates/homelab-ca.crt
+        ssl_cert_file: /etc/certificate/certificate.crt
+        ssl_key_file: /etc/certificate/certificate.key
       pg_hba:
         - host replication replicator 127.0.0.1/32 md5
         - host replication replicator {{ subnet }} md5
@@ -35,16 +41,16 @@ bootstrap:
 
 postgresql:
   listen: 0.0.0.0:5432
-  connect_address: {{ etcd_member_ips[etcd_member_index]  }}:5432
+  connect_address: {{ etcd_member_dns_name[etcd_member_index]  }}:5432
   data_dir: /var/lib/postgresql/{{ postgresql_version }}/data
   bin_dir: /usr/bin
   authentication:
     superuser:
       username: postgres
-      password: {{ password }}
+      password: {{ password | to_json }}
     replication:
       username: replicator
-      password: {{ password }}
+      password: {{ password | to_json }}
   parameters:
     max_connections: 100
     shared_buffers: 256MB

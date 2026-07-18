@@ -241,3 +241,6 @@ CLAUDE.md
 .mcp.json
 .gemini
 GEMINI.md
+AGENTS.md
+scripts
+target.md

@@ -1,13 +1,25 @@
 export ETCD_NAME={{ etcd_member_names[etcd_member_index] }}
 export ETCD_DATA_DIR="/var/lib/etcd"
 {% set clusters = [] %}
-{% for i in range(etcd_member_ips | length) %}
-{% set _ = clusters.append(etcd_member_names[i] + '=http://' + etcd_member_ips[i] + ':2380') %}
+{% for i in range(etcd_member_dns_name | length) %}
+{% set _ = clusters.append(etcd_member_names[i] + '=https://' + etcd_member_dns_name[i] + ':2380') %}
 {% endfor %}
 export ETCD_INITIAL_CLUSTER={{ clusters | join(',') }}
 export ETCD_INITIAL_CLUSTER_STATE=new
 export ETCD_INITIAL_CLUSTER_TOKEN="etcd-cluster"
-export ETCD_INITIAL_ADVERTISE_PEER_URLS="http://{{ etcd_member_ips[etcd_member_index]  }}:2380"
-export ETCD_LISTEN_PEER_URLS="http://0.0.0.0:2380"
-export ETCD_LISTEN_CLIENT_URLS="http://0.0.0.0:2379"
-export ETCD_ADVERTISE_CLIENT_URLS="http://{{ etcd_member_ips[etcd_member_index]  }}:2379"
+
+export ETCD_INITIAL_ADVERTISE_PEER_URLS="https://{{ etcd_member_dns_name[etcd_member_index]  }}:2380"
+export ETCD_ADVERTISE_CLIENT_URLS="https://{{ etcd_member_dns_name[etcd_member_index]  }}:2379"
+
+export ETCD_LISTEN_PEER_URLS="https://0.0.0.0:2380"
+export ETCD_LISTEN_CLIENT_URLS="https://0.0.0.0:2379"
+
+export ETCD_CERT_FILE="/etc/certificate/certificate.crt"
+export ETCD_KEY_FILE="/etc/certificate/certificate.key"
+export ETCD_TRUSTED_CA_FILE="/usr/local/share/ca-certificates/homelab-ca.crt"
+export ETCD_CLIENT_CERT_AUTH="true"
+
+export ETCD_PEER_CERT_FILE="/etc/certificate/certificate.crt"
+export ETCD_PEER_KEY_FILE="/etc/certificate/certificate.key"
+export ETCD_PEER_TRUSTED_CA_FILE="/usr/local/share/ca-certificates/homelab-ca.crt"
+export ETCD_PEER_CLIENT_CERT_AUTH="true"

@@ -28,7 +28,7 @@
   ansible.builtin.command: /usr/sbin/update-ca-certificates
   when: cert_create.changed
 
-- name: Create server certificate
+- name: Create certificate
   ansible.builtin.command:
     cmd: >
      certbot certonly
@@ -37,72 +37,42 @@
      --agree-tos
      --keep-until-expiring
      --email {{ acme_email }}
-     --server {{ acme_server_server }}
+     --server {{ acme_server }}
      -d {{ server_name }}
-     --config-dir /etc/certificate/server
+     --config-dir /etc/certificate
      --work-dir /var/lib/certbot
      --logs-dir /var/log/certbot
 
-- name: Link server fullchain
+- name: Make hook file
+  ansible.builtin.template:
+    src: key.sh.j2
+    dest: /etc/certificate/renewal-hooks/deploy/key.sh
+    mode: "755"
+
+- name: Link certificate fullchain
   ansible.builtin.file:
-    src: "/etc/certificate/server/live/{{ server_name }}/fullchain.pem"
-    dest: /etc/certificate/server/server.crt
+    src: "/etc/certificate/live/{{ server_name }}/fullchain.pem"
+    dest: /etc/certificate/certificate.crt
     state: link
     force: true
 
-- name: Link server key
+- name: Link certificate key
   ansible.builtin.file:
-    src: "/etc/certificate/server/live/{{ server_name }}/privkey.pem"
-    dest: /etc/certificate/server/server.key
+    src: "/etc/certificate/live/{{ server_name }}/privkey.pem"
+    dest: /etc/certificate/certificate.key
     state: link
     force: true
 
-- name: Link server chain 
+- name: Link certificate chain 
   ansible.builtin.file:
-    src: "/etc/certificate/server/live/{{ server_name }}/chain.pem"
-    dest: /etc/certificate/server/chain.crt
+    src: "/etc/certificate/live/{{ server_name }}/chain.pem"
+    dest: /etc/certificate/chain.crt
     state: link
     force: true
 
-- name: Create client certificate
-  ansible.builtin.command:
-    cmd: >
-     certbot certonly
-     --standalone
-     --non-interactive
-     --agree-tos
-     --keep-until-expiring
-     --email {{ acme_email }}
-     --server {{ acme_server_client }}
-     -d {{ server_name }}
-     --config-dir /etc/certificate/client
-     --work-dir /var/lib/certbot
-     --logs-dir /var/log/certbot
-
-- name: Link client fullchain
-  ansible.builtin.file:
-    src: "/etc/certificate/client/live/{{ server_name }}/fullchain.pem"
-    dest: /etc/certificate/client/client.crt
-    state: link
-    force: true
-
-- name: Link client key
-  ansible.builtin.file:
-    src: "/etc/certificate/client/live/{{ server_name }}/privkey.pem"
-    dest: /etc/certificate/client/client.key
-    state: link
-    force: true
-
-- name: Link client chain 
-  ansible.builtin.file:
-    src: "/etc/certificate/client/live/{{ server_name }}/chain.pem"
-    dest: /etc/certificate/client/chain.crt
-    state: link
-    force: true
-
-- name: Configure server certificate renewal 
+- name: Configure certificate renewal 
   ansible.builtin.cron: 
-    name: renew server certificate
+    name: renew certificate
     minute: 0
     hour: "*/1"
     user: root
@@ -110,20 +80,6 @@
       REQUESTS_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt
       SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt
       certbot renew -q 
-      --config-dir /etc/certificate/server
-      --work-dir /var/lib/certbot
-      --logs-dir /var/log/certbot
-
-- name: Configure client certificate renewal 
-  ansible.builtin.cron: 
-    name: renew client certificate
-    minute: 0
-    hour: "*/1"
-    user: root
-    job: >-
-      REQUESTS_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt
-      SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt
-      certbot renew -q 
-      --config-dir /etc/certificate/client
+      --config-dir /etc/certificate
       --work-dir /var/lib/certbot
       --logs-dir /var/log/certbot

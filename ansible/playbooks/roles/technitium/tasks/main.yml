@@ -43,10 +43,10 @@
 - name: Create PKCS#12 certificate for Technitium
   community.crypto.openssl_pkcs12:
     action: export
-    path: "/etc/certificate/server/server.pfx"
-    privatekey_path: "/etc/certificate/server/server.key"
-    certificate_path: "/etc/certificate/server/server.crt"
-    other_certificates: "/etc/certificate/server/chain.crt"
+    path: "/etc/certificate/certificate.pfx"
+    privatekey_path: "/etc/certificate/certificate.key"
+    certificate_path: "/etc/certificate/certificate.crt"
+    other_certificates: "/etc/certificate/chain.crt"
     friendly_name: "technitium"
     passphrase: ""
     mode: "0600"
@@ -55,8 +55,8 @@
 
 - name: Install Technitium certificate deploy hook
   ansible.builtin.template:
-    src: hook.sh.j2
-    dest: /etc/certificate/server/renewal-hooks/deploy/hook.sh
+    src: technitium.sh.j2
+    dest: /etc/certificate/renewal-hooks/deploy/technitium.sh
     owner: root
     group: root
     mode: "0755"

@@ -8,4 +8,6 @@
   ansible.builtin.template:
     src: patroni.j2
     dest: "/etc/patroni/patroni.yml"
-    mode: "755"
+    owner: postgres
+    group: postgres
+    mode: "600"

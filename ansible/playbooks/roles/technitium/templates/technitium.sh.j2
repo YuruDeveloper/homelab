@@ -1,0 +1,10 @@
+#!/bin/sh
+
+set -eu
+
+openssl pkcs12 -export -out /etc/certificate/certificate.pfx -inkey /etc/certificate/certificate.key -in /etc/certificate/certificate.crt -certfile /etc/certificate/chain.crt -name technitium -passout pass:
+
+chmod 0600 /etc/certificate/certificate.pfx
+chown root:root /etc/certificate/certificate.pfx
+
+rc-service {{ dns_service_name }} restart

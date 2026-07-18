@@ -23,8 +23,7 @@
 - name: Make venv and install Patroni
   ansible.builtin.pip:
     name:
-      - psycopg2
-      - patroni[etcd]
+      - patroni[etcd3,psycopg2]
     virtualenv: /etc/patroni/venv/
     virtualenv_command: python3 -m venv ./venv
 

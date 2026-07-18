@@ -52,18 +52,10 @@
     group: step-ca
     mode: "600"
 
-- name: Make server temaplates
+- name: Make acme temaplates
   ansible.builtin.template:
-    src: server.tpl.j2
-    dest: /etc/step-ca/templates/server.tpl
-    owner: step-ca
-    group: step-ca
-    mode: "644"
-
-- name: Make client temaplates
-  ansible.builtin.template:
-    src: client.tpl.j2
-    dest: /etc/step-ca/templates/client.tpl
+    src: acme.tpl.j2
+    dest: /etc/step-ca/templates/acme.tpl
     owner: step-ca
     group: step-ca
     mode: "644"
@@ -81,3 +73,4 @@
     name: step-ca
     state: restarted
     enabled: true
+

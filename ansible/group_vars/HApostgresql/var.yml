@@ -3,8 +3,8 @@ etcd_member_names:
   - postgreslave0
   - postgreslave1
 
-etcd_member_ips:
-  - 192.168.2.20
-  - 192.168.2.30
-  - 192.168.2.31
+etcd_member_dns_name:
+  - "postgresql-haproxy.home.arpa"
+  - "postgresql0.home.arpa"
+  - "postgresql1.home.arpa"
 
