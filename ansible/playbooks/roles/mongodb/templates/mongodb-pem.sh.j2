@@ -1,0 +1,20 @@
+#!/bin/sh
+set -eu
+umask 077
+target=/etc/certificate/mongodb.pem
+temp=$(mktemp /etc/certificate/.mongodb.pem.XXXXXX)
+trap 'rm -f "$temp"' EXIT HUP INT TERM
+cat /etc/certificate/certificate.crt /etc/certificate/certificate.key > "$temp"
+chown root:key "$temp"
+chmod 640 "$temp"
+if [ -f "$target" ] && cmp -s "$temp" "$target"; then
+    chown root:key "$target"
+    chmod 640 "$target"
+    exit 0
+fi
+mv -f "$temp" "$target"
+trap - EXIT HUP INT TERM
+# SIGUSR1: mongod 온라인 인증서 로테이션 (rotateCertificates, 재시작 불필요)
+if pid=$(pidof mongod); then
+    kill -USR1 "$pid"
+fi

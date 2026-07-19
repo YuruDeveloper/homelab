@@ -49,7 +49,10 @@
   ansible.builtin.template:
     src: config.j2
     dest: /etc/default/pbm-agent
-    mode: "755"
+    owner: root
+    group: root
+    mode: "0600"
+  no_log: true
 
 - name: Deploy pbm-agent systemd file
   ansible.builtin.template:
@@ -61,24 +64,13 @@
   ansible.builtin.systemd:
     daemon_reload: true
 
-- name: ADD Environment value
-  ansible.builtin.lineinfile:
-    path: /etc/environment
-    regexp: '^PBM_MONGODB_URI='
-    line: 'PBM_MONGODB_URI="mongodb://pbmuser:{{ pbm_password }}@127.0.0.1:{{ mongodb_port }}/?authSource=admin"'
-    state: present
-    create: true
-    backup: true
-    owner: root
-    group: root
-    mode: '0644'
-
 - name: Apply PBM config
   ansible.builtin.command:
     cmd: "pbm config --file /var/lib/tmp/pbm.yaml"
   environment:
-    PBM_MONGODB_URI: "mongodb://pbmuser:{{ pbm_password }}@127.0.0.1:{{ mongodb_port }}/?authSource=admin"
+    PBM_MONGODB_URI: "mongodb://pbmuser:{{ pbm_password | urlencode }}@{{ ansible_hostname }}.home.arpa:{{ mongodb_port }}/?authSource=admin&tls=true&tlsCAFile=/etc/ssl/certs/ca-certificates.crt"
   changed_when: false
+  no_log: true
 
 - name: Remove temp folder
   ansible.builtin.file:

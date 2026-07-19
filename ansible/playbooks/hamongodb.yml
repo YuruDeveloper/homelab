@@ -47,39 +47,128 @@
     - name: Download Need Packge
       ansible.builtin.apt:
         name:
-          - python3-pymongo
+          - python3-pip
 
-    - name: Replica Setup
+    - name: Install pymongo 4+
+      ansible.builtin.pip:
+        name: pymongo>=4.4
+        extra_args: --break-system-packages
+
+    - name: Check admin authentication state
+      ansible.builtin.command:
+        cmd: python3
+        stdin: |
+          import sys
+          from pymongo import MongoClient
+          client = MongoClient(
+              "localhost", {{ mongodb_port }},
+              tls=True, tlsAllowInvalidHostnames=True,
+              tlsCAFile="/etc/ssl/certs/ca-certificates.crt",
+              directConnection=True,
+              username="{{ mongodb_admin_user }}",
+              password="{{ mongodb_admin_password }}",
+              authSource="admin",
+              serverSelectionTimeoutMS=5000)
+          try:
+              client.admin.command("usersInfo")
+          except Exception:
+              sys.exit(1)
+      register: auth_check
+      failed_when: false
+      changed_when: false
+      no_log: true
+
+    - name: Set auth initialized fact
+      ansible.builtin.set_fact:
+        auth_initialized: "{{ auth_check.rc == 0 }}"
+
+    - name: Replica Setup (bootstrap via localhost exception)
       community.mongodb.mongodb_replicaset:
         replica_set: "{{ replica_set_name }}"
-        members:
+        members: &replica_members
           - host: "{{ replica_set_members[0] }}:{{ mongodb_port }}"
             priority: 1
           - host: "{{ replica_set_members[1] }}:{{ mongodb_port }}"
             priority: 1
           - host: "{{ replica_set_members[2] }}:{{ mongodb_port }}"
             priority: 1
-        login_host: "{{ replica_set_members[1] }}"
+        login_host: localhost
         login_port: "{{ mongodb_port }}"
+        ssl: true
+        ssl_ca_certs: /etc/ssl/certs/ca-certificates.crt
+        connection_options:
+          - tlsAllowInvalidHostnames=true
         arbiter_at_index: 0
-    - name: Create User
-      community.mongodb.mongodb_user:
+      when: not auth_initialized
+
+    - name: Replica Setup (authenticated reconcile)
+      community.mongodb.mongodb_replicaset:
         replica_set: "{{ replica_set_name }}"
+        members: *replica_members
+        login_host: localhost
+        login_port: "{{ mongodb_port }}"
+        login_user: "{{ mongodb_admin_user }}"
+        login_password: "{{ mongodb_admin_password }}"
         login_database: admin
+        ssl: true
+        ssl_ca_certs: /etc/ssl/certs/ca-certificates.crt
+        connection_options:
+          - tlsAllowInvalidHostnames=true
+        arbiter_at_index: 0
+      no_log: true
+      when: auth_initialized
+
+    - name: Create admin user (bootstrap via localhost exception)
+      community.mongodb.mongodb_user:
+        login_host: localhost
+        login_port: "{{ mongodb_port }}"
+        ssl: true
+        ssl_ca_certs: /etc/ssl/certs/ca-certificates.crt
+        connection_options:
+          - tlsAllowInvalidHostnames=true
         database: admin
         name: "{{ mongodb_admin_user }}"
         password: "{{ mongodb_admin_password }}"
-        roles:
+        roles: &admin_roles
           - role: root
             db: admin
         state: present
+      no_log: true
+      when: not auth_initialized
+
+    - name: Create admin user (authenticated reconcile)
+      community.mongodb.mongodb_user:
+        replica_set: "{{ replica_set_name }}"
+        login_host: localhost
+        login_port: "{{ mongodb_port }}"
+        login_user: "{{ mongodb_admin_user }}"
+        login_password: "{{ mongodb_admin_password }}"
+        login_database: admin
+        ssl: true
+        ssl_ca_certs: /etc/ssl/certs/ca-certificates.crt
+        connection_options:
+          - tlsAllowInvalidHostnames=true
+        database: admin
+        name: "{{ mongodb_admin_user }}"
+        password: "{{ mongodb_admin_password }}"
+        roles: *admin_roles
+        state: present
+      no_log: true
+      when: auth_initialized
     - name: Create PBM User
       community.mongodb.mongodb_user:
         replica_set: "{{ replica_set_name }}"
+        login_host: localhost
+        login_user: "{{ mongodb_admin_user }}"
+        login_password: "{{ mongodb_admin_password }}"
         login_database: admin
+        ssl: true
+        ssl_ca_certs: /etc/ssl/certs/ca-certificates.crt
+        connection_options:
+          - tlsAllowInvalidHostnames=true
         database: admin
         name: pbmuser
-        password: "{{ mongodb_admin_password }}"
+        password: "{{ pbm_password }}"
         roles:
           - role: root
             db: admin
@@ -104,4 +193,7 @@
     - name: CreateBackup
       ansible.builtin.command:
         cmd: pbm backup
+      environment:
+        PBM_MONGODB_URI: "mongodb://pbmuser:{{ pbm_password | urlencode }}@{{ ansible_hostname }}.home.arpa:{{ mongodb_port }}/?authSource=admin&tls=true&tlsCAFile=/etc/ssl/certs/ca-certificates.crt"
       changed_when: false
+      no_log: true

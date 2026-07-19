@@ -38,22 +38,23 @@ defaults
 # main frontend which proxys to the backends
 #---------------------------------------------------------------------
 frontend main
-    bind *:{{ haproxy_port }}
+    bind *:{{ haproxy_port }} ssl crt /etc/certificate/mongodb.pem
     mode tcp
+    timeout client 1h
     default_backend db
 
 backend db
     mode tcp
     option tcp-check
     timeout connect 5s
-    timeout server 30s
+    timeout server 1h
 
     tcp-check send-binary 3d00000001000000ffffffffd407000000000000746573742e24636d640000000000ffffffff170000000169734d617374657200000000000000f03f00
     tcp-check expect binary 0869736d61737465720001
 
     {% for i in range(replica_set_members | length) %}
     {% if i != arbiter_index %}
-    server {{ replica_set_names[i] }} {{ replica_set_members[i] }}:{{ mongodb_port }} check
+    server {{ replica_set_names[i] }} {{ replica_set_members[i] }}:{{ mongodb_port }} check ssl verify required ca-file /etc/ssl/certs/ca-certificates.crt
     {% endif %}
     {% endfor %}
 
@@ -61,7 +62,7 @@ backend db
 # HAProxy Statistics and Prometheus Metrics
 #---------------------------------------------------------------------
 listen stats
-    bind *:8404
+    bind *:8404 ssl crt /etc/certificate/mongodb.pem
     mode http
     stats enable
     stats uri /

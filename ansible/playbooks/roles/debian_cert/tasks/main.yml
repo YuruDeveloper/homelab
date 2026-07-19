@@ -1,10 +1,10 @@
 - name: Install Need Package
-  community.general.apt:
+  ansible.builtin.apt:
     update_cache: false
     name:
       - certbot
       - ca-certificates
-    state: installed
+    state: present
 
 - name: Add key group
   ansible.builtin.group:
@@ -21,8 +21,7 @@
     mode: "755"
   loop:
     - /usr/local/share/ca-certificates
-    - /etc/certificate/server
-    - /etc/certificate/client
+    - /etc/certificate/
 
 - name: create ca.crt
   ansible.builtin.template:

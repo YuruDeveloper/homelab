@@ -1,0 +1,27 @@
+
+storage:
+  dbPath: /var/lib/mongodb
+
+systemLog:
+  destination: file
+  logAppend: true
+  path: /var/log/mongodb/mongod.log
+
+net:
+  port: 27017
+  bindIp: 0.0.0.0
+  tls:
+    mode: requireTLS
+    certificateKeyFile: /etc/certificate/mongodb.pem
+    CAFile: /etc/ssl/certs/ca-certificates.crt
+    allowConnectionsWithoutCertificates: true
+
+processManagement:
+  timeZoneInfo: /usr/share/zoneinfo
+
+replication:
+  replSetName: {{ replica_set_name }}
+
+security:
+  clusterAuthMode: x509
+  authorization: enabled

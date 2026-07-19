@@ -3,6 +3,12 @@
     name:
       - mongodb-org-server
 
+- name: Add mongodb user to key group
+  ansible.builtin.user:
+    name: mongodb
+    groups: key
+    append: true
+
 - name: Ensure directory exists (create if not present)
   ansible.builtin.file:
     path: /var/lib/mongodb/arb
@@ -12,32 +18,40 @@
     mode: '0777'
     recurse: true
 
-- name: Update dbPath in mongod.conf
-  ansible.builtin.lineinfile:
-    path: /etc/mongod.conf
-    regexp: '^(\s*)dbPath:\s*/var/lib/mongodb\s*$'
-    line: '\1dbPath: /var/lib/mongodb/arb'
-    backrefs: true
-    state: present
 
-- name: Configure replication in mongod.conf
-  ansible.builtin.blockinfile:
-    path: /etc/mongod.conf
-    block: |
-      replication:
-        replSetName: {{ replica_set_name }}
-    marker: "# {mark} ANSIBLE MANAGED REPLICATION BLOCK"
+- name: Configure  mongod.conf
+  ansible.builtin.template:
+    src: mongod.conf.j2
+    dest: /etc/mongod.conf
+    mode: "755"
 
-- name: Configure replication in mongod.conf
-  ansible.builtin.lineinfile:
-    path: /etc/mongod.conf
-    regexp: '^(\s*)bindIp:\s*127\.0\.0\.1'
-    line: '\1bindIp: 0.0.0.0'
-    backrefs: true
-    state: present
+- name: Deploy MongoDB PEM renewal hook
+  ansible.builtin.template:
+    src: mongodb-pem.sh.j2
+    dest: /etc/certificate/renewal-hooks/deploy/mongodb-pem.sh
+    mode: "0755"
+
+- name: Create MongoDB PEM
+  ansible.builtin.command: /etc/certificate/renewal-hooks/deploy/mongodb-pem.sh
+
+# TODO: SERVER-121912 (커널 6.19+ TCMalloc rseq 비호환) 수정 버전 나오면 제거
+- name: Create mongod systemd override directory
+  ansible.builtin.file:
+    path: /etc/systemd/system/mongod.service.d
+    state: directory
+    mode: "0755"
+
+- name: Workaround kernel 6.19+ tcmalloc rseq incompatibility
+  ansible.builtin.copy:
+    content: |
+      [Service]
+      Environment=GLIBC_TUNABLES=glibc.pthread.rseq=1
+    dest: /etc/systemd/system/mongod.service.d/rseq.conf
+    mode: "0644"
 
 - name: Setup mongod
   ansible.builtin.systemd:
     name: mongod
     state: restarted
     enabled: true
+    daemon_reload: true

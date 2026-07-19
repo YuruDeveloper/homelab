@@ -36,8 +36,3 @@
 - name: Update cache
   ansible.builtin.apt:
     update_cache: true
-
-- name: Remove gpg
-  ansible.builtin.apt:
-    name: gpg
-    state: absent

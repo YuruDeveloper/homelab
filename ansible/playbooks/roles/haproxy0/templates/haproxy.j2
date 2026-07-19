@@ -40,6 +40,7 @@ defaults
 frontend main
     bind *:5432
     mode tcp
+    timeout client 1h
     default_backend db
 
 backend db
@@ -48,8 +49,8 @@ backend db
     option httpchk GET /primary
     http-check expect status 200
     timeout connect 5s
-    timeout client 30s
-    timeout server 30s
+    timeout client 1h
+    timeout server 1h
 
     {% for i in range(etcd_member_dns_name | length) %}
     {% if i != etcd_member_index %}
@@ -61,7 +62,7 @@ backend db
 # HAProxy Statistics and Prometheus Metrics
 #---------------------------------------------------------------------
 listen stats
-    bind *:8404
+    bind *:8404 ssl crt /etc/certificate/haproxy.pem
     mode http
     stats enable
     stats uri /

@@ -1,0 +1,19 @@
+#!/bin/sh
+set -eu
+umask 077
+target=/etc/certificate/haproxy.pem
+temp=$(mktemp /etc/certificate/.haproxy.pem.XXXXXX)
+trap 'rm -f "$temp"' EXIT HUP INT TERM
+cat /etc/certificate/certificate.crt /etc/certificate/certificate.key > "$temp"
+chown root:key "$temp"
+chmod 640 "$temp"
+if [ -f "$target" ] && cmp -s "$temp" "$target"; then
+    chown root:key "$target"
+    chmod 640 "$target"
+    exit 0
+fi
+mv -f "$temp" "$target"
+trap - EXIT HUP INT TERM
+if rc-service haproxy status >/dev/null 2>&1; then
+    rc-service haproxy reload
+fi
