@@ -356,9 +356,7 @@ module "claw" {
   IpAddress = "192.168.2.200/24"
   Gateway   = local.Networks.internal.Gateway
 
-  Unprivileged  = true
-  EnableKeyctl  = true
-  EnableNesting = true
+  Unprivileged = true
 
   depends_on = [module.Debian13Template]
 }

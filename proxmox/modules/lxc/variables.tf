@@ -89,17 +89,6 @@ variable "Unprivileged" {
   default     = true
 }
 
-variable "EnableNesting" {
-  type        = bool
-  description = "Docker 등 중첩 컨테이너 지원 활성화"
-  default     = false
-}
-
-variable "EnableKeyctl" {
-  type        = bool
-  description = "Keyctl 기능 활성화"
-  default     = false
-}
 
 variable "AdditionalNetworkInterfaces" {
   type = list(object({

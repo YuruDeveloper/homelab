@@ -18,8 +18,7 @@ module "llamacpp" {
   IpAddress     = var.IpAddress
   Gateway       = var.Gateway
 
-  Unprivileged  = true
-  EnableNesting = true
+  Unprivileged = true
 
   DevicePassthrough = [
     {

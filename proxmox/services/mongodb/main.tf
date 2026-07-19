@@ -8,7 +8,7 @@ module "mongodb" {
   VmId     = var.VmId
   Hostname = var.Hostname
 
-  CpuCores = 1
+  CpuCores = 2
   Memory   = 1024
   Swap     = 512
   DiskSize = 20

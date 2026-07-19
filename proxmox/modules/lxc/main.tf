@@ -29,12 +29,9 @@ resource "proxmox_virtual_environment_container" "LxcContainer" {
     }
   }
 
-  dynamic "features" {
-    for_each = var.EnableNesting || var.EnableKeyctl ? [1] : []
-    content {
-      nesting = var.EnableNesting
-      keyctl  = var.EnableKeyctl
-    }
+  features {
+    nesting = true
+    keyctl  = true
   }
 
   disk {

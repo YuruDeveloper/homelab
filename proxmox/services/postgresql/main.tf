@@ -18,9 +18,7 @@ module "postgresql" {
   IpAddress     = var.IpAddress
   Gateway       = var.Gateway
 
-  Unprivileged  = true
-  EnableKeyctl  = true
-  EnableNesting = true
+  Unprivileged = true
 
   MountPoints = [
     {
