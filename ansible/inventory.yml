@@ -6,6 +6,10 @@ all:
           ansible_host: 192.168.0.2
     alpine:
       children:
+        ca:
+         hosts:
+          stepca:
+            ansible_host: 192.168.2.6
         dns:
          hosts:
           technitium0:
@@ -17,53 +21,13 @@ all:
             proxy0:
               hosts:
                 haproxy0:
-                  ansible_host: 192.168.2.30
+                  ansible_host: 192.168.2.20
             postgresql:
               hosts:
                 db0:
-                  ansible_host: 192.168.2.40
+                  ansible_host: 192.168.2.30
                 db1:
-                  ansible_host: 192.168.2.41
-        HARedis:
-          children:
-            proxy2:
-              hosts:
-                haproxy2:
-                  ansible_host: 192.168.2.32
-            redis:
-              hosts:
-                db4:
-                  ansible_host: 192.168.2.70
-                db5:
-                  ansible_host: 192.168.2.71
-        Rustfs:
-          hosts:
-            rustfs:
-              ansible_host: 192.168.2.50
-        docker:
-          hosts:
-            docker0:
-              ansible_host: 192.168.2.20
-        nginx:
-          hosts:
-            nginx0:
-              ansible_host: 192.168.5.2
-        gitops:
-          hosts:
-            gitea:
-              ansible_host: 192.168.2.80
-            zot:
-              ansible_host: 192.168.2.81
-            argocd:
-              ansible_host: 192.168.2.83
-        observability:
-          hosts:
-            grafana:
-              ansible_host: 192.168.2.100
-            loki:
-              ansible_host: 192.168.2.101
-            prometheus:
-              ansible_host: 192.168.2.102
+                  ansible_host: 192.168.2.31
     debian:
       children:
         HAmongodb:
@@ -71,22 +35,22 @@ all:
             proxy1:
               hosts:
                 haproxy1:
-                  ansible_host: 192.168.2.31
+                  ansible_host: 192.168.2.21
             mongodb:
               hosts:
                 db2: 
-                  ansible_host: 192.168.2.60
-                db3:  
-                  ansible_host: 192.168.2.61
-        redpanda:
-          hosts:
-            redpanda0:
-              ansible_host: 192.168.2.90
-        GitOpsDebian:
-          hosts:
-            jenkins:
-              ansible_host: 192.168.2.82
-        llamacpp:
-          hosts:
-            llamacpp0:
-              ansible_host: 192.168.2.110
+                  ansible_host: 192.168.2.40
+                db3:
+                  ansible_host: 192.168.2.41
+        HAvalkey:
+          children:
+            proxy2:
+              hosts:
+                haproxy2:
+                  ansible_host: 192.168.2.22
+            valkey:
+              hosts:
+                db4:
+                  ansible_host: 192.168.2.50
+                db5:
+                  ansible_host: 192.168.2.51

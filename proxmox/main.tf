@@ -211,39 +211,40 @@ module "haproxy2" {
   source = "./services/haproxy"
 
   CommonConfig   = local.CommonLxcConfig
-  TemplateFileId = local.Templates.Alpine
+  OsType         = "debian"
+  TemplateFileId = local.Templates.Debian13
   Hostname       = "valkey-haproxy"
   VmId           = 500
   IpAddress      = "192.168.2.22/24"
   Gateway        = local.Networks.internal.Gateway
 
-  depends_on = [module.AlpineTemplate]
+  depends_on = [module.Debian13Template]
 }
 
-module "redis0" {
-  source         = "./services/redis"
+module "valkey0" {
+  source         = "./services/valkey"
   CommonConfig   = local.CommonLxcConfig
-  TemplateFileId = local.Templates.Alpine
+  OsType         = "debian"
+  TemplateFileId = local.Templates.Debian13
   Hostname       = "valkey0"
   VmId           = 510
   IpAddress      = "192.168.2.50/24"
   Gateway        = local.Networks.internal.Gateway
 
-  depends_on = [module.AlpineTemplate]
+  depends_on = [module.Debian13Template]
 }
 
-
-
-module "redis1" {
-  source         = "./services/redis"
+module "valkey1" {
+  source         = "./services/valkey"
   CommonConfig   = local.CommonLxcConfig
-  TemplateFileId = local.Templates.Alpine
+  OsType         = "debian"
+  TemplateFileId = local.Templates.Debian13
   Hostname       = "valkey1"
   VmId           = 511
   IpAddress      = "192.168.2.51/24"
   Gateway        = local.Networks.internal.Gateway
 
-  depends_on = [module.AlpineTemplate]
+  depends_on = [module.Debian13Template]
 }
 
 module "docker" {
@@ -276,14 +277,14 @@ module "forgejo" {
   source = "./services/forgejo"
 
   CommonConfig   = local.CommonLxcConfig
-  TemplateFileId = local.Templates.Alpine
+  TemplateFileId = local.Templates.Debian13
 
   Hostname  = "forgejo"
   VmId      = 1000
   IpAddress = "192.168.2.100/24"
   Gateway   = local.Networks.internal.Gateway
 
-  depends_on = [module.AlpineTemplate]
+  depends_on = [module.Debian13Template]
 }
 
 module "zot" {

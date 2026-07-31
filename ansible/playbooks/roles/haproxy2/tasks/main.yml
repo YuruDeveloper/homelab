@@ -1,9 +1,25 @@
 - name: Install Need Package
-  community.general.apk:
+  ansible.builtin.apt:
     name:
       - haproxy
       - rsyslog
-    state: installed
+    state: present
+
+- name: Add haproxy user to key group
+  ansible.builtin.user:
+    name: haproxy
+    groups: key
+    append: true
+
+- name: Deploy HAProxy PEM renewal hook
+  ansible.builtin.template:
+    src: haproxy-pem.sh.j2
+    dest: /etc/certificate/renewal-hooks/deploy/haproxy-pem.sh
+    mode: "0755"
+
+- name: Create HAProxy PEM
+  ansible.builtin.command: /etc/certificate/renewal-hooks/deploy/haproxy-pem.sh
+  changed_when: false
 
 - name: Configure rsyslog for HAProxy
   ansible.builtin.blockinfile:
@@ -30,8 +46,11 @@
   ansible.builtin.template:
     src: haproxy.j2
     dest: "/etc/haproxy/haproxy.cfg"
-    mode: "755"
+    owner: root
+    group: haproxy
+    mode: "0640"
     force: true
+  no_log: true
 
 - name: Start Haproxy
   ansible.builtin.service:

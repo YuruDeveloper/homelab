@@ -11,7 +11,7 @@ module "haproxy" {
   CpuCores = 1
   Memory   = 512
   Swap     = 512
-  DiskSize = 2
+  DiskSize = 3
 
   NetworkBridge = "vmbr0"
   VlanId        = 100

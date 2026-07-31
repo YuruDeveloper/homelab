@@ -1,0 +1,58 @@
+# valkey-sentinel 은 valkey-tools 에만 의존한다. valkey-server 를 함께 깔면
+# Debian 은 설치 즉시 기본 설정으로 기동해 6379 를 선점하고, proxy2 의
+# HAProxy 프런트엔드 bind 와 충돌한다.
+- name: Install Need Package
+  ansible.builtin.apt:
+    name:
+      - valkey-sentinel
+      # valkey-cli 제공 — 인증서 갱신 훅의 CONFIG SET 재적재에 사용
+      - valkey-tools
+    state: present
+    update_cache: true
+
+- name: Add valkey user to key group
+  ansible.builtin.user:
+    name: valkey
+    groups: key
+    append: true
+
+- name: Create Sentinel directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: valkey
+    group: valkey
+    mode: "0750"
+  loop:
+    - /var/lib/valkey
+    - /var/log/valkey
+
+- name: Deploy certificate renewal hook
+  ansible.builtin.template:
+    src: certificate_hook.j2
+    dest: /etc/certificate/renewal-hooks/deploy/valkey.sh
+    owner: root
+    group: root
+    mode: "0700"
+  no_log: true
+
+# Sentinel 은 이 파일을 런타임에 계속 재작성한다 — 현재 프라임, 발견한 동료,
+# 레플리카가 모두 여기 기록된다. 즉 이 파일의 주인은 Sentinel 이다.
+# force: true 로 덮으면 페일오버 결과가 초기값으로 되감기므로 최초 1회만 심는다.
+- name: Seed Sentinel config file (first run only)
+  ansible.builtin.template:
+    src: sentinel.j2
+    dest: /etc/valkey/sentinel.conf
+    owner: valkey
+    group: valkey
+    mode: "0640"
+    force: true
+  no_log: true
+
+- name: Enable and start Valkey Sentinel
+  ansible.builtin.systemd:
+    name: valkey-sentinel
+    state: restarted
+    enabled: true
+    daemon_reload: true
+

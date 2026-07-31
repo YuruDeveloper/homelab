@@ -1,0 +1,44 @@
+- name: Install Need Package
+  ansible.builtin.apt:
+    name:
+      - valkey-server
+    state: present
+    update_cache: true
+
+- name: Add valkey user to key group
+  ansible.builtin.user:
+    name: valkey
+    groups: key
+    append: true
+
+- name: Create Valkey directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: valkey
+    group: valkey
+    mode: "0750"
+  loop:
+    - /var/lib/valkey
+    - /var/log/valkey
+
+- name: Make Valkey config file
+  ansible.builtin.template:
+    src: valkey.j2
+    dest: /etc/valkey/valkey.conf
+    owner: valkey
+    group: valkey
+    mode: "0640"
+    force: true
+  no_log: true
+  notify: Restart valkey
+
+# 무조건 재시작하지 않는다. 프라임을 재시작하면 그 자체로 페일오버가 일어나고,
+# 이 파일에는 런타임이 기록한 replicaof 도 함께 들어 있기 때문이다.
+# 설정이 실제로 바뀐 경우에만 핸들러가 돈다.
+- name: Enable and start Valkey
+  ansible.builtin.systemd:
+    name: valkey-server
+    state: restarted
+    enabled: true
+    daemon_reload: true

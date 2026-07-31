@@ -1,4 +1,4 @@
-module "redis" {
+module "valkey" {
   source = "../../modules/lxc"
 
   CommonConfig   = var.CommonConfig

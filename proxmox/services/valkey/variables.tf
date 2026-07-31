@@ -15,7 +15,7 @@ variable "CommonConfig" {
 variable "OsType" {
   type        = string
   description = "OS 타입 (alpine, debian)"
-  default     = "alpine"
+  default     = "debian"
 }
 
 variable "TemplateFileId" {
@@ -26,7 +26,7 @@ variable "TemplateFileId" {
 variable "Hostname" {
   type        = string
   description = "LXC 컨테이너 호스트네임"
-  default     = "redis"
+  default     = "valkey"
 }
 
 # 서비스별 개별 설정

@@ -1,0 +1,27 @@
+#!/bin/sh
+# 인증서 갱신 시 Valkey / Sentinel 이 새 인증서를 다시 읽게 한다.
+# CONFIG SET 으로 재적재하므로 프로세스 재시작(= 불필요한 페일오버)이 없다.
+set -eu
+
+host="$(hostname).home.arpa"
+
+reload() {
+    port="$1"
+    valkey-cli \
+        --tls \
+        --cert /etc/certificate/certificate.crt \
+        --key /etc/certificate/certificate.key \
+        --cacert /etc/ssl/certs/ca-certificates.crt \
+        --sni "$host" \
+        -h "$host" -p "$port" \
+        -a '{{ valkey_password }}' --no-auth-warning \
+        config set tls-cert-file /etc/certificate/certificate.crt >/dev/null
+}
+
+if systemctl is-active --quiet valkey-server; then
+    reload {{ valkey_port }} || systemctl restart valkey-server
+fi
+
+if systemctl is-active --quiet valkey-sentinel; then
+    reload {{ sentinel_port }} || systemctl restart valkey-sentinel
+fi

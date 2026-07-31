@@ -1,0 +1,41 @@
+- name: Set cert
+  become: true
+  hosts: haproxy2
+  vars:
+    server_name: "valkey-haproxy.home.arpa"
+  roles:
+    - debian_cert
+
+- name: Set cert
+  become: true
+  hosts: db4
+  vars:
+    server_name: "valkey0.home.arpa"
+  roles:
+    - debian_cert
+
+- name: Set cert
+  become: true
+  hosts: db5
+  vars:
+    server_name: "valkey1.home.arpa"
+  roles:
+    - debian_cert
+
+- name: Set Valkey
+  become: true
+  hosts: valkey
+  roles:
+    - valkey
+
+- name: Set Sentinel
+  become: true
+  hosts: HAvalkey
+  roles:
+    - valkey_sentinel
+
+- name: Set ha proxy
+  become: true
+  hosts: proxy2
+  roles:
+    - haproxy2
