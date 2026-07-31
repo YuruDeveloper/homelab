@@ -40,7 +40,6 @@ defaults
 frontend valkey-front
     bind *:{{ valkey_port }} ssl crt /etc/certificate/haproxy.pem
     mode tcp
-    # pub/sub, BLPOP 등 장시간 유휴 연결을 끊지 않는다
     timeout client 1h
     default_backend valkey-prime
 
@@ -53,18 +52,10 @@ backend valkey-prime
     timeout connect 5s
     timeout server 1h
 
-    # 프라임이 아닌 노드는 expect 가 매칭되지 않아 이 시간만큼 매달렸다가 L7TOUT 이
-    # 된다(Sentinel 이 QUIT 을 지원하지 않아 연결이 안 닫히기 때문). 그런데 inter 는
-    # "체크 사이" 간격이라, 체크 자체가 10s 를 쓰면 그 노드는 11s 에 한 번만
-    # 검사된다 — 승격 직후 새 프라임을 알아채는 데 그만큼 늦어진다.
-    # 정상 체크는 6~13ms 에 끝나므로 1s 로도 75배 이상 여유가 있다.
     timeout check 1s
 
     balance first
 
-    #-----------------------------------------------------------------
-    # 1단계 - 노드가 살아서 응답하는가
-    #-----------------------------------------------------------------
     tcp-check connect ssl
     tcp-check send AUTH\ {{ valkey_password }}\r\n
     tcp-check expect string +OK
@@ -73,32 +64,14 @@ backend valkey-prime
     tcp-check send QUIT\r\n
     tcp-check expect string +OK
 
-    #-----------------------------------------------------------------
-    # 2단계 - Sentinel 이 이 노드를 프라임으로 인정하는가
-    #
-    # "너 마스터냐"고 노드에 물으면 재부팅으로 부활한 낡은 마스터도 그렇다고
-    # 답한다(자기가 강등된 걸 아직 모른다). 그래서 판정자인 Sentinel 에게 묻는다.
-    # 답은 하나뿐이므로 %[srv_name] 과 일치하는 서버도 하나뿐 — 이중 UP 이
-    # 구조적으로 성립하지 않는다.
-    #
-    # 주소는 그대로 두고 포트만 바꿔 같은 노드의 Sentinel 에 붙는다. 그래야
-    # 제시되는 인증서가 그 노드 것이라 verifyhost 가 그대로 통과한다.
-    # 이 connect 에 sni 를 붙이면 인증서 검증이 깨지므로 지정하지 않는다.
-    #-----------------------------------------------------------------
     tcp-check connect port {{ sentinel_port }} ssl
     tcp-check send AUTH\ {{ valkey_password }}\r\n
     tcp-check expect string +OK
     tcp-check send SENTINEL\ get-master-addr-by-name\ {{ sentinel_prime_name }}\r\n
-    # 여기서 QUIT 으로 연결을 닫아 불일치를 즉시 판정하려 했으나 Sentinel 은 QUIT 을
-    # 지원하지 않는다("-ERR unknown command 'QUIT'" 실측). 연결이 닫히지 않으므로
-    # 프라임이 아닌 노드는 expect 가 매칭되지 않은 채 timeout check 까지 대기한다.
-    # 그래서 이 대기를 위쪽 timeout check 로 짧게 묶는다.
     tcp-check expect string-lf %[srv_name]
 
-    # 서버 이름은 반드시 FQDN — Sentinel 이 반환하는 주소와 문자열 대조된다.
-    # 백엔드 재암호화: 노드 인증서를 CA + 호스트명으로 검증하고, 자신도 클라이언트 인증서를 제시한다.
 {% for host in groups['valkey'] %}
-{% set node_dns = hostvars[host].ansible_hostname ~ '.home.arpa' %}
+{% set node_dns = hostvars[host].ansible_host %}
     server {{ node_dns }} {{ node_dns }}:{{ valkey_port }} check inter 1s fall 3 rise 2 on-marked-down shutdown-sessions ssl verify required ca-file /etc/ssl/certs/ca-certificates.crt crt /etc/certificate/haproxy.pem sni str({{ node_dns }}) verifyhost {{ node_dns }}
 {% endfor %}
 

@@ -1,25 +1,8 @@
-# 멤버 목록은 인벤토리의 valkey 그룹이 단일 출처다.
-# 아래는 최초 구성 때만 쓰이는 씨앗 값 — 이후 프라임은 Sentinel 이 정한다.
-valkey_initial_prime_dns: "valkey0.home.arpa"  # db4 (valkey0)
+valkey_initial_prime_dns: "valkey0.home.arpa"  
 valkey_port: 6379
 sentinel_port: 26379
 sentinel_prime_name: "prime"
 sentinel_quorum: 2
 
-# 프라임 무응답을 장애로 판정하기까지의 대기 시간.
-# 전체 체감 중단 = 이 값 + 승격(~0.5s) + HAProxy 재판정(rise 2 x inter 1s).
-# Sentinel 의 PING-PERIOD 가 1000ms 라 3000 은 3회 연속 무응답을 뜻한다.
-# 같은 랜의 LXC 3대라 RTT 가 0.3ms 수준이므로 오탐 여유가 충분하다.
-# (2000 까지 내리면 2회라 다소 공격적 — 필요해지면 그때 판단)
 sentinel_down_after_ms: 3000
 
-# valkey-cli 공통 인자 (TLS + 클라이언트 인증서). 여러 롤이 함께 쓴다.
-valkey_cli_tls_args:
-  - --tls
-  - --cert
-  - /etc/certificate/certificate.crt
-  - --key
-  - /etc/certificate/certificate.key
-  - --cacert
-  - /etc/ssl/certs/ca-certificates.crt
-  - --no-auth-warning

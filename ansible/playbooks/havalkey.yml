@@ -2,7 +2,7 @@
   become: true
   hosts: haproxy2
   vars:
-    server_name: "valkey-haproxy.home.arpa"
+    server_name: "{{ ansible_host }}"
   roles:
     - debian_cert
 
@@ -10,7 +10,7 @@
   become: true
   hosts: db4
   vars:
-    server_name: "valkey0.home.arpa"
+    server_name: "{{ ansible_host }}"
   roles:
     - debian_cert
 
@@ -18,7 +18,7 @@
   become: true
   hosts: db5
   vars:
-    server_name: "valkey1.home.arpa"
+    server_name: "{{ ansible_host }}"
   roles:
     - debian_cert
 

@@ -5,9 +5,11 @@ set -eu
 
 host="$(hostname).home.arpa"
 
+# 상대가 평문이면 TLS 핸드셰이크 응답이 영영 안 와 valkey-cli 가 무한 대기한다
+# (타임아웃 옵션이 없다). 상한이 없으면 아래 || 재시작 폴백에 도달하지 못한다.
 reload() {
     port="$1"
-    valkey-cli \
+    timeout 5 valkey-cli \
         --tls \
         --cert /etc/certificate/certificate.crt \
         --key /etc/certificate/certificate.key \
