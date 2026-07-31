@@ -47,10 +47,10 @@ all:
             proxy2:
               hosts:
                 haproxy2:
-                  ansible_host: 192.168.2.22
+                  ansible_host: valkey-haproxy.home.arpa
             valkey:
               hosts:
                 db4:
-                  ansible_host: 192.168.2.50
+                  ansible_host: valkey0.home.arpa
                 db5:
-                  ansible_host: 192.168.2.51
+                  ansible_host: valkey1.home.arpa
