@@ -35,8 +35,11 @@
   ansible.builtin.template:
     src: haproxy.j2
     dest: "/etc/haproxy/haproxy.cfg"
-    mode: "755"
+    owner: root
+    group: haproxy
+    mode: "0640"
     force: true
+  no_log: true
 
 - name: Start Haproxy
   ansible.builtin.service:

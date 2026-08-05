@@ -39,6 +39,6 @@
 - name: Enable and start Valkey
   ansible.builtin.systemd:
     name: valkey-server
-    state: restarted
+    state: started
     enabled: true
     daemon_reload: true
